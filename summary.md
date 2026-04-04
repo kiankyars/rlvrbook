@@ -1,8 +1,5 @@
 # Reinforcement Learning from Verifiable Rewards
 
-_Working summary for the book design_  
-_Last updated: April 3, 2026_
-
 ## Core Thesis
 
 This book should treat RLVR as the study of verifiers, not as a subcase of reinforcement learning and not as a chronology of optimizer papers. The central object is the verifier: what it can check, what evidence it consumes, what proxy it induces, how it interacts with search, and how it fails. Policy optimization matters, but it belongs in the background. If the book is successful, a reader should come away thinking more clearly about verifier design, verifier limits, and verifier-driven post-training than about any particular policy-gradient variant.
@@ -132,6 +129,4 @@ Each main chapter should contain:
 
 ## What This Book Is Not
 
-This book should not be organized around a timeline of papers. It should not spend disproportionate space on optimizer variants. It should not assume that reasoning quality is fully legible from surface chains of thought. And it should not overfit itself to a single benchmark family just because math happened to be the first clean domain where RLVR scaled well.
-
-If the book stays disciplined on those points, it has a real chance to become the reference document people send around when they need to get serious about verifier-driven post-training.
+This book should not be organized around a timeline of papers, and it should not spend disproportionate space on optimizer variants.
