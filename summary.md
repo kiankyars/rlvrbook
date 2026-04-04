@@ -64,6 +64,28 @@ Close by identifying the unresolved bottlenecks: stronger process verifiers, tru
 - **B. Benchmarks, Evals, and Contamination**: benchmark hygiene, extraction mismatch, leakage, hidden tests, and reporting pitfalls.
 - **C. Practical Verifier Design Checklist**: a compact field manual for designing a new verifier stack.
 
+## Flagship Figures
+
+### 1. The RLVR Verifier Stack
+
+Place this on the homepage and in chapter 1. It should show task, trajectory, evidence, verifier, reward, and policy or search in one layered stack. The HTML version should let the reader toggle which evidence is exposed to the verifier and see how the failure mode changes. The PDF version should be a clean static stack with annotated variants.
+
+### 2. What Can Be Verified?
+
+Use this in chapter 1 as a domain map. Plot math, code, proof, long-context QA, multimodal tasks, and agentic settings by verification strength and verification granularity. The HTML version should reveal the checked object, attack surface, and blind spot for each point. The PDF version should use numbered callouts on the same map.
+
+### 3. Outcome vs Process vs Hybrid
+
+Use this across chapters 2 through 4. Show the same example scored three ways: outcome-only, process, and hybrid stack. The HTML version should step through a single trajectory and show which verifier fires where. The PDF version should be a static three-column walkthrough.
+
+### 4. Reward Hacking Sandbox
+
+Use this in chapter 7. Let the reader change extractor rules, hidden tests, or judge strictness and watch a strategy move from "correct" to "high reward but wrong." The PDF version should show a small set of fixed scenarios with before-and-after outcomes.
+
+### 5. Search vs Amortization
+
+Use this in chapter 6. Show how verifier-assisted search improves results immediately and how training amortizes some of that gain into the policy. The HTML version should expose search-budget and before-versus-after toggles. The PDF version should be a static curve panel with a few representative budgets.
+
 ## Chapter Contract
 
 The book should use a small set of chapter archetypes rather than one universal template.

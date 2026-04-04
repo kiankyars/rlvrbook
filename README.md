@@ -1,6 +1,7 @@
 # RLVR Book
 
-This repo is the source tree for *Reinforcement Learning from Verifiable Rewards*: a verifier-first reference book intended to compile from Markdown into both HTML and PDF.
+This repo is the source tree for *Reinforcement Learning from Verifiable Rewards*.
+Do a case study at Will Brown code
 
 ## Implemented Layout
 
