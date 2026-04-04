@@ -51,8 +51,19 @@ The homepage should eventually open with **The RLVR Verifier Stack**: a layered 
 - [10. Long-Context, Multimodal, and Agentic RLVR](chapters/10-long-context-multimodal-and-agentic-rlvr.md)
 - [11. Open Problems and the Research Agenda](chapters/11-open-problems-and-the-research-agenda.md)
 
-## Appendices
+### Appendices
 
 - [A. Minimal RL and Post-Training Background](appendices/a-minimal-rl-and-post-training-background.md)
 - [B. Benchmarks, Evals, and Contamination](appendices/b-benchmarks-evals-and-contamination.md)
 - [C. Practical Verifier Design Checklist](appendices/c-practical-verifier-design-checklist.md)
+
+## LLM Use
+
+Fortunately, we live in a world where AI slop writing is still *very* intelligible from genuine human text. It is knowing this fact, and also knowing that a textbook is still very much a human-lead endeavor that I write almost all of the sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex to this project were:
+- helping me plan out the structure
+- giving me the initial boilerplate/skeleton scaffold of the textbook itself
+- creating the diagrams and equations, since this is much more effecient, in particular given my lack of LaTex scripting skills, and is inherently much lower-entropy than writing english, not requiring the same human creativity
+
+## Acknowledgments
+
+- I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfbook.com), and I am well aware that his textbook treats the subject of RLVR in quite some detail; notwithstanding, as he notes himself, this particular sub-field of ML is evolving so fast that much of the RLHF book's RLVR content will become outdated, and this book is intended to maintain pace with progress.

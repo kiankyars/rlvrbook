@@ -3,6 +3,7 @@ project:
 
 book:
   title: "Reinforcement Learning from Verifiable Rewards"
+  author: "Kian Kyars"
   subtitle: "A verifier-first reference"
   output-file: rlvrbook
   downloads:
