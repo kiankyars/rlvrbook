@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+if ! command -v quarto >/dev/null 2>&1; then
+  echo "quarto is required to build the book" >&2
+  exit 1
+fi
+
+mkdir -p "$ROOT/build/html" "$ROOT/build/pdf"
+
+quarto render "$ROOT/book" --to html --output-dir "$ROOT/build/html"
+quarto render "$ROOT/book" --to pdf --output-dir "$ROOT/build/pdf"

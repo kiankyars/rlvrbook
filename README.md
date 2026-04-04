@@ -1,8 +1,8 @@
 # RLVR Book
 
-This repo should have one source-of-truth manuscript tree, with one Markdown file per chapter and a build pipeline that emits both HTML and PDF. The right shape is closer to a publishing repo than a research dump: keep prose, figures, citations, code, and generated artifacts cleanly separated.
+This repo is the source tree for *Reinforcement Learning from Verifiable Rewards*: a verifier-first reference book intended to compile from Markdown into both HTML and PDF.
 
-## Proposed Repo Layout
+## Implemented Layout
 
 ```text
 rlvrbook/
@@ -11,42 +11,29 @@ rlvrbook/
 ├── .gitignore
 ├── book/
 │   ├── _quarto.yml
-│   ├── metadata.yml
+│   ├── index.md
 │   ├── bibliography.bib
-│   ├── glossary.yml
 │   ├── styles/
-│   │   ├── pdf.scss
 │   │   └── html.scss
-│   ├── frontmatter/
-│   │   ├── title-page.md
-│   │   ├── preface.md
-│   │   └── notation.md
 │   ├── chapters/
 │   │   ├── 01-the-verifier-lens.md
-│   │   ├── 02-what-can-be-verified.md
-│   │   ├── 03-outcome-verifiers.md
-│   │   ├── 04-process-verifiers.md
-│   │   ├── 05-hybrid-verifiers.md
-│   │   ├── 06-turning-checks-into-signal.md
-│   │   ├── 07-search-and-test-time-verification.md
-│   │   ├── 08-reward-hacking-and-robustness.md
-│   │   ├── 09-faithfulness-and-confidence.md
-│   │   ├── 10-math-code-and-formal-proof.md
-│   │   ├── 11-long-context-multimodal-and-agentic-rlvr.md
-│   │   └── 12-open-problems.md
+│   │   ├── 02-outcome-verifiers.md
+│   │   ├── 03-process-verifiers.md
+│   │   ├── 04-learned-programmatic-and-hybrid-verifiers.md
+│   │   ├── 05-turning-checks-into-training-signal.md
+│   │   ├── 06-search-and-test-time-verification.md
+│   │   ├── 07-reward-hacking-proxy-misspecification-and-verifier-robustness.md
+│   │   ├── 08-faithfulness-confidence-and-what-verification-misses.md
+│   │   ├── 09-canonical-domains-math-code-and-formal-proof.md
+│   │   ├── 10-long-context-multimodal-and-agentic-rlvr.md
+│   │   └── 11-open-problems-and-the-research-agenda.md
 │   ├── appendices/
-│   │   ├── a-minimal-rl-background.md
+│   │   ├── a-minimal-rl-and-post-training-background.md
 │   │   ├── b-benchmarks-evals-and-contamination.md
-│   │   └── c-verifier-design-checklist.md
+│   │   └── c-practical-verifier-design-checklist.md
 │   ├── diagrams/
-│   │   ├── 01-verifier-lens-overview.svg
-│   │   ├── 03-outcome-verifier-pipeline.svg
-│   │   ├── 04-process-verifier-taxonomy.svg
-│   │   ├── 08-reward-hacking-failure-modes.svg
-│   │   └── ...
 │   └── templates/
-│       ├── chapter-template.md
-│       └── figure-template.svg
+│       └── chapter-template.md
 ├── code/
 │   ├── math/
 │   ├── code/
@@ -60,25 +47,52 @@ rlvrbook/
 ├── scripts/
 │   ├── build-book
 │   ├── lint-book
-│   ├── render-figures
+│   ├── check-diagrams
 │   └── check-citations
-├── build/
-│   ├── html/
-│   └── pdf/
+└── build/
+    ├── html/
+    └── pdf/
 ```
 
-## Why This Layout
+## Locked Main Text
 
-- Keep all publishable manuscript source inside `book/`; that avoids the split-brain structure many research repos end up with.
-- Keep each chapter as a single `.md` file in `book/chapters/`; this is the easiest unit for review, citation passes, and PDF compilation.
-- Keep all diagrams in a single flat `book/diagrams/` folder and prefix each filename with its chapter number; that keeps lookup simple without creating unnecessary nesting.
-- Keep executable code and datasets outside `book/`; textbook builds should not depend on the prose tree staying import-safe.
-- Treat `build/` as generated output only; PDF and HTML should be reproducible artifacts, not hand-edited source.
+1. The Verifier Lens
+2. Outcome Verifiers
+3. Process Verifiers
+4. Learned, Programmatic, and Hybrid Verifiers
+5. Turning Checks into Training Signal
+6. Search and Test-Time Verification
+7. Reward Hacking, Proxy Misspecification, and Verifier Robustness
+8. Faithfulness, Confidence, and What Verification Misses
+9. Canonical Domains: Math, Code, and Formal Proof
+10. Long-Context, Multimodal, and Agentic RLVR
+11. Open Problems and the Research Agenda
+
+Appendices:
+
+- Minimal RL and Post-Training Background
+- Benchmarks, Evals, and Contamination
+- Practical Verifier Design Checklist
+
+## Conventions
+
+- One Markdown file per chapter and per appendix.
+- Keep all manuscript source inside `book/`.
+- Keep all diagrams in `book/diagrams/` with chapter-prefixed filenames like `01-verifier-lens-overview.svg`.
+- Keep executable examples in `code/` and datasets in `data/`, not mixed into the manuscript tree.
+- Treat `build/` as generated output only.
+
+## Commands
+
+- `scripts/build-book`: render the Quarto book to HTML and PDF.
+- `scripts/lint-book`: validate the scaffold shape and required chapter files.
+- `scripts/check-diagrams`: enforce diagram filename conventions.
+- `scripts/check-citations`: flag citekeys used in Markdown but missing from `book/bibliography.bib`.
 
 ## Writing Plan
 
-1. Freeze the table of contents and the chapter contract for each file.
-2. Draft the backbone chapters first: verifier lens, outcome/process verifiers, reward hacking, canonical domains.
-3. Build figures, glossary entries, and citations in parallel with chapter drafting.
-4. Run a technical review pass chapter-by-chapter before expanding frontier material.
-5. Freeze prose, then render and polish the HTML/PDF edition.
+1. Draft chapter 1 until the verifier-first framing is stable enough to constrain the rest of the book.
+2. Write chapters 2-4 next so the verifier taxonomy and design space are fixed early.
+3. Fill chapters 5-8 once the book has a settled vocabulary for signal design and failure modes.
+4. Write chapters 9-11 after the core conceptual spine is stable.
+5. Polish citations, diagrams, and cross-references only after the chapter drafts exist.

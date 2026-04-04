@@ -1,0 +1,57 @@
+project:
+  type: book
+
+book:
+  title: "Reinforcement Learning from Verifiable Rewards"
+  subtitle: "A verifier-first reference"
+  output-file: rlvrbook
+  downloads:
+    - pdf
+  chapters:
+    - index.md
+    - part: "Foundations"
+      chapters:
+        - chapters/01-the-verifier-lens.md
+    - part: "Verifier Design"
+      chapters:
+        - chapters/02-outcome-verifiers.md
+        - chapters/03-process-verifiers.md
+        - chapters/04-learned-programmatic-and-hybrid-verifiers.md
+    - part: "From Verifiers to Capability"
+      chapters:
+        - chapters/05-turning-checks-into-training-signal.md
+        - chapters/06-search-and-test-time-verification.md
+    - part: "Failure Modes"
+      chapters:
+        - chapters/07-reward-hacking-proxy-misspecification-and-verifier-robustness.md
+        - chapters/08-faithfulness-confidence-and-what-verification-misses.md
+    - part: "Domains and Frontiers"
+      chapters:
+        - chapters/09-canonical-domains-math-code-and-formal-proof.md
+        - chapters/10-long-context-multimodal-and-agentic-rlvr.md
+        - chapters/11-open-problems-and-the-research-agenda.md
+  appendices:
+    - appendices/a-minimal-rl-and-post-training-background.md
+    - appendices/b-benchmarks-evals-and-contamination.md
+    - appendices/c-practical-verifier-design-checklist.md
+
+bibliography: bibliography.bib
+
+crossref:
+  chapters: true
+
+execute:
+  freeze: auto
+  echo: false
+  warning: false
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    css: styles/html.scss
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true

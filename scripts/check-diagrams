@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+status=0
+
+while IFS= read -r path; do
+  name="$(basename "$path")"
+
+  if [[ "$name" == ".gitkeep" ]]; then
+    continue
+  fi
+
+  if [[ ! "$name" =~ ^[0-9]{2}-[a-z0-9-]+\.(svg|png|pdf|jpg|jpeg)$ ]]; then
+    echo "invalid diagram filename: $name" >&2
+    status=1
+  fi
+done < <(find "$ROOT/book/diagrams" -maxdepth 1 -type f | sort)
+
+if [[ "$status" -eq 0 ]]; then
+  echo "diagram filenames look consistent"
+fi
+
+exit "$status"

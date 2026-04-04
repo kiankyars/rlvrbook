@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+tmp_dir="$(mktemp -d)"
+trap 'rm -rf "$tmp_dir"' EXIT
+
+used_file="$tmp_dir/used.txt"
+declared_file="$tmp_dir/declared.txt"
+
+rg -o '\[[^]]*@[^]]+\]' "$ROOT/book" --glob '*.md' | rg -o '@[A-Za-z0-9:_-]+' | sed 's/^@//' | sort -u > "$used_file" || true
+rg -o '^@[A-Za-z]+\{[^,]+' "$ROOT/book/bibliography.bib" | sed -E 's/^@[A-Za-z]+\{//' | sort -u > "$declared_file" || true
+
+if [[ ! -s "$used_file" ]]; then
+  echo "no citations found in book markdown"
+  exit 0
+fi
+
+missing="$(comm -23 "$used_file" "$declared_file" || true)"
+
+if [[ -n "$missing" ]]; then
+  echo "missing bibliography entries for:" >&2
+  printf '%s\n' "$missing" >&2
+  exit 1
+fi
+
+echo "all citekeys resolve in bibliography.bib"
