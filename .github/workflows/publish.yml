@@ -28,9 +28,8 @@ jobs:
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-
-      - name: Install TinyTeX
-        run: quarto install tinytex --update-path
+        with:
+          tinytex: true
 
       - name: Install LaTeX package dependency
         run: |
