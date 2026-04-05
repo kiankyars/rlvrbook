@@ -109,7 +109,7 @@ The RLVR pipeline can be read as a stack from objective definition to policy/sea
 :::
 
 ::: {.content-visible when-format="pdf"}
-![The RLVR Verifier Stack: Task/Spec, Trajectory, Evidence, Verifier, Reward, and Policy/Search with iterative feedback loops.](diagrams/01-rlvr-verifier-stack.png){#fig-rlvr-verifier-stack fig-alt="The RLVR Verifier Stack with layered flow from task to policy/search and looped refinement."}
+![The RLVR Verifier Stack: Task/Spec, Trajectory, Evidence, Verifier, Reward, and Policy/Search with iterative feedback loops.](){#fig-rlvr-verifier-stack fig-alt="The RLVR Verifier Stack with layered flow from task to policy/search and looped refinement."}
 :::
 
 ## Table of Contents
