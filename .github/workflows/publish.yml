@@ -33,7 +33,15 @@ jobs:
         run: quarto install tinytex --update-path
 
       - name: Build HTML and PDF
-        run: scripts/build-book
+        env:
+          HOME: ${{ github.workspace }}
+          XDG_CACHE_HOME: ${{ github.workspace }}/.cache
+          TEXMFHOME: ${{ github.workspace }}/.texmf
+          TEXMFVAR: ${{ github.workspace }}/.texmf-var
+          TEXMFCONFIG: ${{ github.workspace }}/.texmf-config
+        run: |
+          mkdir -p "$TEXMFHOME" "$TEXMFVAR" "$TEXMFCONFIG" "$XDG_CACHE_HOME"
+          scripts/build-book
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
