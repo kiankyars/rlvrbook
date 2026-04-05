@@ -32,8 +32,6 @@ Fortunately, we live in a world where AI slop writing is still *very* intelligib
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
 - creating the diagrams and equations, since this is much more effecient, in particular given my lack of LaTex scripting skills, and is inherently much lower-entropy than writing english, not requiring the same human creativity
 
-The core text and synthesis in this index are authored by me [@kyars2026rlvr].
-
 ## Target Audience
 
 ## How to Use This Book
@@ -41,3 +39,17 @@ The core text and synthesis in this index are authored by me [@kyars2026rlvr].
 ## Acknowledgments
 
 I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfbook.com), and I am well aware that his textbook treats the subject of RLVR in quite some detail; notwithstanding, as he notes himself, this particular sub-field of ML is evolving so fast that much of the RLHF book's RLVR content will become outdated, and this book is intended to maintain pace with progress.
+
+## Citation
+
+You can cite this book directly with this BibTeX:
+
+```bibtex
+@online{kyars2026rlvrbook,
+  title  = {Reinforcement Learning from Verifiable Rewards},
+  author = {Kyars, Kian},
+  year   = {2026},
+  url    = {https://github.com/kiankyars/rlvrbook},
+  urldate = {2026-04-05}
+}
+```
