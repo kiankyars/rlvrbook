@@ -18,7 +18,7 @@ Three choices define the manuscript:
 
 Define RLVR through the verifier rather than through reinforcement learning alone. Merge the opening conceptual framing with the taxonomy of what can be verified: outcome checks, process checks, executable checks, proof checks, retrieval-grounded checks, environment feedback, and layered verification.
 
-### 2. Outcome Rewards
+### 2. Outcome Verifiers
 
 Study final-answer and completed-solution checkers: exact match, extraction pipelines, unit tests, theorem checkers, symbolic evaluators, hidden tests, and domain-specific graders. Emphasize representation choices, normalization, ambiguity handling, and checker brittleness.
 

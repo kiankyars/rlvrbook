@@ -32,9 +32,6 @@ jobs:
       - name: Install TinyTeX
         run: quarto install tinytex --update-path
 
-      - name: Install SVG conversion tools
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
-
       - name: Build HTML and PDF
         env:
           HOME: ${{ github.workspace }}
