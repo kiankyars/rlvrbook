@@ -12,3 +12,9 @@ mkdir -p "$ROOT/build/html" "$ROOT/build/pdf"
 
 quarto render "$ROOT/book" --to html --output-dir "$ROOT/build/html"
 quarto render "$ROOT/book" --to pdf --output-dir "$ROOT/build/pdf"
+
+if [[ -f "$ROOT/build/pdf/rlvrbook.pdf" ]]; then
+  cp "$ROOT/build/pdf/rlvrbook.pdf" "$ROOT/build/html/rlvrbook.pdf"
+fi
+
+touch "$ROOT/build/html/.nojekyll"
