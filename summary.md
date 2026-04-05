@@ -14,7 +14,7 @@ Three choices define the manuscript:
 
 ## Locked Table of Contents
 
-### 1. The Verifier Lens
+### 1. Introduction
 
 Define RLVR through the verifier rather than through reinforcement learning alone. Merge the opening conceptual framing with the taxonomy of what can be verified: outcome checks, process checks, executable checks, proof checks, retrieval-grounded checks, environment feedback, and layered verification.
 

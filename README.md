@@ -2,7 +2,7 @@
 
 This repo is the source tree for *Reinforcement Learning from Verifiable Rewards*.
 Do a case study at Will Brown code
-
+What does it really mean to post-train a harness?
 ## Implemented Layout
 
 ```text
@@ -17,7 +17,7 @@ rlvrbook/
 │   ├── styles/
 │   │   └── html.scss
 │   ├── chapters/
-│   │   ├── 01-the-verifier-lens.md
+│   │   ├── 01-introduction.md
 │   │   ├── 02-outcome-verifiers.md
 │   │   ├── 03-process-verifiers.md
 │   │   ├── 04-learned-programmatic-and-hybrid-verifiers.md
@@ -55,7 +55,7 @@ rlvrbook/
 
 ## Locked Main Text
 
-1. The Verifier Lens
+1. Introduction
 2. Outcome Verifiers
 3. Process Verifiers
 4. Learned, Programmatic, and Hybrid Verifiers

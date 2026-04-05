@@ -6,14 +6,14 @@ book:
   author: "Kian Kyars"
   output-file: rlvrbook
   sidebar:
-    title: "RLVR Book"
+    title: "rlvrbook"
   downloads:
     - pdf
   chapters:
     - index.md
     - part: "Foundations"
       chapters:
-        - chapters/01-the-verifier-lens.md
+        - chapters/01-introduction.md
     - part: "Verifier Design"
       chapters:
         - chapters/02-outcome-verifiers.md

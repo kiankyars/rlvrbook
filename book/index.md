@@ -1,12 +1,14 @@
 # Start Here {.unnumbered}
 
-[Read the book](chapters/01-the-verifier-lens.md)  
+[Read the book](chapters/01-introduction.md)  
 [Download the PDF](rlvrbook.pdf)  
 [View on GitHub](https://github.com/kiankyars/rlvrbook)
 
+Reinforcement learning from verifiable rewards studies how models can improve by learning from reward signals derived from checkable task outcomes, executable feedback, formal validation, or other reliable forms of verification. This book is a reference on that paradigm. It is not organized around optimizer fashions or a timeline of papers. Its purpose is to explain what kinds of rewards can be made verifiable, what those rewards actually train, where the paradigm has been most successful, and where it breaks.
+
 ### New to RLVR
 
-Read [Chapter 1](chapters/01-the-verifier-lens.md), [Chapter 2](chapters/02-outcome-verifiers.md), and [Chapter 7](chapters/07-reward-hacking-proxy-misspecification-and-verifier-robustness.md).
+Read [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-verifiers.md), and [Chapter 7](chapters/07-reward-hacking-proxy-misspecification-and-verifier-robustness.md).
 
 ### Building Systems
 
