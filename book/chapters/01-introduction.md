@@ -9,7 +9,7 @@
 
 RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in code generation with tests. Sometimes it is partial, as in grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is not a specific optimizer. It is the availability of a notion of task success. Once a task can expose useful correctness signals, reinforcement learning can optimize against them, search can exploit them at inference time, and systems can often improve far beyond what static supervised fine-tuning alone would produce.
 
-[Open the native Excalidraw version of this loop](https://excalidraw.com/#json=XNd4vgSrtfuqqETLsc9hP,uJc8fn198767pGuwzj7Orw).
+[Open the native Excalidraw version of this loop](https://excalidraw.com/#json=Vvn86VatppZzVqTirtZtq,V13gZkAMri9M6tL8tHONWA).
 
 ## Origins of RLVR
 
@@ -31,8 +31,6 @@ Tasks admit verifiable rewards when they expose an interface that can separate b
 Other tasks are weaker but still useful. Long-context question answering may permit citation checks, evidence matching, or entailment-style grading. Tool-using agents may expose environment transitions, task completion criteria, or execution traces. These signals are often noisier, more expensive, and easier to exploit, but they can still support learning if the reward channel is informative enough.
 
 The practical lesson is that RLVR does not apply uniformly across all tasks. It is strongest where correctness is legible and weakest where the reward channel is sparse, ambiguous, or only loosely coupled to the capability we want.
-
-![Escher-like view of state transitions and reward flow in the RL lens for RLVR](../diagrams/01-introduction-escher-like.svg){width=85% fig-align='center'}
 
 ## Why RLVR Became Central to Reasoning Models
 
