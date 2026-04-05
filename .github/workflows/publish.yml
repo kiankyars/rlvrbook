@@ -28,8 +28,15 @@ jobs:
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          tinytex: true
+
+      - name: Install TinyTeX
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: quarto install tinytex --update-path
+
+      - name: Install LaTeX package dependency
+        run: |
+          tlmgr install koma-script
 
       - name: Build HTML and PDF
         env:
