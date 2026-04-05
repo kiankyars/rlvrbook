@@ -32,6 +32,10 @@ jobs:
       - name: Install TinyTeX
         run: quarto install tinytex --update-path
 
+      - name: Install LaTeX package dependency
+        run: |
+          tlmgr install koma-script
+
       - name: Build HTML and PDF
         env:
           HOME: ${{ github.workspace }}
