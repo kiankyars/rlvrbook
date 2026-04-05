@@ -4,3 +4,4 @@ book/_book/
 *.log
 **/.quarto/
 **/*.quarto_ipynb
+book/.gitignore

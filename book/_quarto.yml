@@ -37,6 +37,7 @@ book:
     - appendices/a-minimal-rl-and-post-training-background.md
     - appendices/b-benchmarks-evals-and-contamination.md
     - appendices/c-practical-verifier-design-checklist.md
+    - appendices/d-brown-grpo-reference.md
 
 bibliography: bibliography.bib
 

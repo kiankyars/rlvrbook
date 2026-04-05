@@ -21,6 +21,7 @@ expected_appendices=(
   a-minimal-rl-and-post-training-background.md
   b-benchmarks-evals-and-contamination.md
   c-practical-verifier-design-checklist.md
+  d-brown-grpo-reference.md
 )
 
 for file in "${expected_chapters[@]}"; do
@@ -55,8 +56,8 @@ if [[ "$chapter_count" != "11" ]]; then
   exit 1
 fi
 
-if [[ "$appendix_count" != "3" ]]; then
-  echo "expected 3 appendix files, found $appendix_count" >&2
+if [[ "$appendix_count" != "4" ]]; then
+  echo "expected 4 appendix files, found $appendix_count" >&2
   exit 1
 fi
 
@@ -65,8 +66,8 @@ if [[ "${#configured_chapters[@]}" -ne 11 ]]; then
   exit 1
 fi
 
-if [[ "${#configured_appendices[@]}" -ne 3 ]]; then
-  echo "expected 3 configured appendices in book/_quarto.yml, found ${#configured_appendices[@]}" >&2
+if [[ "${#configured_appendices[@]}" -ne 4 ]]; then
+  echo "expected 4 configured appendices in book/_quarto.yml, found ${#configured_appendices[@]}" >&2
   exit 1
 fi
 
