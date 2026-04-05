@@ -113,11 +113,9 @@ The central lesson is that outcome reward design is easiest to reason about when
 
 ## What the verifier sees and misses
 
-An outcome verifier sees only the final artifact that survives extraction: an answer string, a program, a proof term, a cited span set, or some other structured endpoint. It does not see how the model arrived there. Two trajectories that differ completely in internal reasoning but end in the same checked object are identical from the verifier's perspective. Likewise, two trajectories that are equally thoughtful but happen to serialize the endpoint differently can receive different rewards if the interface is brittle.
+An outcome verifier sees only the final artifact that survives extraction: an answer string, a program, a proof term, a cited span set, or some other structured endpoint. It does not see how the model arrived there, so different trajectories that land on the same checked object are indistinguishable, while brittle interfaces can still split equivalent endpoints into different rewards.
 
-That blindness is not automatically a defect. If the endpoint is the task, then endpoint supervision is exactly what we want. In formal proof, the accepted proof object is already a strong operationalization of success. In code, executable correctness is a useful operationalization even if it is incomplete. In many math tasks, however, the endpoint is a compressed shadow of the real capability we care about. A single correct final answer does not tell us whether the reasoning was robust, whether the model would succeed under slightly different phrasing, or whether it merely exploited a narrow regularity in the prompt distribution.
-
-This is the limit case that motivates the next chapter. When the endpoint is too sparse, too delayed, or too lossy, we start asking whether some intermediate structure can also be checked. That move leads from outcome verifiers to process verifiers: instead of rewarding only the final artifact, we try to say something operational about the path that produced it.
+That blindness is not automatically a defect. If the endpoint is already a strong operationalization of the task, endpoint supervision may be enough. But when the endpoint is lossy, sparse, or delayed, a correct final answer says little about whether the reasoning was robust or causally responsible for success. That is the transition to process verifiers: asking whether some intermediate structure in the path can also be checked.
 
 ## Open questions
 
