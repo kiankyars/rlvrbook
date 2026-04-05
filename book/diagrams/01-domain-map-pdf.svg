@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="920" viewBox="0 0 920 920" role="img" aria-labelledby="title desc">
+  <title id="title">What can be verified? RLVR domain map</title>
+  <desc id="desc">A two-axis map placing proof, code, math, long-context question answering, multimodal tasks, and agentic settings by verification strength and verification granularity.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .panel { fill: #ffffff; stroke: #d7dde8; stroke-width: 2; }
+      .quadrant-a { fill: #f7f9fc; }
+      .quadrant-b { fill: #edf5ff; }
+      .quadrant-c { fill: #fff6ea; }
+      .quadrant-d { fill: #ebf8f3; }
+      .grid { stroke: #d6dde9; stroke-width: 2; }
+      .axis { stroke: #1f2328; stroke-width: 4; }
+      .text { fill: #1f2328; font-family: Avenir Next, Inter, Segoe UI, sans-serif; }
+      .muted { fill: #5a6472; }
+      .title { font-size: 30px; font-weight: 800; }
+      .subtitle { font-size: 18px; }
+      .axis-label { font-size: 24px; font-weight: 700; }
+      .tick { font-size: 20px; font-weight: 600; }
+      .quadrant-label { font-size: 16px; font-weight: 700; }
+      .point-label { font-size: 22px; font-weight: 800; }
+      .number { fill: #ffffff; font-size: 22px; font-weight: 800; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="920" height="920" rx="32" />
+  <rect class="panel" x="24" y="24" width="872" height="872" rx="28" />
+
+  <text class="text title" x="72" y="86">What can be verified?</text>
+  <text class="text subtitle muted" x="72" y="120">RLVR domain map by verification strength and verification granularity</text>
+
+  <rect class="quadrant-a" x="160" y="162" width="300" height="205" rx="22" />
+  <rect class="quadrant-b" x="470" y="162" width="300" height="205" rx="22" />
+  <rect class="quadrant-c" x="160" y="382" width="300" height="195" rx="22" />
+  <rect class="quadrant-d" x="470" y="382" width="300" height="195" rx="22" />
+
+  <g class="grid">
+    <line x1="188" y1="610" x2="778" y2="610" />
+    <line x1="188" y1="500" x2="778" y2="500" />
+    <line x1="188" y1="390" x2="778" y2="390" />
+    <line x1="188" y1="280" x2="778" y2="280" />
+
+    <line x1="188" y1="180" x2="188" y2="640" />
+    <line x1="335" y1="180" x2="335" y2="640" />
+    <line x1="482" y1="180" x2="482" y2="640" />
+    <line x1="629" y1="180" x2="629" y2="640" />
+    <line x1="776" y1="180" x2="776" y2="640" />
+  </g>
+
+  <g class="axis">
+    <line x1="188" y1="640" x2="790" y2="640" />
+    <polygon points="790,640 770,630 770,650" fill="#1f2328" />
+    <line x1="188" y1="640" x2="188" y2="150" />
+    <polygon points="188,150 178,170 198,170" fill="#1f2328" />
+  </g>
+
+  <text class="text axis-label" x="492" y="736" text-anchor="middle">Verification strength</text>
+  <text class="text tick" x="188" y="774">Weak</text>
+  <text class="text tick" x="700" y="774">Strong</text>
+
+  <text class="text axis-label" x="80" y="412" transform="rotate(-90 80 412)">Verification granularity</text>
+  <text class="text tick" x="44" y="650">Coarse outcome</text>
+  <text class="text tick" x="44" y="198">Fine-grained trajectory</text>
+
+  <text class="text quadrant-label muted" x="198" y="192">Granular but fragile</text>
+  <text class="text quadrant-label muted" x="480" y="192">Strong and granular</text>
+  <text class="text quadrant-label muted" x="198" y="558">Weak and coarse</text>
+  <text class="text quadrant-label muted" x="480" y="558">Strong but endpoint-heavy</text>
+
+  <g transform="translate(720 238)">
+    <circle cx="0" cy="0" r="24" fill="#0f4c81" />
+    <text class="number" x="0" y="2">1</text>
+    <text class="text point-label" x="36" y="8">Proof</text>
+  </g>
+
+  <g transform="translate(600 356)">
+    <circle cx="0" cy="0" r="24" fill="#d97706" />
+    <text class="number" x="0" y="2">2</text>
+    <text class="text point-label" x="36" y="8">Code</text>
+  </g>
+
+  <g transform="translate(660 495)">
+    <circle cx="0" cy="0" r="24" fill="#117864" />
+    <text class="number" x="0" y="2">3</text>
+    <text class="text point-label" x="36" y="8">Math</text>
+  </g>
+
+  <g transform="translate(482 392)">
+    <circle cx="0" cy="0" r="24" fill="#8a5a00" />
+    <text class="number" x="0" y="2">4</text>
+    <text class="text point-label" x="36" y="8">Long-context QA</text>
+  </g>
+
+  <g transform="translate(380 486)">
+    <circle cx="0" cy="0" r="24" fill="#c2410c" />
+    <text class="number" x="0" y="2">5</text>
+    <text class="text point-label" x="36" y="8">Multimodal</text>
+  </g>
+
+  <g transform="translate(316 292)">
+    <circle cx="0" cy="0" r="24" fill="#b42318" />
+    <text class="number" x="0" y="2">6</text>
+    <text class="text point-label" x="36" y="8">Agentic</text>
+  </g>
+
+  <text class="text muted" x="72" y="842" font-size="18">Numbers map to the PDF callouts in the chapter text.</text>
+</svg>

@@ -5,6 +5,8 @@
 - Explain when intermediate verification improves credit assignment beyond final-answer rewards alone.
 - Show the main risk: rewarding reasoning-shaped traces that correlate weakly with actual competence.
 
+FIGURE- Outcome versus process preview: Chapter 2 checks the endpoint; later chapters ask what can be said about the path.
+
 ## Main Argument
 
 Process verifiers matter when final-answer rewards are too sparse, too delayed, or too weak to shape behavior reliably. They are not justified by default. A process signal is only helpful if the notion of a "good step" can be defined operationally and checked with enough fidelity.

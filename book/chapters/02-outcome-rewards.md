@@ -29,7 +29,7 @@ The final answer is the ordered tuple (2,3).
 
 **Outcome reward check (for RLVR).**
 
-The verifier extracts the final artifact from `<answer>...</answer>`, normalizes order, and checks against the ground-truth set. DeepSeek-R1 uses `<think>` and `<answer>` tags in its response template; for deterministic math tasks it can also add format constraints (for example, boxed expressions) when the reward parser needs a stricter extraction rule.[^ch2-deepseek-r1-template]
+The verifier extracts the final artifact from `<answer>...</answer>`, normalizes order, and checks against the ground-truth set.[^ch2-deepseek-r1-template]
 
 $$
 r(x,y)=
@@ -45,12 +45,17 @@ If the model fails the output contract (for example, omits `<answer>...</answer>
 
 ## The outcome verifier pipeline
 
-An outcome verifier checks the final artifact. It does not see the reasoning trace, the search tree, or any intermediate computation. It receives a candidate output and returns a scalar. That is the defining constraint of this chapter: everything that matters must be readable from the endpoint.
-
-The scaffold above makes this look like a single comparison, but in practice the reward is a pipeline with at least four stages:
+An outcome verifier receives a candidate output and returns a scalar, i.e. everything that matters must be readable from the endpoint. In practice the reward is a pipeline with at least four stages:
 
 $$
-r(x,y) = \text{score}\!\Big(\text{compare}\!\big(\text{normalize}(\text{extract}(y)),\;\text{gold}(x)\big)\Big)
+r(x,y)=\mathrm{score}\!\Big(\mathrm{compare}\!\big(\mathrm{normalize}(\mathrm{extract}(y)),\; g(x)\big)\Big),
+\qquad r(x,y)\in[0,1].
+$$
+
+It is useful to compress the same object into function composition:
+
+$$
+r(x,y)=s\!\big(c(n(e(y)),\,g(x))\big).
 $$
 
 Each stage does different work:
@@ -63,13 +68,15 @@ Each stage does different work:
 
 4. **Score.** Map the comparison outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
 
-Most real failures in outcome reward systems happen before comparison. The comparison rule is often straightforward once the inputs are clean; the fragility is in the interface contract, extraction logic, and normalization layer. This is also why outcome verification is domain-dependent: math stresses normalization, code stresses execution cost and test coverage, and formal proof often delegates most of the work to the proof assistant. The stages stay the same, but the bottleneck shifts across domains.
+Where the engineering difficulty concentrates is strongly domain-dependent. In math-style RLVR, verifier design often hinges on answer-format contracts and normalization for deterministic parsing; in code, correctness depends heavily on the quality and coverage of the test suite; in formal proof, the core acceptance check is delegated to the proof assistant. The stages stay the same, but the bottleneck shifts across domains.[^ch2-domain-bottlenecks]
+
+[^ch2-domain-bottlenecks]: This point is best supported domain by domain rather than as a single universal statistic. DeepSeek-R1 uses task-specific output-shape constraints for deterministic reward parsing in math-style reasoning tasks [@deepseekai2025r1]. EvalPlus shows that limited test suites can miss substantial amounts of incorrect code and even mis-rank models, making test quality and coverage central to code verification [@liu2023evalplus]. For formal theorem proving, DeepSeek-Prover describes proof assistants such as Lean as providing high-accuracy, reliable proof verification, which shifts the engineering difficulty away from the final acceptance check itself [@xin2024deepseekprover].
 
 ## Outcome check, full-trajectory update
 
-A common misreading of "outcome reward" is that only the final token gets a training signal. That is not how the update works. The verifier checks the outcome, but the optimizer updates the entire trajectory. In REINFORCE-style algorithms (including GRPO), the scalar reward from the outcome check is used to upweight or downweight the log-probability of every token in the completion. If the answer is correct, the whole chain of reasoning that produced it becomes more likely. If it is wrong, the whole chain becomes less likely.
+Although the verifier checks the outcome only, the optimizer updates the entire trajectory. In REINFORCE-style algorithms (including GRPO), the scalar reward from the outcome check is used to upweight or downweight the log-probability of every token in the completion. If the answer is correct, the whole chain of reasoning that produced it becomes more likely. If it is wrong, the whole chain becomes less likely.
 
-This is the blunt instrument at the heart of outcome-based RLVR. The verifier has no opinion about which tokens in the reasoning trace were helpful and which were noise — it assigns a single number to the whole sequence. The optimizer then spreads that number uniformly across all token-level decisions. This works surprisingly well in practice, because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed. But it also means that outcome rewards cannot isolate a specific reasoning step as good or bad. That distinction is exactly what process rewards (Chapter 3) attempt to provide.
+This is the blunt instrument at the heart of outcome-based RLVR. The verifier has no opinion about which tokens in the reasoning trace were helpful and which were noise — it assigns a single number to the whole sequence. The optimizer then spreads that number uniformly across all token-level decisions. This works surprisingly well in practice, because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed. But it also means that outcome rewards cannot isolate a specific reasoning step as good or bad. That distinction is exactly what process rewards (Chapter 3) provide.
 
 ## Remaining sections
 
@@ -100,7 +107,7 @@ The verifier sees the final artifact: answer string, code file, proof object, or
 
 - Outcome verifier pipeline: prompt → model output → extraction → normalization → checked artifact → reward.
 - Same task, many surface forms: several answer strings collapsing to one normalized mathematical object.
-- Outcome versus process preview: Chapter 2 checks the endpoint; later chapters ask what can be said about the path.
+
 
 ### Open questions
 
