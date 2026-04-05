@@ -1,10 +1,88 @@
-# Outcome Verifiers
+# Outcome Rewards
 
 ## Chapter Map
 
-- Explain how strong outcome verifiers are built for completed solutions.
+- Explain how strong outcome verifiers are built.
 - Show why extraction, representation, and hidden brittleness matter more than the apparent simplicity suggests.
 
+## Starting Scaffold
+
+**Prompt.** Solve the equation: $x^2-5x+6=0$.
+
+```text
+<think>
+We can factor the quadratic: x^2 - 5x + 6 = (x-2)(x-3).
+Set each factor to zero:
+x - 2 = 0 -> x = 2
+x - 3 = 0 -> x = 3
+The final answer is the ordered tuple (2,3).
+</think>
+
+<answer>
+(2,3)
+</answer>
+```
+
+**Outcome reward check (for RLVR).**
+
+The verifier extracts the final artifact from `<answer>...</answer>`, normalizes order, and checks against the ground-truth set. DeepSeek-R1 explicitly uses `<think>` and `<answer>` tags in its training template, with additional response-shape rules (like boxed math forms) only added in task-specific reward templates.[^ch2-deepseek-r1-template]
+
+\[
+r(x,y)=\mathbb{I}[\text{normalize}(\text{extract\_ans}(y))=\{2,3\}]
+\]
+
+If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the reward drops to 0 even if the algebra is correct.
+
+[^ch2-deepseek-r1-template]: DeepSeek-R1 trains models with `<think>`/`<answer>` separators and uses explicit format constraints, including boxed final outputs for deterministic math tasks when needed for rule-based reward parsing.[@deepseekai2025r1]
+
+
+Yes. Chapter 2 is where the book should start feeling more technical.
+
+  My recommendation is: make chapter 2 the first chapter with real artifacts on the page:
+
+  - one or two equations
+  - two or three diagrams
+  - one running example carried through the chapter
+
+  For this chapter, the cleanest running example is math, then briefly widen to code and formal proof.
+
+  A good build for chapter 2 would be:
+
+  1. Open with one concrete example
+     A model solves a math problem, outputs some reasoning plus a boxed answer, and the system has to extract, normalize, and check the final answer. Start there, not abstractly.
+  2. Define the object
+     An outcome verifier checks the final artifact, not the path used to produce it.
+  3. Add the minimal math
+     Keep it light:
+     [
+     r(x,y) = V(\mathrm{extract}(y), x)
+     ]
+     and then the more realistic version:
+     [
+     The point is to show that the reward channel is really a pipeline, not a single comparison.
+  4. Show the three canonical cases
+      - math: exact or symbolic answer checking
+      - code: test-suite execution
+      - proof: proof assistant acceptance
+  5. Then do the failure modes
+
+  - Outcome verifier pipeline: prompt -> model output -> extraction -> normalization -> checked artifact -> reward
+  - Same task, many surface forms: different final strings collapsing to one normalized math object
+  - Outcome vs process preview: one small diagram showing that chapter 2 only checks the endpoint
+
+  So yes: chapter 2 is exactly where you should start introducing math and diagrams. Just keep the math instrumental rather than textbook-RL-heavy.
+
+means the chapter starts from the end of a trajectory: you need a
+reliable y -> reward map for final outputs. That includes:
+
+1. what the model output should look like (format/design contract),
+2. how it is normalized/extracted (math strings, code, proofs),
+3. how the verifier checks correctness (execution, exact match with equivalence, theorem acceptance), and
+4. what grading granularity is used (binary vs partial feedback).
+
+The second bullet (“Show why extraction, representation, and hidden brittleness matter more than the apparent simplicity suggests”) is the warning that outcome reward looks easy—just check the final
+answer—but most failure modes come from the plumbing: brittle parsing, formatting assumptions, unstable benchmarks, and exploitability (model learns the checker’s quirks, not the intended skill). So
+the chapter is really about the practical engineering tension: outcomes are simple to define, but getting a reward that’s both strong and honest is the hard part.
 ## Main Argument
 
 Outcome verifiers are the natural entry point for RLVR because they are operationally simple and often highly scalable. They become useful when the mapping from model output to checked object is stable, unambiguous, and hard to exploit.
