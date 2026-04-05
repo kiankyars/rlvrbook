@@ -12,13 +12,13 @@ rlvrbook/
 ├── .gitignore
 ├── book/
 │   ├── _quarto.yml
-│   ├── index.md
 │   ├── bibliography.bib
 │   ├── styles/
 │   │   └── html.scss
 │   ├── chapters/
+│   │   ├── 00-index.md
 │   │   ├── 01-introduction.md
-│   │   ├── 02-outcome-verifiers.md
+│   │   ├── 02-outcome-rewards.md
 │   │   ├── 03-process-verifiers.md
 │   │   ├── 04-learned-programmatic-and-hybrid-verifiers.md
 │   │   ├── 05-turning-checks-into-training-signal.md
@@ -56,7 +56,7 @@ rlvrbook/
 ## Locked Main Text
 
 1. Introduction
-2. Outcome Verifiers
+2. Outcome Rewards
 3. Process Verifiers
 4. Learned, Programmatic, and Hybrid Verifiers
 5. Turning Checks into Training Signal

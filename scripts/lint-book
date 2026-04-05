@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 expected_chapters=(
   01-introduction.md
-  02-outcome-verifiers.md
+  02-outcome-rewards.md
   03-process-verifiers.md
   04-learned-programmatic-and-hybrid-verifiers.md
   05-turning-checks-into-training-signal.md
@@ -40,14 +40,14 @@ done
 configured_chapters=()
 while IFS= read -r line; do
   configured_chapters+=("${line#chapters/}")
-done < <(rg -o 'chapters/[0-9]{2}-[^"]+\.md' "$ROOT/book/_quarto.yml")
+done < <(rg -o 'chapters/(0[1-9]|1[01])-[^"]+\.md' "$ROOT/book/_quarto.yml")
 
 configured_appendices=()
 while IFS= read -r line; do
   configured_appendices+=("${line#appendices/}")
 done < <(rg -o 'appendices/[a-z]-[^"]+\.md' "$ROOT/book/_quarto.yml")
 
-chapter_count="$(find "$ROOT/book/chapters" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')"
+chapter_count="$(find "$ROOT/book/chapters" -maxdepth 1 -type f -name '[0-9][0-9]-*.md' | grep -v '/00-' | wc -l | tr -d ' ')"
 appendix_count="$(find "$ROOT/book/appendices" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')"
 
 if [[ "$chapter_count" != "11" ]]; then

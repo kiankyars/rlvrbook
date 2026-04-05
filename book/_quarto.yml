@@ -10,7 +10,7 @@ book:
   downloads:
     - pdf
   chapters:
-    - index.md
+    - chapters/00-index.md
     - part: "Foundations"
       chapters:
         - chapters/01-introduction.md
