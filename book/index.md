@@ -1,5 +1,6 @@
 [Read the book](chapters/01-the-verifier-lens.md)  
-[Download the PDF](rlvrbook.pdf)
+[Download the PDF](rlvrbook.pdf)  
+[View on GitHub](https://github.com/kiankyars/rlvrbook)
 
 ## Start Here
 
