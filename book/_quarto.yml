@@ -6,7 +6,7 @@ book:
   author: "Kian Kyars"
   output-file: rlvrbook
   sidebar:
-    title: "rlvrbook"
+    title: "RLVR Book"
   downloads:
     - pdf
   chapters:
