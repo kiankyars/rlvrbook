@@ -34,10 +34,10 @@ The verifier extracts the final artifact from `<answer>...</answer>`, normalizes
 $$
 r(x,y)=
 \begin{cases}
-1 & \text{if } \text{normalize}(\text{extract\_ans}(y))=\{2,3\},\\
+1 & \text{if } \operatorname{normalize}\!\bigl(\operatorname{extract}_{\mathrm{ans}}(y)\bigr)=\{2,3\},\\
 0 & \text{otherwise.}
 \end{cases}
-$$
+$$ {#eq-ch2-binary-check}
 
 If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the verifier can assign an incorrect reward even when the underlying solution is algebraically correct.
 
@@ -48,15 +48,19 @@ If the model fails the output contract (for example, omits `<answer>...</answer>
 An outcome verifier receives a candidate output and returns a scalar, i.e. everything that matters must be readable from the endpoint. In practice the reward is a pipeline with at least four stages:
 
 $$
-r(x,y)=\mathrm{score}\!\Big(\mathrm{compare}\!\big(\mathrm{normalize}(\mathrm{extract}(y)),\; g(x)\big)\Big),
+\begin{aligned}
+z(y) &= \operatorname{extract}(y),\\
+\hat{z}(y) &= \operatorname{normalize}\!\bigl(z(y)\bigr),\\
+r(x,y) &= \operatorname{score}\!\bigl(\operatorname{compare}(\hat{z}(y), g(x))\bigr),
 \qquad r(x,y)\in[0,1].
-$$
+\end{aligned}
+$$ {#eq-ch2-pipeline}
 
 It is useful to compress the same object into function composition:
 
 $$
-r(x,y)=s\!\big(c(n(e(y)),\,g(x))\big).
-$$
+r(x,y)=s\!\bigl(c(n(e(y)), g(x))\bigr).
+$$ {#eq-ch2-pipeline-compressed}
 
 Each stage does different work:
 

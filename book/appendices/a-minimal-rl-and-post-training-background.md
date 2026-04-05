@@ -22,13 +22,13 @@ At its core, reinforcement learning optimizes the expected discounted return of 
 
 $$
 \mathcal M=(\mathcal S,\mathcal A,P,R,\gamma).
-$$
+$$ {#eq-appa-mdp}
 
 For a policy $\pi$, the objective is:
 
 $$
 J(\pi)=\mathbb E_{\tau\sim \pi}\!\left[\sum_{t=0}^{T-1}\gamma^{t}r(s_t,a_t)\right].
-$$
+$$ {#eq-appa-return}
 
 where $\tau=(s_0,a_0,s_1,a_1,\dots)$.
 
@@ -36,32 +36,32 @@ For **single-turn LLM inference/training with one prompt-to-completion interacti
 
 $$
 s_0=x,\quad a=y,\quad s_1=\text{terminal},\quad r=r_\phi(x,y).
-$$
+$$ {#eq-appa-contextual-bandit}
 
 So the objective becomes:
 
 $$
 J(\pi_\theta)=\mathbb E_{x\sim p_{\text{data}}}\left[\mathbb E_{y\sim \pi_\theta(\cdot\mid x)}\,r_\phi(x,y)\right].
-$$
+$$ {#eq-appa-single-turn-objective}
 
 For **multi-turn settings** we retain the full trajectory form with state as dialogue/context history:
 
 $$
 s_t=(x,y_{<t}),\qquad a_t=y_t,\qquad s_{t+1}= (x,y_{\le t}).
-$$
+$$ {#eq-appa-multiturn-state}
 
 The trajectory distribution factorizes as:
 
 $$
 \pi_\theta(y_{1:T}\mid x)=\prod_{t=1}^{T}\pi_\theta(y_t\mid x,y_{<t}),
-$$
+$$ {#eq-appa-trajectory-factorization}
 
 and the return is:
 
 $$
 J(\pi_\theta)=\mathbb E_{x\sim p_{\text{data}}}\!\left[\mathbb E_{y_{1:T}\sim\pi_\theta(\cdot\mid x)}
 \left[\sum_{t=1}^{T}\gamma^{t-1}r_t(s_t,y_t)\right]\right].
-$$
+$$ {#eq-appa-multiturn-objective}
 
 In many verifier-driven setups, \(r_t\approx 0\) for \(t<T\) and a scalar terminal reward \(r_T=R_\phi(x,y_{1:T})\) carries the verification signal from the environment.
 
