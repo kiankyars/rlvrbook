@@ -67,3 +67,25 @@ body {
   font-size: 0.95rem;
   color: var(--rlvr-detail-fg);
 }
+
+.rlvr-theme-figure .rlvr-theme-image {
+  display: none;
+  width: 100%;
+  height: auto;
+}
+
+body.quarto-light .rlvr-theme-image-light {
+  display: block;
+}
+
+body.quarto-dark .rlvr-theme-image-dark {
+  display: block;
+}
+
+html[data-bs-theme="light"] .rlvr-theme-image-light {
+  display: block;
+}
+
+html[data-bs-theme="dark"] .rlvr-theme-image-dark {
+  display: block;
+}

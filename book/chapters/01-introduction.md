@@ -9,7 +9,14 @@
 
 RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in code generation with tests. Sometimes it is partial, as in grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is not a specific optimizer. It is the availability of a notion of task success. Once a task can expose useful correctness signals, reinforcement learning can optimize against them, search can exploit them at inference time, and systems can often improve far beyond what static supervised fine-tuning alone would produce.
 
-[Open the native Excalidraw version of this loop](https://excalidraw.com/#json=Vvn86VatppZzVqTirtZtq,V13gZkAMri9M6tL8tHONWA).
+RLVR is defined by learning from verifiable reward signals; the optimizer can vary.
+
+```{=html}
+<div class="rlvr-theme-figure" role="img" aria-label="RLVR objective loop (light and dark variants).">
+  <img src="diagrams/01-verifier-stack-light.png" alt="RLVR figure in light mode" class="rlvr-theme-image rlvr-theme-image-light" />
+  <img src="diagrams/01-verifier-stack-dark.png" alt="RLVR figure in dark mode" class="rlvr-theme-image rlvr-theme-image-dark" />
+</div>
+```
 
 ## Origins of RLVR
 
