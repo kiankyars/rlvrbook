@@ -31,10 +31,6 @@ jobs:
         with:
           tinytex: true
 
-      - name: Install LaTeX package dependency
-        run: |
-          tlmgr install koma-script
-
       - name: Build HTML and PDF
         env:
           HOME: ${{ github.workspace }}
