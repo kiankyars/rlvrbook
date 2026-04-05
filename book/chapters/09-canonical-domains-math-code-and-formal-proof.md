@@ -1,5 +1,7 @@
 # Canonical Domains: Math, Code, and Formal Proof
 
+![M. C. Escher, _Corsica Corte_ (1929).](../art/escher/09-corsica-corte.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Compare how verifier regimes differ across math, code, and formal proof.

@@ -1,5 +1,7 @@
 # Faithfulness, Confidence, and What Verification Misses
 
+![M. C. Escher, _Morano Calabria_ (1930).](../art/escher/08-morano-calabria.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain what important properties remain off-screen even when a verifier is strong.

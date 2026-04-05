@@ -1,9 +1,11 @@
 # Outcome Rewards
 
+![M. C. Escher, _Castrovalva_ (1930).](../art/escher/02-castrovalva.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain how strong outcome verifiers are built.
-- Show why extraction, representation, and hidden brittleness matter more than the apparent simplicity suggests.
+- Show why answer extraction, canonicalization, and hidden brittleness matter more than the apparent simplicity suggests.
 
 ## A Rollout
 
@@ -29,56 +31,61 @@ The final answer is the ordered tuple (2,3).
 
 **Outcome reward check (for RLVR).**
 
-The verifier extracts the final artifact from `<answer>...</answer>`, normalizes order, and checks against the ground-truth set.[^ch2-deepseek-r1-template]
+The verifier reads the checked artifact from `<answer>...</answer>`, canonicalizes it to the task's answer representation, and checks it against the ground-truth set.[^ch2-deepseek-r1-template]
 
 $$
 r(x,y)=
 \begin{cases}
-1 & \text{if } \operatorname{normalize}\!\bigl(\operatorname{extract}_{\mathrm{ans}}(y)\bigr)=\{2,3\},\\
+1 & \text{if } \operatorname{canon}\!\bigl(\operatorname{extract}_{\mathrm{ans}}(y)\bigr)=\{2,3\},\\
 0 & \text{otherwise.}
 \end{cases}
 $$ {#eq-ch2-binary-check}
 
-If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the verifier can assign an incorrect reward even when the underlying solution is algebraically correct.
+If the model fails the output contract (for example, omits `<answer>...</answer>`, changes surface form in a way the canonicalizer does not handle, or adds extraneous text that breaks parsing), the verifier can assign an incorrect reward even when the underlying solution is algebraically correct.
 
-## The outcome verifier pipeline
+## How outcome verifiers are implemented
 
-An outcome verifier receives a candidate output and returns a scalar, i.e. everything that matters must be readable from the endpoint. In practice the reward is a pipeline with at least four stages:
+Current RLVR libraries do not expose a formal `extract -> normalize -> compare -> score` interface. In practice, one usually writes or selects a task-specific reward function: in TRL, a `reward_func`; in veRL, a scoring function or reward manager.[@vonwerra2020trl; @sheng2024hybridflow] For math-style tasks, those reward functions often delegate most of the work to answer-verification libraries such as Math-Verify, whose documented grading architecture is explicit: answer extraction, conversion to a common representation, and gold comparison.[@kydlicek2025mathverify]
+
+A useful abstraction of what these implementations do is:
 
 $$
 \begin{aligned}
-z(y) &= \operatorname{extract}(y),\\
-\hat{z}(y) &= \operatorname{normalize}\!\bigl(z(y)\bigr),\\
-r(x,y) &= \operatorname{score}\!\bigl(\operatorname{compare}(\hat{z}(y), g(x))\bigr),
+a(y) &= \operatorname{extract}(y),\\
+\tilde{a}(y) &= \operatorname{canon}\!\bigl(a(y)\bigr),\\
+v(x,y) &= \operatorname{verify}(\tilde{a}(y), g(x)),\\
+r(x,y) &= \operatorname{reward}\!\bigl(v(x,y)\bigr),
 \qquad r(x,y)\in[0,1].
 \end{aligned}
 $$ {#eq-ch2-pipeline}
 
+Not every verifier makes each stage explicit. Some collapse canonicalization and checking into one call, and some omit canonicalization almost entirely. Code execution often has very little to canonicalize; formal proof pushes most of the verification step into the proof assistant. But the same practical pieces recur often enough that the decomposition is useful.
+
 It is useful to compress the same object into function composition:
 
 $$
-r(x,y)=s\!\bigl(c(n(e(y)), g(x))\bigr).
+r(x,y)=\rho\!\bigl(\operatorname{verify}(\operatorname{canon}(\operatorname{extract}(y)), g(x))\bigr).
 $$ {#eq-ch2-pipeline-compressed}
 
 Each stage does different work:
 
-1. **Extract.** Parse the model's raw text to isolate the answer artifact. This depends on the output contract: the `<answer>` tags in our scaffold, `\boxed{}` in many math benchmarks, the final code block in a generation task, or the proof term in a formal system.
+1. **Extract.** Parse the model's raw text to isolate the checked artifact. This depends on the output contract: the `<answer>` tags in our scaffold, `\boxed{}` in many math benchmarks, the final code block in a generation task, or the proof term in a formal system.
 
-2. **Normalize.** Map the extracted artifact to a canonical form so that surface variation does not affect grading. In math this can mean parsing `(2,3)`, `{3,2}`, and `x=2, x=3` into the same set object.
+2. **Canonicalize.** Map the extracted artifact to a representation that is stable under harmless surface variation. In math this can mean parsing `(2,3)`, `{3,2}`, and `x=2, x=3` into the same set object.
 
-3. **Compare.** Check the normalized candidate against the reference. This can be string equality, set equality, symbolic equivalence via a CAS, execution against a test suite, or acceptance by a proof kernel. The comparison function is where most people's intuition about "verification" lives, but it is often the least error-prone stage.
+3. **Verify.** Check the candidate against the reference or external environment. This can be string equality, set equality, symbolic equivalence via a CAS, execution against a test suite, or acceptance by a proof kernel.
 
-4. **Score.** Map the comparison outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
+4. **Reward.** Map the verification outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
 
 ::: {#fig-answer-normalization}
 ![](../diagrams/02-answer-normalization-light.png){.light-content}
 
 ![](../diagrams/02-answer-normalization-dark.png){.dark-content}
 
-If normalization fails, algebraically correct answers can receive the wrong reward. The practical work is to parse the answer region, strip surface variation, and canonicalize set structure or ordering before comparison.
+If canonicalization fails, algebraically correct answers can receive the wrong reward. The practical work is to parse the answer region, strip surface variation, and canonicalize set structure or ordering before verification.
 :::
 
-Where the engineering difficulty concentrates is strongly domain-dependent. In math-style RLVR, verifier design often hinges on answer-format contracts and normalization for deterministic parsing; in code, correctness depends heavily on the quality and coverage of the test suite; in formal proof, the core acceptance check is delegated to the proof assistant. The stages stay the same, but the bottleneck shifts across domains.[^ch2-domain-bottlenecks]
+Where the engineering difficulty concentrates is strongly domain-dependent. In math-style RLVR, verifier design often hinges on answer-format contracts and canonicalization for deterministic parsing; in code, correctness depends heavily on the quality and coverage of the test suite; in formal proof, the core acceptance check is delegated to the proof assistant. The pieces stay similar, but the bottleneck shifts across domains.[^ch2-domain-bottlenecks]
 
 ## Outcome check, full-trajectory update
 
@@ -88,17 +95,17 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
 
 ## Three canonical cases: math, code, and proof
 
-The abstract pipeline in Equation @eq-ch2-pipeline is the same across the main RLVR domains. A model emits a completion, the system extracts the checked artifact, normalizes it into a canonical form, compares it to a reference or executable criterion, and maps the result to a scalar reward. What changes from domain to domain is not the algebra of the pipeline, but where the real engineering difficulty sits.
+The practical verifier structure in Equation @eq-ch2-pipeline is the same across the main RLVR domains. A model emits a completion, the system extracts the checked artifact, canonicalizes it when needed, verifies it against a reference or executable criterion, and maps the result to a scalar reward. What changes from domain to domain is not the existence of these pieces, but where the real engineering difficulty sits.
 
-In math, extraction and normalization dominate. The checked object is usually a final answer rather than a full derivation, so the verifier lives or dies by whether it can reliably map many surface forms onto one mathematical object. Boxed-answer conventions, XML answer tags, and task-specific output contracts are not cosmetic; they are there to make deterministic parsing possible at scale.[@shao2024deepseekmath; @deepseekai2025r1] In our toy quadratic example, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should all receive the same reward if the task asks for the solution set. A weak normalizer turns semantic equivalence into reward noise.
+In math, extraction and canonicalization dominate. The checked object is usually a final answer rather than a full derivation, so the verifier lives or dies by whether it can reliably map many surface forms onto one mathematical object. Boxed-answer conventions, XML answer tags, and task-specific output contracts are not cosmetic; they are there to make deterministic parsing possible at scale.[@shao2024deepseekmath; @deepseekai2025r1] In our toy quadratic example, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should all receive the same reward if the task asks for the solution set. A weak canonicalizer turns semantic equivalence into reward noise.
 
-In code, the picture is almost inverted. Once the model has produced a code block, extraction is comparatively easy and normalization is usually minimal. The hard part is comparison, because "is this program correct?" is answered by running it in a sandbox against tests, timeouts, and resource limits. Outcome-based RL for code has therefore focused on execution feedback and test-derived reward signals.[@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] But execution is only as strong as the harness: limited suites can certify incorrect programs, and richer suites can change model rankings substantially.[@liu2023evalplus] The verifier is grounded, but never exhaustive.
+In code, the picture is almost inverted. Once the model has produced a code block, extraction is comparatively easy and canonicalization is usually minimal. The hard part is verification, because "is this program correct?" is answered by running it in a sandbox against tests, timeouts, and resource limits. Outcome-based RL for code has therefore focused on execution feedback and test-derived reward signals.[@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] But execution is only as strong as the harness: limited suites can certify incorrect programs, and richer suites can change model rankings substantially.[@liu2023evalplus] The verifier is grounded, but never exhaustive.
 
 In formal proof, the final acceptance check is strongest of all. The model outputs a proof script or term, and the proof assistant kernel either accepts it or rejects it. Recent theorem-proving systems exploit exactly this property: the endpoint check is high-fidelity, deterministic, and much harder to fake than natural-language grading.[@xin2024deepseekprover; @xin2024deepseekproverv15] But that does not mean the whole task is solved. "Valid proof of the stated theorem" is a narrow objective. The hard part shifts away from final checking and toward theorem selection, search, decomposition, and interaction with the formal environment.
 
 ## Where the apparent simplicity breaks
 
-Outcome rewards look trivial only when the plumbing is hidden. Written as a scalar function, `r(x,y)` seems to say: take the answer, check it, assign 0 or 1. Implemented as a system, each stage becomes its own proxy with its own failure modes. An extractor can reward obedience to formatting conventions more than correctness. A normalizer can fail to merge equivalent answers, or worse, collapse distinct answers into one canonical form. A comparator can be perfectly implemented and still evaluate the wrong capability because the benchmark itself admits shortcuts.
+Outcome rewards look trivial only when the plumbing is hidden. Written as a scalar function, `r(x,y)` seems to say: take the answer, check it, assign 0 or 1. Implemented as a system, each stage becomes its own proxy with its own failure modes. An extractor can reward obedience to formatting conventions more than correctness. A canonicalizer can fail to merge equivalent answers, or worse, collapse distinct answers into one canonical form. A verifier can be perfectly implemented and still evaluate the wrong capability because the benchmark itself admits shortcuts.
 
 This is why outcome verification should be thought of as interface design, not just scoring. The checker only sees whatever survives the interface between the model and the environment. If that interface is brittle, the model is trained against parser quirks. If the benchmark is narrow, the model is trained against benchmark regularities. If the score is graded rather than binary, the model can optimize partial credit in ways that do not track the underlying task. In code, that can mean passing easy visible tests while failing edge cases. In math, it can mean learning answer-shape regularities without robust symbolic competence. In any domain, a badly chosen partial-credit scheme can become an exploit surface rather than a better learning signal.
 

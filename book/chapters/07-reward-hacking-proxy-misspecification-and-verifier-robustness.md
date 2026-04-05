@@ -1,5 +1,7 @@
 # Reward Hacking, Proxy Misspecification, and Verifier Robustness
 
+![M. C. Escher, _Fiumara, Calabria_ (1930).](../art/escher/07-fiumara-calabria.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain how verifier-driven optimization fails under pressure.

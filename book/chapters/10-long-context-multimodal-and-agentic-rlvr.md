@@ -1,5 +1,7 @@
 # Long-Context, Multimodal, and Agentic RLVR
 
+![M. C. Escher, _Cimino Barbarano_ (1929).](../art/escher/10-cimino-barbarano.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Examine how RLVR stretches into long-context, multimodal, and agentic settings.

@@ -1,5 +1,7 @@
 # Search and Test-Time Verification
 
+![M. C. Escher, _Calanques de Piana_ (1928).](../art/escher/06-calanques-de-piana.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain what verifiers enable at inference time, not just during training.

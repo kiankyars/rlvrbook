@@ -1,5 +1,7 @@
 # Process Verifiers
 
+![M. C. Escher, _The Bridge_ (1930).](../art/escher/03-the-bridge.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain when intermediate verification improves credit assignment beyond final-answer rewards alone.

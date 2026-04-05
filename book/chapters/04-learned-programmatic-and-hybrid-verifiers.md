@@ -1,5 +1,7 @@
 # Learned, Programmatic, and Hybrid Verifiers
 
+![M. C. Escher, _Dolphins_ (1923).](../art/escher/04-dolphins.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain how to build verifier stacks when a single hard-coded checker is not enough.

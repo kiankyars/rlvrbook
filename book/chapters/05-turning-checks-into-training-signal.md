@@ -1,5 +1,7 @@
 # Turning Checks into Training Signal
 
+![M. C. Escher, _The Drowned Cathedral_ (1929).](../art/escher/05-the-drowned-cathedral.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Explain how a checker becomes useful learning signal rather than a brittle scoreboard.

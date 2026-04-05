@@ -1,5 +1,7 @@
 # Introduction
 
+![M. C. Escher, _Tower of Babel_ (1928).](../art/escher/01-tower-of-babel.jpg){width="80%" fig-align="center"}
+
 ## Chapter Map
 
 - Define RLVR as learning from verifiable reward signals and explain which tasks admit them.
