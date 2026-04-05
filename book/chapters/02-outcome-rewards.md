@@ -78,9 +78,16 @@ Each stage does different work:
 4. **Reward.** Map the verification outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
 
 ::: {#fig-answer-normalization}
+
+::: {.content-visible when-format="html"}
 ![](../diagrams/02-answer-normalization-light.png){.light-content}
 
 ![](../diagrams/02-answer-normalization-dark.png){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/02-answer-normalization-light.png)
+:::
 
 If canonicalization fails, algebraically correct answers can receive the wrong reward. The practical work is to parse the answer region, strip surface variation, and canonicalize set structure or ordering before verification.
 :::

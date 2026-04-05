@@ -1,5 +1,7 @@
 project:
   type: book
+  post-render:
+    - ../scripts/adjust-chapter-zero.py
 
 book:
   title: "Reinforcement Learning from Verifiable Rewards"
@@ -66,3 +68,5 @@ format:
     toc: true
     number-sections: true
     colorlinks: true
+    include-in-header:
+      - styles/chapter-zero.tex

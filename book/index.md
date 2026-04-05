@@ -1,7 +1,6 @@
 ---
 title: "Start Here"
-number-offset: -1
-number-depth: 1
+number-sections: false
 ---
 
 [<i class="bi bi-file-earmark-pdf"></i> Open PDF](rlvrbook.pdf)  
