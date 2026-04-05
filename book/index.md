@@ -3,9 +3,8 @@ title: "Start Here"
 number-sections: false
 ---
 
-[Read the book](chapters/01-introduction.md)  
-[Download the PDF](rlvrbook.pdf)  
-[View on GitHub](https://github.com/kiankyars/rlvrbook)
+[<i class="bi bi-file-earmark-pdf"></i> Open PDF](rlvrbook.pdf)  
+[<i class="bi bi-github"></i> GitHub](https://github.com/kiankyars/rlvrbook)
 
 Reinforcement learning from verifiable rewards studies how models can improve by learning from reward signals derived from checkable task outcomes, executable feedback, formal validation, or other reliable forms of verification. This book is a reference on that paradigm. It is not organized around optimizer fashions or a timeline of papers. Its purpose is to explain what kinds of rewards can be made verifiable, what those rewards actually train, where the paradigm has been most successful, and where it breaks.
 

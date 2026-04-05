@@ -5,6 +5,7 @@ book:
   title: "Reinforcement Learning from Verifiable Rewards"
   author: "Kian Kyars"
   output-file: rlvrbook
+  favicon: escher.jpg
   sidebar:
     title: "rlvrbook"
   downloads:
@@ -52,7 +53,6 @@ format:
     theme:
       light: flatly
       dark: darkly
-    favicon: escher.jpg
     respect-user-color-scheme: true
     toc: true
     toc-depth: 3
