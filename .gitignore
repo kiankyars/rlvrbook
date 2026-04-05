@@ -1,6 +1,6 @@
 build/
-book/.quarto/
 book/_book/
-.quarto/
 .DS_Store
 *.log
+**/.quarto/
+**/*.quarto_ipynb
