@@ -68,6 +68,14 @@ Each stage does different work:
 
 4. **Score.** Map the comparison outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
 
+::: {#fig-answer-normalization}
+![](../diagrams/02-answer-normalization-light.png){.light-content}
+
+![](../diagrams/02-answer-normalization-dark.png){.dark-content}
+
+If normalization fails, algebraically correct answers can receive the wrong reward. The practical work is to parse the answer region, strip surface variation, and canonicalize set structure or ordering before comparison.
+:::
+
 Where the engineering difficulty concentrates is strongly domain-dependent. In math-style RLVR, verifier design often hinges on answer-format contracts and normalization for deterministic parsing; in code, correctness depends heavily on the quality and coverage of the test suite; in formal proof, the core acceptance check is delegated to the proof assistant. The stages stay the same, but the bottleneck shifts across domains.[^ch2-domain-bottlenecks]
 
 [^ch2-domain-bottlenecks]: This point is best supported domain by domain rather than as a single universal statistic. DeepSeek-R1 uses task-specific output-shape constraints for deterministic reward parsing in math-style reasoning tasks [@deepseekai2025r1]. EvalPlus shows that limited test suites can miss substantial amounts of incorrect code and even mis-rank models, making test quality and coverage central to code verification [@liu2023evalplus]. For formal theorem proving, DeepSeek-Prover describes proof assistants such as Lean as providing high-accuracy, reliable proof verification, which shifts the engineering difficulty away from the final acceptance check itself [@xin2024deepseekprover].
@@ -105,8 +113,7 @@ The verifier sees the final artifact: answer string, code file, proof object, or
 
 ### Figures needed
 
-- Outcome verifier pipeline: prompt → model output → extraction → normalization → checked artifact → reward.
-- Same task, many surface forms: several answer strings collapsing to one normalized mathematical object.
+- Answer normalization: several surface-form answers collapsing to one canonical checked object, with the failure mode that a correct answer can still receive the wrong reward if parsing or normalization fails.
 
 
 ### Open questions
