@@ -32,6 +32,8 @@ Fortunately, we live in a world where AI slop writing is still *very* intelligib
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
 - creating the diagrams and equations, since this is much more effecient, in particular given my lack of LaTex scripting skills, and is inherently much lower-entropy than writing english, not requiring the same human creativity
 
+The core text and synthesis in this index are authored by me [@kyars2026rlvr].
+
 ## Target Audience
 
 ## How to Use This Book
