@@ -54,6 +54,8 @@ format:
     theme:
       light: flatly
       dark: darkly
+    appendix-style: plain
+    appendix-cite-as: false
     code-copy: hover
     respect-user-color-scheme: true
     toc: true

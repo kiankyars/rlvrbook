@@ -41,8 +41,6 @@ $$ {#eq-ch2-binary-check}
 
 If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the verifier can assign an incorrect reward even when the underlying solution is algebraically correct.
 
-[^ch2-deepseek-r1-template]: DeepSeek-R1 uses `<think>`/`<answer>` separators and applies task-specific response-shape constraints for reward parsing, including boxed final outputs when useful for deterministic math verification.[@deepseekai2025r1]
-
 ## The outcome verifier pipeline
 
 An outcome verifier receives a candidate output and returns a scalar, i.e. everything that matters must be readable from the endpoint. In practice the reward is a pipeline with at least four stages:
@@ -82,46 +80,44 @@ If normalization fails, algebraically correct answers can receive the wrong rewa
 
 Where the engineering difficulty concentrates is strongly domain-dependent. In math-style RLVR, verifier design often hinges on answer-format contracts and normalization for deterministic parsing; in code, correctness depends heavily on the quality and coverage of the test suite; in formal proof, the core acceptance check is delegated to the proof assistant. The stages stay the same, but the bottleneck shifts across domains.[^ch2-domain-bottlenecks]
 
-[^ch2-domain-bottlenecks]: This point is best supported domain by domain rather than as a single universal statistic. DeepSeek-R1 uses task-specific output-shape constraints for deterministic reward parsing in math-style reasoning tasks [@deepseekai2025r1]. EvalPlus shows that limited test suites can miss substantial amounts of incorrect code and even mis-rank models, making test quality and coverage central to code verification [@liu2023evalplus]. For formal theorem proving, DeepSeek-Prover describes proof assistants such as Lean as providing high-accuracy, reliable proof verification, which shifts the engineering difficulty away from the final acceptance check itself [@xin2024deepseekprover].
-
 ## Outcome check, full-trajectory update
 
 Although the verifier checks the outcome only, the optimizer updates the entire trajectory. In REINFORCE-style algorithms (including GRPO), the scalar reward from the outcome check is used to upweight or downweight the log-probability of every token in the completion. If the answer is correct, the whole chain of reasoning that produced it becomes more likely. If it is wrong, the whole chain becomes less likely.
 
 This is the blunt instrument at the heart of outcome-based RLVR. The verifier has no opinion about which tokens in the reasoning trace were helpful and which were noise — it assigns a single number to the whole sequence. The optimizer then spreads that number uniformly across all token-level decisions. This works surprisingly well in practice, because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed. But it also means that outcome rewards cannot isolate a specific reasoning step as good or bad. That distinction is exactly what process rewards (Chapter 3) provide.
 
-## Remaining sections
+## Three canonical cases: math, code, and proof
 
-The following sections still need to be expanded into full prose. The plan and the current stubs are merged here as a writing guide.
+The abstract pipeline in Equation @eq-ch2-pipeline is the same across the main RLVR domains. A model emits a completion, the system extracts the checked artifact, normalizes it into a canonical form, compares it to a reference or executable criterion, and maps the result to a scalar reward. What changes from domain to domain is not the algebra of the pipeline, but where the real engineering difficulty sits.
 
-### Three canonical cases: math, code, and proof
+In math, extraction and normalization dominate. The checked object is usually a final answer rather than a full derivation, so the verifier lives or dies by whether it can reliably map many surface forms onto one mathematical object. Boxed-answer conventions, XML answer tags, and task-specific output contracts are not cosmetic; they are there to make deterministic parsing possible at scale.[@shao2024deepseekmath; @deepseekai2025r1] In our toy quadratic example, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should all receive the same reward if the task asks for the solution set. A weak normalizer turns semantic equivalence into reward noise.
 
-Each case should show what the outcome verifier pipeline looks like concretely in that domain — where extraction, normalization, and comparison concentrate their difficulty — and carry the running math example forward where possible.
+In code, the picture is almost inverted. Once the model has produced a code block, extraction is comparatively easy and normalization is usually minimal. The hard part is comparison, because "is this program correct?" is answered by running it in a sandbox against tests, timeouts, and resource limits. Outcome-based RL for code has therefore focused on execution feedback and test-derived reward signals.[@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] But execution is only as strong as the harness: limited suites can certify incorrect programs, and richer suites can change model rankings substantially.[@liu2023evalplus] The verifier is grounded, but never exhaustive.
 
-- **Math.** Exact-match grading with normalized final answers. The hard part is normalization: how many surface forms can you map to a single mathematical object? Symbolic evaluation for structured tasks where `(2,3)`, `{3,2}`, and `x ∈ {2,3}` must all resolve to the same set. SymPy equivalence vs string match. Boxed-answer conventions and their brittleness.
-- **Code.** Execution against a test suite with visible and hidden tests. Extraction and normalization are trivial (the code is the code), but comparison is expensive (execution) and incomplete (you only test what you wrote tests for). Sandboxing, timeout handling, and the gap between "passes tests" and "is correct."
-- **Formal proof.** Theorem acceptance in a proof assistant (Lean, Coq). The entire pipeline collapses to a single call: the proof kernel either accepts the term or it does not. The signal is binary and unfakeable, but "valid proof" ≠ "interesting theorem."
+In formal proof, the final acceptance check is strongest of all. The model outputs a proof script or term, and the proof assistant kernel either accepts it or rejects it. Recent theorem-proving systems exploit exactly this property: the endpoint check is high-fidelity, deterministic, and much harder to fake than natural-language grading.[@xin2024deepseekprover; @xin2024deepseekproverv15] But that does not mean the whole task is solved. "Valid proof of the stated theorem" is a narrow objective. The hard part shifts away from final checking and toward theorem selection, search, decomposition, and interaction with the formal environment.
 
-### Where the apparent simplicity breaks
+## Where the apparent simplicity breaks
 
-This is the chapter's payoff: outcome rewards look simple only if the plumbing is ignored. Each failure mode should connect back to a specific pipeline stage.
+Outcome rewards look trivial only when the plumbing is hidden. Written as a scalar function, `r(x,y)` seems to say: take the answer, check it, assign 0 or 1. Implemented as a system, each stage becomes its own proxy with its own failure modes. An extractor can reward obedience to formatting conventions more than correctness. A normalizer can fail to merge equivalent answers, or worse, collapse distinct answers into one canonical form. A comparator can be perfectly implemented and still evaluate the wrong capability because the benchmark itself admits shortcuts.
 
-- Checker errors induced by fragile extraction or formatting assumptions (stages 1–2).
-- Benchmarks that reward shortcuts rather than the intended capability (stage 3 — the comparison is correct but the task is not testing what we think).
-- Partial-credit schemes that leak exploitable heuristics (stage 4).
-- Brittle parsing, unstable benchmarks, exploitable partial credit, and checker quirks as recurring themes.
+This is why outcome verification should be thought of as interface design, not just scoring. The checker only sees whatever survives the interface between the model and the environment. If that interface is brittle, the model is trained against parser quirks. If the benchmark is narrow, the model is trained against benchmark regularities. If the score is graded rather than binary, the model can optimize partial credit in ways that do not track the underlying task. In code, that can mean passing easy visible tests while failing edge cases. In math, it can mean learning answer-shape regularities without robust symbolic competence. In any domain, a badly chosen partial-credit scheme can become an exploit surface rather than a better learning signal.
 
-### What the verifier sees and misses
+The central lesson is that outcome reward design is easiest to reason about when the checked artifact is both high-fidelity and hard to fake. Formal proof is close to that ideal. Code is somewhat weaker because tests are incomplete. Math is often weaker still because the final answer is a lossy projection of the reasoning that produced it. The more lossy the endpoint, the more care is required in the pipeline around it.
 
-The verifier sees the final artifact: answer string, code file, proof object, or structured output that survives extraction. It misses how the artifact was produced, whether intermediate reasoning was valid, and whether success came from true competence or from exploiting narrow regularities. This section should set up the transition to process rewards in Chapter 3.
+## What the verifier sees and misses
 
-### Figures needed
+An outcome verifier sees only the final artifact that survives extraction: an answer string, a program, a proof term, a cited span set, or some other structured endpoint. It does not see how the model arrived there. Two trajectories that differ completely in internal reasoning but end in the same checked object are identical from the verifier's perspective. Likewise, two trajectories that are equally thoughtful but happen to serialize the endpoint differently can receive different rewards if the interface is brittle.
 
-- Answer normalization: several surface-form answers collapsing to one canonical checked object, with the failure mode that a correct answer can still receive the wrong reward if parsing or normalization fails.
+That blindness is not automatically a defect. If the endpoint is the task, then endpoint supervision is exactly what we want. In formal proof, the accepted proof object is already a strong operationalization of success. In code, executable correctness is a useful operationalization even if it is incomplete. In many math tasks, however, the endpoint is a compressed shadow of the real capability we care about. A single correct final answer does not tell us whether the reasoning was robust, whether the model would succeed under slightly different phrasing, or whether it merely exploited a narrow regularity in the prompt distribution.
 
+This is the limit case that motivates the next chapter. When the endpoint is too sparse, too delayed, or too lossy, we start asking whether some intermediate structure can also be checked. That move leads from outcome verifiers to process verifiers: instead of rewarding only the final artifact, we try to say something operational about the path that produced it.
 
-### Open questions
+## Open questions
 
-- When is binary scoring enough, and when is graded outcome feedback worth the complexity?
-- How should hidden tests be designed to reduce benchmark gaming without drifting away from the task?
-- Which extraction conventions are stable across model families?
+- When is binary scoring enough, and when does graded outcome feedback improve learning enough to justify the extra exploit surface it creates?
+- How should hidden tests and evaluation harnesses be designed so that repeated training does not simply overfit to a static benchmark?
+- Which output contracts and normalization schemes remain stable across model families, prompting styles, and generations of post-trained models?
+- When should equivalence be defined syntactically for reproducibility, and when is semantic comparison worth the added complexity?
+
+[^ch2-deepseek-r1-template]: DeepSeek-R1 uses `<think>`/`<answer>` separators and applies task-specific response-shape constraints for reward parsing, including boxed final outputs when useful for deterministic math verification.[@deepseekai2025r1]
+[^ch2-domain-bottlenecks]: This point is best supported domain by domain rather than as a single universal statistic. DeepSeek-R1 uses task-specific output-shape constraints for deterministic reward parsing in math-style reasoning tasks [@deepseekai2025r1]. EvalPlus shows that limited test suites can miss substantial amounts of incorrect code and even mis-rank models, making test quality and coverage central to code verification [@liu2023evalplus]. For formal theorem proving, DeepSeek-Prover describes proof assistants such as Lean as providing high-accuracy, reliable proof verification, which shifts the engineering difficulty away from the final acceptance check itself [@xin2024deepseekprover].
