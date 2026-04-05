@@ -68,27 +68,3 @@ body {
   color: var(--rlvr-detail-fg);
 }
 
-.rlvr-theme-figure p {
-  margin: 0;
-  line-height: 0;
-}
-
-.rlvr-theme-figure img {
-  width: 100%;
-  height: auto;
-}
-
-.rlvr-theme-figure .rlvr-theme-image-dark,
-.rlvr-theme-figure .rlvr-theme-image-light {
-  display: none;
-}
-
-body.quarto-light .rlvr-theme-figure .rlvr-theme-image-light,
-html[data-bs-theme="light"] .rlvr-theme-figure .rlvr-theme-image-light {
-  display: block;
-}
-
-body.quarto-dark .rlvr-theme-figure .rlvr-theme-image-dark,
-html[data-bs-theme="dark"] .rlvr-theme-figure .rlvr-theme-image-dark {
-  display: block;
-}
