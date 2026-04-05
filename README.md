@@ -12,11 +12,11 @@ rlvrbook/
 ├── .gitignore
 ├── book/
 │   ├── _quarto.yml
+│   ├── index.md
 │   ├── bibliography.bib
 │   ├── styles/
 │   │   └── html.scss
 │   ├── chapters/
-│   │   ├── 00-index.md
 │   │   ├── 01-introduction.md
 │   │   ├── 02-outcome-rewards.md
 │   │   ├── 03-process-verifiers.md
