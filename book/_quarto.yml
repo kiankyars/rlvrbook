@@ -16,7 +16,7 @@ book:
         - chapters/01-introduction.md
     - part: "Verifier Design"
       chapters:
-        - chapters/02-outcome-verifiers.md
+        - chapters/02-outcome-rewards.md
         - chapters/03-process-verifiers.md
         - chapters/04-learned-programmatic-and-hybrid-verifiers.md
     - part: "From Verifiers to Capability"
@@ -52,6 +52,7 @@ format:
     theme:
       light: flatly
       dark: darkly
+    favicon: escher.jpg
     respect-user-color-scheme: true
     toc: true
     toc-depth: 3
