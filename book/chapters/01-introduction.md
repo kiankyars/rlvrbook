@@ -43,250 +43,154 @@ A useful way to see the space is as a domain map. One axis is verification stren
 ::: {#fig-domain-map}
 ::: {.content-visible when-format="html"}
 ```{=html}
-<div class="rlvr-domain-map-widget" data-default-domain="math">
-  <div class="rlvr-domain-map-header">
-    <div>
-      <p class="rlvr-domain-map-kicker">Domain map</p>
-      <h4>What can be verified?</h4>
-    </div>
-    <p class="rlvr-domain-map-hint">Hover, focus, or click a domain to reveal the checked object, main attack surface, and blind spot.</p>
-  </div>
+<div class="dm" data-default-domain="math">
+  <p class="dm-hint">Click a domain to see what its verifier checks, where it can be gamed, and what it misses.</p>
 
-  <svg viewBox="0 0 960 580" role="img" aria-labelledby="domain-map-title domain-map-desc">
-    <title id="domain-map-title">RLVR domain map by verification strength and verification granularity</title>
-    <desc id="domain-map-desc">Six domains are plotted on a two-axis map. Verification strength runs from weak to strong on the horizontal axis. Verification granularity runs from coarse outcome checks to fine-grained trajectory checks on the vertical axis.</desc>
+  <svg class="dm-svg" viewBox="0 0 700 420" aria-label="RLVR domain map: six domains plotted by verification strength and granularity.">
+    <rect class="dm-bg" x="80" y="10" width="590" height="370" rx="6" />
 
-    <defs>
-      <linearGradient id="domain-map-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="var(--rlvr-domain-bg-1)" />
-        <stop offset="100%" stop-color="var(--rlvr-domain-bg-2)" />
-      </linearGradient>
-    </defs>
-
-    <rect x="80" y="40" width="800" height="420" rx="28" fill="url(#domain-map-bg)" />
-
-    <rect x="130" y="80" width="330" height="170" rx="22" fill="var(--rlvr-domain-quadrant-a)" />
-    <rect x="470" y="80" width="330" height="170" rx="22" fill="var(--rlvr-domain-quadrant-b)" />
-    <rect x="130" y="260" width="330" height="150" rx="22" fill="var(--rlvr-domain-quadrant-c)" />
-    <rect x="470" y="260" width="330" height="150" rx="22" fill="var(--rlvr-domain-quadrant-d)" />
-
-    <g class="rlvr-domain-map-grid" stroke="var(--rlvr-domain-grid)" stroke-width="1.5">
-      <line x1="160" y1="410" x2="780" y2="410" />
-      <line x1="160" y1="330" x2="780" y2="330" />
-      <line x1="160" y1="250" x2="780" y2="250" />
-      <line x1="160" y1="170" x2="780" y2="170" />
-      <line x1="160" y1="110" x2="160" y2="430" />
-      <line x1="315" y1="110" x2="315" y2="430" />
-      <line x1="470" y1="110" x2="470" y2="430" />
-      <line x1="625" y1="110" x2="625" y2="430" />
-      <line x1="780" y1="110" x2="780" y2="430" />
+    <g class="dm-grid">
+      <line x1="80" y1="103" x2="670" y2="103" />
+      <line x1="80" y1="196" x2="670" y2="196" />
+      <line x1="80" y1="289" x2="670" y2="289" />
+      <line x1="277" y1="10" x2="277" y2="380" />
+      <line x1="473" y1="10" x2="473" y2="380" />
     </g>
 
-    <g class="rlvr-domain-map-axis">
-      <line x1="160" y1="430" x2="790" y2="430" />
-      <polygon points="790,430 776,423 776,437" fill="var(--rlvr-domain-axis)" />
-      <line x1="160" y1="430" x2="160" y2="95" />
-      <polygon points="160,95 153,109 167,109" fill="var(--rlvr-domain-axis)" />
+    <g class="dm-axes">
+      <line x1="80" y1="380" x2="670" y2="380" />
+      <line x1="80" y1="380" x2="80" y2="10" />
     </g>
 
-    <g class="rlvr-domain-map-text rlvr-domain-map-axis-labels">
-      <text x="474" y="505">Verification strength</text>
-      <text x="160" y="530">Weak</text>
-      <text x="730" y="530">Strong</text>
-      <text x="38" y="270" transform="rotate(-90 38 270)">Verification granularity</text>
-      <text x="22" y="435">Coarse outcome</text>
-      <text x="22" y="115">Fine-grained trajectory</text>
+    <g class="dm-labels">
+      <text x="375" y="410" text-anchor="middle">Verification strength</text>
+      <text x="110" y="400">Weak</text>
+      <text x="630" y="400">Strong</text>
+      <text x="28" y="200" transform="rotate(-90 28 200)">Verification granularity</text>
+      <text x="72" y="375" text-anchor="end" class="dm-tick">Coarse</text>
+      <text x="72" y="20" text-anchor="end" class="dm-tick">Fine</text>
     </g>
 
-    <g class="rlvr-domain-map-text rlvr-domain-map-quadrant-labels">
-      <text x="166" y="116">Granular but fragile</text>
-      <text x="476" y="116">Strong and granular</text>
-      <text x="166" y="394">Weak and coarse</text>
-      <text x="476" y="394">Strong but endpoint-heavy</text>
+    <g class="dm-point" data-domain="proof" tabindex="0" role="button" aria-label="Proof">
+      <circle class="dm-halo" cx="610" cy="55" r="28" />
+      <circle class="dm-dot dm-c-proof" cx="610" cy="55" r="14" />
+      <text class="dm-name" x="610" y="90" text-anchor="middle">Proof</text>
     </g>
-
-    <g class="domain-point" data-domain="proof" tabindex="0" role="button" aria-label="Proof">
-      <circle class="domain-point-halo" cx="742" cy="148" r="30"></circle>
-      <circle class="domain-point-core" cx="742" cy="148" r="18"></circle>
-      <text class="domain-point-label" x="765" y="153">Proof</text>
+    <g class="dm-point" data-domain="agentic" tabindex="0" role="button" aria-label="Agentic">
+      <circle class="dm-halo" cx="210" cy="100" r="28" />
+      <circle class="dm-dot dm-c-agentic" cx="210" cy="100" r="14" />
+      <text class="dm-name" x="210" y="135" text-anchor="middle">Agentic</text>
     </g>
-
-    <g class="domain-point" data-domain="agentic" tabindex="0" role="button" aria-label="Agentic settings">
-      <circle class="domain-point-halo" cx="278" cy="184" r="30"></circle>
-      <circle class="domain-point-core" cx="278" cy="184" r="18"></circle>
-      <text class="domain-point-label" x="302" y="189">Agentic</text>
+    <g class="dm-point" data-domain="code" tabindex="0" role="button" aria-label="Code">
+      <circle class="dm-halo" cx="540" cy="185" r="28" />
+      <circle class="dm-dot dm-c-code" cx="540" cy="185" r="14" />
+      <text class="dm-name" x="540" y="220" text-anchor="middle">Code</text>
     </g>
-
-    <g class="domain-point" data-domain="code" tabindex="0" role="button" aria-label="Code">
-      <circle class="domain-point-halo" cx="638" cy="240" r="30"></circle>
-      <circle class="domain-point-core" cx="638" cy="240" r="18"></circle>
-      <text class="domain-point-label" x="661" y="245">Code</text>
+    <g class="dm-point" data-domain="long_context_qa" tabindex="0" role="button" aria-label="Long-context QA">
+      <circle class="dm-halo" cx="370" cy="225" r="28" />
+      <circle class="dm-dot dm-c-lcqa" cx="370" cy="225" r="14" />
+      <text class="dm-name" x="370" y="260" text-anchor="middle">Long-context QA</text>
     </g>
-
-    <g class="domain-point" data-domain="long_context_qa" tabindex="0" role="button" aria-label="Long-context QA">
-      <circle class="domain-point-halo" cx="468" cy="262" r="30"></circle>
-      <circle class="domain-point-core" cx="468" cy="262" r="18"></circle>
-      <text class="domain-point-label" x="492" y="267">Long-context QA</text>
+    <g class="dm-point" data-domain="multimodal" tabindex="0" role="button" aria-label="Multimodal">
+      <circle class="dm-halo" cx="270" cy="280" r="28" />
+      <circle class="dm-dot dm-c-multi" cx="270" cy="280" r="14" />
+      <text class="dm-name" x="270" y="315" text-anchor="middle">Multimodal</text>
     </g>
-
-    <g class="domain-point" data-domain="multimodal" tabindex="0" role="button" aria-label="Multimodal tasks">
-      <circle class="domain-point-halo" cx="356" cy="324" r="30"></circle>
-      <circle class="domain-point-core" cx="356" cy="324" r="18"></circle>
-      <text class="domain-point-label" x="380" y="329">Multimodal</text>
-    </g>
-
-    <g class="domain-point" data-domain="math" tabindex="0" role="button" aria-label="Math">
-      <circle class="domain-point-halo" cx="672" cy="342" r="30"></circle>
-      <circle class="domain-point-core" cx="672" cy="342" r="18"></circle>
-      <text class="domain-point-label" x="695" y="347">Math</text>
+    <g class="dm-point" data-domain="math" tabindex="0" role="button" aria-label="Math">
+      <circle class="dm-halo" cx="570" cy="330" r="28" />
+      <circle class="dm-dot dm-c-math" cx="570" cy="330" r="14" />
+      <text class="dm-name" x="570" y="365" text-anchor="middle">Math</text>
     </g>
   </svg>
 
-  <div class="rlvr-domain-map-detail" aria-live="polite">
-    <div class="rlvr-domain-map-detail-top">
-      <div>
-        <p class="rlvr-domain-map-kicker js-domain-tier">Strong verification, coarse granularity</p>
-        <h5 class="js-domain-title">Math</h5>
-      </div>
-      <span class="rlvr-domain-chip js-domain-chip">Normalized answer object</span>
-    </div>
-    <p class="rlvr-domain-summary js-domain-summary"></p>
-    <dl class="rlvr-domain-map-facts">
-      <dt>Checked object</dt>
-      <dd class="js-domain-checked"></dd>
-      <dt>Attack surface</dt>
-      <dd class="js-domain-attack"></dd>
-      <dt>Blind spot</dt>
-      <dd class="js-domain-blind"></dd>
+  <div class="dm-detail" aria-live="polite">
+    <h5 class="js-dm-title">Math</h5>
+    <p class="dm-summary js-dm-summary"></p>
+    <dl class="dm-facts">
+      <dt>Checked object</dt>  <dd class="js-dm-checked"></dd>
+      <dt>Attack surface</dt>  <dd class="js-dm-attack"></dd>
+      <dt>Blind spot</dt>      <dd class="js-dm-blind"></dd>
     </dl>
   </div>
 </div>
 
 <script>
 (() => {
-  const domainData = {
+  const D = {
     math: {
-      tier: "Strong verification, coarse granularity",
       title: "Math",
-      chip: "Normalized answer object",
-      summary: "Exact symbolic normalization makes math unusually verifier-friendly, but most production rewards still score the endpoint rather than the reasoning path.",
-      checked: "A final answer, normalized expression, or equivalence class such as a set, number, boxed value, or symbolic form.",
-      attack: "Brittle extraction, formatting hacks, alternate-but-parse-breaking forms, and benchmark leakage.",
+      summary: "Symbolic normalization makes math unusually verifier-friendly, but most rewards still score the endpoint rather than the reasoning path.",
+      checked: "Final answer, normalized expression, or equivalence class (set, boxed value, symbolic form).",
+      attack: "Brittle extraction, formatting hacks, alternate-but-unparseable surface forms, and benchmark leakage.",
       blind: "Whether the reasoning was faithful, reusable, or causally responsible for the final answer."
     },
     code: {
-      tier: "Strong verification, medium granularity",
       title: "Code",
-      chip: "Executable program behavior",
-      summary: "Execution against tests gives sharper feedback than most language tasks, but the verifier only sees behavior on the covered cases and environments.",
+      summary: "Execution against tests gives sharper feedback than most language tasks, but the verifier only sees behavior on the covered cases.",
       checked: "Program outputs, execution traces, unit-test outcomes, and sometimes compiler/runtime signals.",
-      attack: "Overfitting to the visible suite, hard-coded answers, environment quirks, and reward through shallow patches that satisfy narrow tests.",
+      attack: "Overfitting to the visible suite, hard-coded answers, environment quirks, and shallow patches that satisfy narrow tests.",
       blind: "Untested behaviors, reliability under distribution shift, efficiency, security, and maintainability outside the harness."
     },
     proof: {
-      tier: "Very strong verification, fine granularity",
       title: "Proof",
-      chip: "Formally accepted proof state",
-      summary: "Proof assistants offer the cleanest verifier in the map because each step is checked against a formal system rather than a soft proxy.",
-      checked: "A theorem statement, a sequence of proof states, and a final proof object accepted by Lean, Coq, or a similar assistant.",
-      attack: "Mis-specified theorems, unsafe assumptions, helper-lemma leakage, and search that exploits automation without broader generality.",
-      blind: "Informal explanatory value, theorem selection, and whether the proof strategy transfers outside the exact formalization."
+      summary: "Proof assistants offer the cleanest verifier because each step is checked against a formal kernel rather than a soft proxy.",
+      checked: "Theorem statement, sequence of proof states, and final proof object accepted by Lean, Coq, or similar.",
+      attack: "Mis-specified theorems, unsafe assumptions, helper-lemma leakage, and automation exploitation.",
+      blind: "Informal explanatory value, theorem selection, and whether the proof strategy transfers outside the formalization."
     },
     long_context_qa: {
-      tier: "Moderate verification, medium granularity",
       title: "Long-context QA",
-      chip: "Answer plus evidence alignment",
-      summary: "Citation-aware QA makes more of the answer checkable, but support is still partial because evidence presence does not guarantee faithful synthesis.",
+      summary: "Citation-aware QA makes more of the answer checkable, but evidence presence does not guarantee faithful synthesis.",
       checked: "Sentence-level citations, retrieved spans, support sets, and answer-evidence alignment over long documents.",
-      attack: "Citation stuffing, irrelevant but plausible evidence, sentence-boundary mismatch, and answers that borrow support without using it faithfully.",
-      blind: "Hidden hallucinations between supported sentences, causal use of evidence, and global consistency across a long answer."
+      attack: "Citation stuffing, irrelevant but plausible evidence, sentence-boundary mismatch, and borrowed support without faithful use.",
+      blind: "Hidden hallucinations between supported sentences, causal use of evidence, and global consistency."
     },
     multimodal: {
-      tier: "Mixed verification, coarse-to-medium granularity",
-      title: "Multimodal tasks",
-      chip: "Answer with partial grounding",
-      summary: "Multimodal benchmarks often expose exact answers or structured annotations, but perception ambiguity keeps the checker weaker than in symbolic domains.",
-      checked: "A final answer and sometimes auxiliary structure such as boxes, chart values, OCR strings, or grounded references.",
-      attack: "Answer priors, shortcut cues, OCR artifacts, annotation ambiguity, and reward on the text output without enough pressure on visual grounding.",
+      title: "Multimodal",
+      summary: "Multimodal benchmarks often expose exact answers, but perception ambiguity keeps the checker weaker than symbolic domains.",
+      checked: "Final answer and sometimes auxiliary structure: bounding boxes, chart values, OCR strings, or grounded references.",
+      attack: "Answer priors, shortcut cues, OCR artifacts, annotation ambiguity, and rewarding text without visual grounding pressure.",
       blind: "Whether the model truly used the visual evidence and whether failures came from perception, grounding, or reasoning."
     },
     agentic: {
-      tier: "Weak-to-moderate verification, high granularity",
-      title: "Agentic settings",
-      chip: "Trajectory and task completion",
-      summary: "Agents expose rich trajectories and execution feedback, but the overall success signal is brittle because environments are open-ended and easy to game.",
-      checked: "Tool calls, environment transitions, intermediate state changes, and task completion scripts over long horizons.",
-      attack: "Reward hacking, simulator exploits, degenerate loops, brittle heuristics, and policies that succeed in the sandbox but not in realistic use.",
+      title: "Agentic",
+      summary: "Agents expose rich trajectories, but the success signal is brittle because environments are open-ended and easy to game.",
+      checked: "Tool calls, environment transitions, intermediate state changes, and task-completion scripts over long horizons.",
+      attack: "Reward hacking, simulator exploits, degenerate loops, and policies that succeed in the sandbox but not in practice.",
       blind: "Side effects, robustness, safety, human acceptability, and transfer from benchmark scripts to real tasks."
     }
   };
 
-  const initDomainMap = (root) => {
-    const points = [...root.querySelectorAll(".domain-point")];
-    const title = root.querySelector(".js-domain-title");
-    const tier = root.querySelector(".js-domain-tier");
-    const chip = root.querySelector(".js-domain-chip");
-    const summary = root.querySelector(".js-domain-summary");
-    const checked = root.querySelector(".js-domain-checked");
-    const attack = root.querySelector(".js-domain-attack");
-    const blind = root.querySelector(".js-domain-blind");
+  document.querySelectorAll(".dm").forEach(root => {
+    const pts = [...root.querySelectorAll(".dm-point")];
+    const el = (s) => root.querySelector(s);
 
-    const activate = (name) => {
-      const payload = domainData[name];
-      if (!payload) return;
-
-      points.forEach((point) => {
-        point.classList.toggle("is-active", point.dataset.domain === name);
-      });
-
-      tier.textContent = payload.tier;
-      title.textContent = payload.title;
-      chip.textContent = payload.chip;
-      summary.textContent = payload.summary;
-      checked.textContent = payload.checked;
-      attack.textContent = payload.attack;
-      blind.textContent = payload.blind;
+    const show = (name) => {
+      const d = D[name]; if (!d) return;
+      pts.forEach(p => p.classList.toggle("is-active", p.dataset.domain === name));
+      el(".js-dm-title").textContent = d.title;
+      el(".js-dm-summary").textContent = d.summary;
+      el(".js-dm-checked").textContent = d.checked;
+      el(".js-dm-attack").textContent = d.attack;
+      el(".js-dm-blind").textContent = d.blind;
     };
 
-    points.forEach((point) => {
-      const name = point.dataset.domain;
-      point.addEventListener("mouseenter", () => activate(name));
-      point.addEventListener("focus", () => activate(name));
-      point.addEventListener("click", () => activate(name));
-      point.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          activate(name);
-        }
-      });
+    pts.forEach(p => {
+      const n = p.dataset.domain;
+      p.addEventListener("mouseenter", () => show(n));
+      p.addEventListener("focus", () => show(n));
+      p.addEventListener("click", () => show(n));
     });
 
-    activate(root.dataset.defaultDomain || "math");
-  };
-
-  const boot = () => {
-    document.querySelectorAll(".rlvr-domain-map-widget").forEach(initDomainMap);
-  };
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once: true });
-  } else {
-    boot();
-  }
+    show(root.dataset.defaultDomain || "math");
+  });
 })();
 </script>
 ```
 :::
 
 ::: {.content-visible when-format="pdf"}
-![](../diagrams/01-domain-map-pdf.png)
-
-1. **Proof**: checked object is a formally accepted proof state or proof object; main attack surface is theorem mis-specification or automation abuse; main blind spot is informal usefulness and transfer outside the formalization.
-2. **Code**: checked object is program behavior under tests; main attack surface is test overfitting or harness exploitation; main blind spot is behavior outside the covered suite.
-3. **Math**: checked object is a normalized final answer; main attack surface is parser brittleness and format gaming; main blind spot is faithfulness of the reasoning path.
-4. **Long-context QA**: checked object is an answer plus sentence-level evidence alignment; main attack surface is citation stuffing or answer-evidence mismatch; main blind spot is faithful synthesis across the whole answer.
-5. **Multimodal tasks**: checked object is a final answer with partial grounding structure; main attack surface is shortcut visual cues and annotation ambiguity; main blind spot is whether the model actually grounded on the image.
-6. **Agentic settings**: checked object is a long-horizon trajectory plus task completion status; main attack surface is reward hacking and simulator exploits; main blind spot is robustness, side effects, and real-world transfer.
+The six domains, from strongest to weakest verification signal: **Proof** (formally accepted proof state; attack surface: theorem mis-specification; blind spot: informal usefulness). **Code** (execution against tests; attack surface: suite overfitting; blind spot: untested behavior). **Math** (normalized final answer; attack surface: parser brittleness; blind spot: reasoning faithfulness). **Long-context QA** (answer plus evidence alignment; attack surface: citation stuffing; blind spot: faithful synthesis). **Multimodal** (answer with partial grounding; attack surface: shortcut cues; blind spot: visual grounding). **Agentic** (trajectory plus task completion; attack surface: reward hacking; blind spot: real-world transfer).
 :::
 
 What can be verified? A schematic domain map of RLVR by verification strength and verification granularity. The axes summarize common verifier interfaces in current practice rather than a single benchmark-derived score.
@@ -314,8 +218,3 @@ The next chapters move from the general paradigm to the main reward regimes in p
 [^ch1-openai-o1]: OpenAI's writeup states that `o1` performance improved with both more reinforcement learning, which they describe as train-time compute, and more time spent thinking at test time [@openai2024o1].
 [^ch1-deepseek-r1]: DeepSeek-R1 argues that reasoning abilities can be incentivized through pure reinforcement learning on verifiable tasks such as mathematics, coding competitions, and STEM fields [@deepseekai2025r1].
 [^ch1-meta-reaction]: The quoted line was reported as an anonymous Teamblind post summarized by TMTPOST, while the claim that Meta created four "war rooms" was reported by Fortune, citing The Information [@tmtpost2025deepseek; @quirozgutierrez2025warrooms].
-
-## References
-
-::: {#refs}
-:::
