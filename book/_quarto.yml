@@ -49,6 +49,10 @@ execute:
 
 format:
   html:
+    theme:
+      light: flatly
+      dark: darkly
+    respect-user-color-scheme: true
     toc: true
     toc-depth: 3
     number-sections: true

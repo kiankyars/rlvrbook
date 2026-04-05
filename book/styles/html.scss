@@ -1,3 +1,20 @@
+:root {
+  --rlvr-title-bg: #f5f6f7;
+  --rlvr-title-fg: #1f2328;
+  --rlvr-widget-bg: #f8fafc;
+  --rlvr-widget-border: #d0d7de;
+  --rlvr-detail-fg: #374151;
+}
+
+html[data-bs-theme="dark"],
+body.quarto-dark {
+  --rlvr-title-bg: #111827;
+  --rlvr-title-fg: #f9fafb;
+  --rlvr-widget-bg: #0f172a;
+  --rlvr-widget-border: #334155;
+  --rlvr-detail-fg: #cbd5e1;
+}
+
 body {
   line-height: 1.65;
 }
@@ -7,15 +24,15 @@ body {
 }
 
 .quarto-title-banner {
-  background: #f5f6f7;
-  color: #1f2328;
+  background: var(--rlvr-title-bg);
+  color: var(--rlvr-title-fg);
 }
 
 .rlvr-stack-widget {
   margin: 1rem 0 1.4rem;
-  border: 1px solid #d0d7de;
+  border: 1px solid var(--rlvr-widget-border);
   border-radius: 12px;
-  background: #f8fafc;
+  background: var(--rlvr-widget-bg);
   padding: 1rem;
 }
 
@@ -48,5 +65,5 @@ body {
 .rlvr-stack-detail {
   margin: 0.85rem 0 0;
   font-size: 0.95rem;
-  color: #374151;
+  color: var(--rlvr-detail-fg);
 }
