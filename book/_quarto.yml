@@ -61,7 +61,7 @@ format:
     toc: true
     toc-depth: 3
     number-sections: true
-    css: styles/html.scss
+    css: styles/custom.css
   pdf:
     toc: true
     number-sections: true
