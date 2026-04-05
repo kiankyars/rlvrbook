@@ -28,7 +28,7 @@ Use concise imperative messages and keep unrelated edits out of the same commit.
 
 ## Learned User Preferences
 
-- Aspires to Simon Bohm reference-work quality: intuitive, concrete examples before abstraction, running examples carried across chapters.
+- Aspires to Simon Boehm reference-work quality: intuitive, concrete examples before abstraction, running examples carried across chapters.
 - Do not replace human-written prose with LLM-generated text unless explicitly asked.
 - Prefers interactive HTML figures (inline SVG + JS) for the web build with a static image fallback for PDF.
 - PDF exports must show only the light-mode variant of dual-mode images; do not touch web dark/light switching when fixing PDF.
@@ -36,9 +36,5 @@ Use concise imperative messages and keep unrelated edits out of the same commit.
 
 ## Learned Workspace Facts
 
-- `book/.gitignore` doubles as the chapter outline/plan file — it contains recommended build notes and section plans, not actual gitignore patterns.
 - Quarto does not natively support dark/light mode image switching; the repo uses custom CSS/JS for this.
 - Interactive figures use `::: {.content-visible when-format="html"}` blocks with inline SVG+JS; static fallbacks use `::: {.content-visible when-format="pdf"}` blocks.
-- tldraw MCP (`@talhaorak/tldraw-mcp`) is configured in `.cursor/mcp.json`; `.tldr` source files live in `book/diagrams/tldraw/`.
-- tldraw MCP-generated `.tldr` files may need migration-safe schema fixes; validate with `parseTldrawJsonFile` from the `tldraw` npm package.
-- `rg` (ripgrep) may not be available in all shell contexts; `scripts/lint-book` depends on it.

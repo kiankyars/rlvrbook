@@ -11,6 +11,8 @@
 
 RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in code generation with tests. Sometimes it is partial, as in grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is not a specific optimizer. It is the availability of a notion of task success. Once a task can expose useful correctness signals, reinforcement learning can optimize against them, search can exploit them at inference time, and systems can often improve far beyond what static supervised fine-tuning alone would produce.
 
+Terminology note. This book uses *verifier* as the default term for the mechanism that checks a model output and produces the signal used for reward. Closely related terms in the literature include *checker*, *scorer*, and sometimes *judge*, though the exact interface varies by system.
+
 ::: {#fig-verifier-stack}
 
 ::: {.content-visible when-format="html"}
