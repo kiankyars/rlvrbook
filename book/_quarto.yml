@@ -53,6 +53,7 @@ format:
     theme:
       light: flatly
       dark: darkly
+    code-copy: hover
     respect-user-color-scheme: true
     toc: true
     toc-depth: 3

@@ -44,33 +44,11 @@ I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfboo
 
 You can cite this book directly with this BibTeX.
 
-```{=html}
-<div class="citation-copy-box" style="position: relative; max-width: 100%;">
-  <button id="copy-bibtex-button" class="btn btn-sm btn-outline-secondary" style="position: absolute; top: 0.45rem; right: 0.45rem;" type="button">Copy</button>
-  <pre id="bibtex-entry-text" style="white-space: pre; overflow: auto; padding-right: 4.5rem;"><code>@online{kyars2026rlvrbook,
-  title  = {Reinforcement Learning from Verifiable Rewards},
-  author = {Kyars, Kian},
-  year   = {2026},
-  url    = {https://github.com/kiankyars/rlvrbook},
-  urldate = {2026-04-05}
-}</code></pre>
-</div>
-<script>
-(() => {
-  const button = document.getElementById("copy-bibtex-button");
-  const code = document.getElementById("bibtex-entry-text");
-  if (!button || !code) return;
-  button.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(code.textContent || "");
-      const previous = button.textContent;
-      button.textContent = "Copied";
-      setTimeout(() => { button.textContent = previous; }, 1200);
-    } catch (err) {
-      button.textContent = "Failed";
-      setTimeout(() => { button.textContent = "Copy"; }, 1200);
-    }
-  });
-})();
-</script>
+```bibtex
+@online{kyars2026rlvrbook,
+  title   = {Reinforcement Learning from Verifiable Rewards},
+  author  = {Kyars, Kian},
+  year    = {2026},
+  url     = {https://rlvrbook.com},
+}
 ```
