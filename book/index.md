@@ -1,7 +1,8 @@
 ---
-title: "Start Here"
 number-sections: false
 ---
+
+# Start Here {.unnumbered}
 
 [<i class="bi bi-file-earmark-pdf"></i> Open PDF](rlvrbook.pdf)  
 [<i class="bi bi-github"></i> GitHub](https://github.com/kiankyars/rlvrbook)
