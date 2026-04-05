@@ -2,9 +2,8 @@
 
 ## Chapter Map
 
-- Central question: How far does the verifier-first framework stretch once tasks become more indirect and operationally messy?
-- Key distinction: Frontier domains remain verifier-driven, but the evidence surface becomes broader, noisier, and easier to partially observe.
-- Main failure mode: Mistaking partial or indirect verification for fully solved evaluation.
+- Examine how RLVR stretches into long-context, multimodal, and agentic settings.
+- Show why frontier tasks remain partially verifiable but become noisier, broader, and easier to misread.
 
 ## Domain Overview
 

@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: How should verifier stacks be built when a single hard-coded checker is not enough?
-- Key distinction: Outcome versus process describes what is checked; learned versus programmatic describes how the checker is implemented.
-- Main failure mode: Combining multiple imperfect signals without understanding how their errors compound.
-
-## Core Terms
-
-- Programmatic verifier: A rule-based checker implemented through deterministic logic, execution, or formal constraints.
-- Learned verifier: A model-based judge that predicts correctness, quality, or consistency.
-- Verifier stack: A layered pipeline that combines multiple checks before producing a reward or decision.
+- Explain how to build verifier stacks when a single hard-coded checker is not enough.
+- Show the main risk: combining imperfect signals without understanding where their errors compound.
 
 ## Main Argument
 

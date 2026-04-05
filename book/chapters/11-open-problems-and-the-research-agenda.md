@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: What bottlenecks still prevent RLVR from becoming a mature science of verifier-driven capability?
-- Key distinction: The frontier is shaped more by verifier quality than by optimizer novelty.
-- Main failure mode: Ending the book with a paper list instead of a real research agenda.
-
-## Core Terms
-
-- Bottleneck: A technical constraint whose resolution would substantially expand what verifiers can support.
-- Research agenda: A structured view of open questions rather than an accumulation of loose future-work bullets.
-- Deployment constraint: A practical limit involving latency, cost, auditability, or safety that shapes verifier design.
+- Identify the main bottlenecks preventing RLVR from becoming a mature science.
+- End with a real research agenda rather than a paper list or optimizer timeline.
 
 ## Main Argument
 

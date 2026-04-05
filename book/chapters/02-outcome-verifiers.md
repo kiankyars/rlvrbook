@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: How do we design strong verifiers that score completed solutions?
-- Key distinction: Outcome verification is simple to scale, but it pushes enormous weight onto representation and extraction.
-- Main failure mode: Building a checker that appears crisp on paper but is noisy or gameable in practice.
-
-## Core Terms
-
-- Outcome verifier: A checker that scores the completed solution rather than its intermediate steps.
-- Extraction pipeline: The logic used to isolate the answer or artifact that the verifier actually evaluates.
-- Hidden test: A private evaluation case that reduces overfitting to visible checker behavior.
+- Explain how strong outcome verifiers are built for completed solutions.
+- Show why extraction, representation, and hidden brittleness matter more than the apparent simplicity suggests.
 
 ## Main Argument
 

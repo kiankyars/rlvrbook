@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: How does verifier-driven optimization fail under pressure?
-- Key distinction: The verifier is not only an evaluator; it is also an attack surface.
-- Main failure mode: Optimizing the checker hard enough that its blind spots become the dominant learned behavior.
-
-## Core Terms
-
-- Reward hacking: Achieving high reward through behavior that exploits the checker rather than solving the intended task.
-- Proxy misspecification: A mismatch between the optimized signal and the capability the signal was supposed to represent.
-- Robustness: The degree to which a verifier resists exploitation, drift, and benchmark gaming.
+- Explain how verifier-driven optimization fails under pressure.
+- Treat the checker as an attack surface, not just as an evaluator.
 
 ## Main Argument
 

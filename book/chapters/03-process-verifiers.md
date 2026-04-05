@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: When is it useful to verify intermediate reasoning rather than only completed solutions?
-- Key distinction: Process verification is valuable when it improves credit assignment, not merely when it makes outputs look nicer.
-- Main failure mode: Rewarding surface-form reasoning traces that correlate poorly with actual competence.
-
-## Core Terms
-
-- Process verifier: A checker that scores intermediate steps, subgoals, or partial traces.
-- Credit assignment: The problem of deciding which parts of a trajectory deserve reward or blame.
-- Dense signal: A reward regime where useful feedback appears before the end of the trajectory.
+- Explain when intermediate verification improves credit assignment beyond final-answer rewards alone.
+- Show the main risk: rewarding reasoning-shaped traces that correlate weakly with actual competence.
 
 ## Main Argument
 

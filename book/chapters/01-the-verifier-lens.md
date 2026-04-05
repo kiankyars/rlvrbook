@@ -7,8 +7,6 @@ Reinforcement learning from verifiable rewards studies how models can improve by
 - Define RLVR as learning from verifiable reward signals and explain which tasks admit them.
 - Explain why RLVR became central to reasoning models and preview the structure of the book.
 
-**Key distinction.** "Verifiable" means that some aspect of task performance can be checked well enough to produce useful reward. It does not mean that the reward captures everything we care about.
-
 ## Origins of RLVR
 
 In one sense RLVR is the oldest paradigm in reinforcement learning, since it learns from direct reward rather than preference comparison; what is new is its explicit application to language models through verifiers that can check answers, code, proofs, and traces.

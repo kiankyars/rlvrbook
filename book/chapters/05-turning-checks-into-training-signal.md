@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: How does a checker become a useful learning signal rather than a brittle scoreboard?
-- Key distinction: The chapter is about signal quality and task shaping, not optimizer taxonomy.
-- Main failure mode: Assuming any available reward can be optimized safely and productively.
-
-## Core Terms
-
-- Signal quality: How informative, stable, and hard to game the reward is for the capability of interest.
-- Sparse reward: A regime where feedback arrives only at the end or only on rare successes.
-- Curriculum: A deliberate progression of tasks, filters, or reward conditions used to improve signal usefulness.
+- Explain how a checker becomes useful learning signal rather than a brittle scoreboard.
+- Keep the focus on signal quality, task shaping, and curriculum rather than optimizer taxonomy.
 
 ## Main Argument
 

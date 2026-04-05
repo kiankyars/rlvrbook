@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: What role do verifiers play at inference time, not just during training?
-- Key distinction: Search exposes what a verifier enables immediately; training amortizes that ability into the policy.
-- Main failure mode: Crediting training for gains that are really coming from test-time search or reranking.
-
-## Core Terms
-
-- Test-time verification: Applying the checker during inference to score, rerank, or refine candidate solutions.
-- Amortization: Turning a search-heavy procedure into a policy that performs well with less search.
-- Deliberation loop: A generate-check-revise pattern that uses the verifier to guide additional compute.
+- Explain what verifiers enable at inference time, not just during training.
+- Distinguish immediate gains from search and reranking from gains that are actually amortized into the policy.
 
 ## Main Argument
 

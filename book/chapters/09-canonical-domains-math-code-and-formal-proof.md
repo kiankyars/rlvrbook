@@ -2,9 +2,8 @@
 
 ## Chapter Map
 
-- Central question: How does verifier design change across the cleanest current RLVR domains?
-- Key distinction: These domains share strong checkability, but each exposes a different verifier regime.
-- Main failure mode: Treating success in one canonical domain as if it transfers automatically to the others.
+- Compare how verifier regimes differ across math, code, and formal proof.
+- Show why strong checkability does not mean the same reward interface or the same failure modes.
 
 ## Domain Overview
 

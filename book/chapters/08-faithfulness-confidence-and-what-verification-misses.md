@@ -2,15 +2,8 @@
 
 ## Chapter Map
 
-- Central question: What important properties remain off-screen even when a verifier is strong?
-- Key distinction: Passing a verifier is not the same thing as exposing faithful reasoning or calibrated uncertainty.
-- Main failure mode: Concluding that verified success implies trustworthy cognition.
-
-## Core Terms
-
-- Faithfulness: The extent to which an externalized explanation tracks the causal basis of the model's answer.
-- Calibration: The relationship between expressed confidence and actual correctness.
-- Epistemic blind spot: A relevant property that the verifier does not directly observe.
+- Explain what important properties remain off-screen even when a verifier is strong.
+- Show why verified success does not imply faithful reasoning or calibrated uncertainty.
 
 ## Main Argument
 
