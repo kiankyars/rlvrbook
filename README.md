@@ -33,8 +33,6 @@ rlvrbook/
 │   │   ├── b-benchmarks-evals-and-contamination.md
 │   │   └── c-practical-verifier-design-checklist.md
 │   ├── diagrams/
-│   └── templates/
-│       └── chapter-template.md
 ├── code/
 │   ├── math/
 │   ├── code/

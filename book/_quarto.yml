@@ -6,6 +6,8 @@ book:
   author: "Kian Kyars"
   subtitle: "A verifier-first reference"
   output-file: rlvrbook
+  sidebar:
+    title: "rlvrbook"
   downloads:
     - pdf
   chapters:

@@ -10,3 +10,43 @@ body {
   background: #f5f6f7;
   color: #1f2328;
 }
+
+.rlvr-stack-widget {
+  margin: 1rem 0 1.4rem;
+  border: 1px solid #d0d7de;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 1rem;
+}
+
+.rlvr-stack-widget svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.stack-layer {
+  cursor: pointer;
+}
+
+.stack-layer rect {
+  opacity: 0.72;
+  transform-origin: center;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.stack-layer:hover rect,
+.stack-layer.is-active rect {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.stack-layer text {
+  pointer-events: none;
+}
+
+.rlvr-stack-detail {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
