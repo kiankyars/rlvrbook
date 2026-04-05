@@ -29,13 +29,33 @@ The final answer is the ordered tuple (2,3).
 
 The verifier extracts the final artifact from `<answer>...</answer>`, normalizes order, and checks against the ground-truth set. DeepSeek-R1 uses `<think>` and `<answer>` tags in its response template; for deterministic math tasks it can also add format constraints (for example, boxed expressions) when the reward parser needs a stricter extraction rule.[^ch2-deepseek-r1-template]
 
-\[
+$$
 r(x,y)=\mathbb{I}[\text{normalize}(\text{extract\_ans}(y))=\{2,3\}]
-\]
+$$
 
 If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the reward drops to 0 even if the algebra is correct.
 
 [^ch2-deepseek-r1-template]: DeepSeek-R1 uses `<think>`/`<answer>` separators and applies task-specific response-shape constraints for reward parsing, including boxed final outputs when useful for deterministic math verification.[@deepseekai2025r1]
+
+## Recommended build
+
+This should be the first chapter where the book starts to feel technical. It should probably be the first chapter with real artifacts on the page: one or two equations, two or three diagrams, and one running example carried through the whole chapter.
+
+The cleanest running example is math. Start with a concrete checked answer, then widen to code and formal proof. The point is to make outcome rewards feel operational before they feel abstract.
+
+- Open with one concrete example: model output, extraction, normalization, and final check.
+- Define the object: an outcome verifier checks the final artifact, not the path used to produce it.
+- Add the minimal math: start with `r(x,y)=V(\mathrm{extract}(y), x)` and then make clear that the practical reward is a pipeline rather than a single comparison.
+- Move to the three canonical cases: math, code, and proof.
+- End by showing where the apparent simplicity breaks: brittle parsing, unstable benchmarks, exploitable partial credit, and checker quirks.
+
+The core engineering tension of the chapter is that outcome rewards look simple only if the plumbing is ignored. In practice, the chapter is really about building a reliable final-output-to-reward map: output contract, extraction, normalization, correctness check, and grading granularity.
+
+The most useful figures for this chapter would be:
+
+- Outcome verifier pipeline: prompt -> model output -> extraction -> normalization -> checked artifact -> reward.
+- Same task, many surface forms: several answer strings collapsing to one normalized mathematical object.
+- Outcome versus process preview: chapter 2 checks the endpoint, while later chapters ask what can be said about the path.
 
 ## Main Argument
 
