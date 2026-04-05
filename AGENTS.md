@@ -20,7 +20,7 @@ Do not replace any human-text with llm-text unless explicitly instructed to. Wri
 
 ## Testing Guidelines
 
-This repo does not use a unit-test framework. Validation is structural and bibliographic: run `scripts/lint-book`, `scripts/check-citations`, and `scripts/check-diagrams`. If you change rendering behavior or styles, also run `quarto render book` and confirm both HTML and PDF output still build.
+This repo does not use a unit-test framework. Validation is structural and bibliographic: run `scripts/lint-book`, `scripts/check-citations`, and `scripts/check-diagrams`. If you change rendering behavior or styles, also run `quarto render book` and confirm both HTML and PDF output still build. For equation/math edits, run `scripts/build-book` and ensure the PDF step has zero `LaTeX Error` in logs.
 
 ## Commit & Pull Request Guidelines
 
