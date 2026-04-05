@@ -5,11 +5,13 @@
 - Explain how strong outcome verifiers are built.
 - Show why extraction, representation, and hidden brittleness matter more than the apparent simplicity suggests.
 
-## Starting scaffold
+## A Rollout
 
-**Prompt.**
+**Prompt**
 
 Solve the equation: $x^2-5x+6=0$.
+
+**Completion**
 
 ```text
 <think>
@@ -30,26 +32,40 @@ The final answer is the ordered tuple (2,3).
 The verifier extracts the final artifact from `<answer>...</answer>`, normalizes order, and checks against the ground-truth set. DeepSeek-R1 uses `<think>` and `<answer>` tags in its response template; for deterministic math tasks it can also add format constraints (for example, boxed expressions) when the reward parser needs a stricter extraction rule.[^ch2-deepseek-r1-template]
 
 $$
-r(x,y)=\mathbb{I}[\text{normalize}(\text{extract\_ans}(y))=\{2,3\}]
+r(x,y)=
+\begin{cases}
+1 & \text{if } \text{normalize}(\text{extract\_ans}(y))=\{2,3\},\\
+0 & \text{otherwise.}
+\end{cases}
 $$
 
-If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the reward drops to 0 even if the algebra is correct.
+If the model fails the output contract (for example, omits `<answer>...</answer>`, changes order without normalization, or adds extraneous text that breaks parsing), the verifier can assign an incorrect reward even when the underlying solution is algebraically correct.
 
 [^ch2-deepseek-r1-template]: DeepSeek-R1 uses `<think>`/`<answer>` separators and applies task-specific response-shape constraints for reward parsing, including boxed final outputs when useful for deterministic math verification.[@deepseekai2025r1]
 
+## The outcome verifier pipeline
 
+An outcome verifier checks the final artifact. It does not see the reasoning trace, the search tree, or any intermediate computation. It receives a candidate output and returns a scalar. That is the defining constraint of this chapter: everything that matters must be readable from the endpoint.
 
-## Main Argument
+The scaffold above makes this look like a single comparison, but in practice the reward is a pipeline with at least four stages:
 
-Outcome verifiers are the natural entry point for RLVR because they are operationally simple and often highly scalable. They become useful when the mapping from model output to checked object is stable, unambiguous, and hard to exploit.
+$$
+r(x,y) = \text{score}\!\Big(\text{compare}\!\big(\text{normalize}(\text{extract}(y)),\;\text{gold}(x)\big)\Big)
+$$
 
-This chapter should focus on answer normalization, format design, theorem checking, executable grading, partial credit, and benchmark hygiene. The hard part is often not the final comparison rule but the interface contract that determines what is being compared.
+Each stage does different work:
 
-## From outcome rewards to post-training harnesses
+1. **Extract.** Parse the model's raw text to isolate the answer artifact. This depends on the output contract: the `<answer>` tags in our scaffold, `\boxed{}` in many math benchmarks, the final code block in a generation task, or the proof term in a formal system. If extraction fails, the reward is typically zero regardless of what the model actually produced.
 
-The objective mechanics in this chapter stay on the outcome reward map from prompt/output to score. The training harness is the separate layer that turns this map into a learning system.
+2. **Normalize.** Map the extracted string to a canonical form so that surface variation does not affect grading. For math this means parsing `(2,3)` and `{3, 2}` and `x=2, x=3` into the same set object. For code it means nothing — the test harness operates on execution, not string form. For proofs, normalization is usually trivial because the proof assistant's own type checker is the canonical form.
 
-We discuss harness design, reward shaping, filtering, and training-loop behavior in [Chapter 5](05-turning-checks-into-training-signal.md), where the full implementation picture belongs.
+3. **Compare.** Check the normalized candidate against the reference. This can be string equality, set equality, symbolic equivalence via a CAS, execution against a test suite, or acceptance by a proof kernel. The comparison function is where most people's intuition about "verification" lives, but it is often the least error-prone stage.
+
+4. **Score.** Map the comparison outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
+
+The important observation is that most real failures in outcome reward systems happen in stages 1 and 2, not in stage 3. The comparison rule is usually straightforward once the inputs are clean. The fragility is in the interface contract and the normalization layer. A model that solves the problem but wraps its answer in the wrong tags scores zero. A normalizer that handles fractions but not mixed numbers silently misclassifies correct responses. These are engineering failures, not conceptual ones, but they dominate the practical difficulty of building outcome verifiers.
+
+This pipeline framing also explains why outcome verification is domain-dependent even when the final comparison looks similar. In math, the hard part is normalization: how many surface forms can you reliably map to a single mathematical object? In code, extraction and normalization are trivial (the code is the code), but comparison is expensive (you must execute it) and incomplete (you only test what you wrote tests for). In formal proof, the entire pipeline collapses to a single call: the proof assistant either accepts the term or it does not. The stages are the same, but where the difficulty concentrates shifts across domains.
 
 ## Canonical Examples
 

@@ -5,3 +5,5 @@ book/_book/
 **/.quarto/
 **/*.quarto_ipynb
 book/.gitignore
+.cursor
+book/index.tex
