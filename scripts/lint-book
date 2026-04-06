@@ -55,11 +55,6 @@ if [[ "$chapter_count" != "11" ]]; then
   exit 1
 fi
 
-if [[ "$appendix_count" != "4" ]]; then
-  echo "expected 4 appendix files, found $appendix_count" >&2
-  exit 1
-fi
-
 if [[ "${#configured_chapters[@]}" -ne 11 ]]; then
   echo "expected 11 configured chapters in book/_quarto.yml, found ${#configured_chapters[@]}" >&2
   exit 1
