@@ -27,6 +27,14 @@ These settings move the field away from single clean checkers and toward partial
 - Vision-language tasks with verifiable perceptual subgoals.
 - Tool-using agents whose traces can be checked for execution validity and grounded progress.
 
+## Frontier coding harnesses
+
+This is the place in the book where *harness* should become a first-class term. A frontier coding harness is not a compact GSM8K training script with a few reward functions. It is an environment-backed system for long-horizon rollouts: a repository state, a shell, tools, tests, hidden graders, task termination criteria, and instrumentation over the full trajectory.
+
+That distinction matters because the verifier interface changes. In Chapter 5, the Brown-style script turns a final extracted answer into reward. In a coding harness, the checked object is much larger: file edits, command traces, test outcomes, runtime failures, partial progress markers, and the final repository state. Reward is usually assembled from several checks rather than one exact comparison.
+
+This is also why frontier coding harnesses belong here rather than in the foundational verifier chapters. They are domain-specific systems for agentic RLVR, not the minimal template for the paradigm as a whole. Their difficulty is not just learning from a verifier; it is building an instrumented environment whose checks remain informative over long trajectories and resist benchmark gaming.
+
 ## Comparative Lessons
 
 - Long-context tasks force a distinction between answer correctness and grounded evidence use.

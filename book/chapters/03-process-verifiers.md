@@ -74,6 +74,29 @@ That aggregation is not unique. Math-Shepherd uses the minimum step score when r
 
 The connection to credit assignment is direct. In Chapter 2, the outcome reward was a single scalar spread across all tokens. A PRM replaces that single scalar with a step-level signal. When used to train a policy or to select among candidates, these scores tell the system where the reasoning went right and where it went wrong. The optimizer no longer has to guess which parts of a rewarded trajectory were actually responsible for the reward.
 
+One can write the interface as a simple loop over step boundaries:
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Step:
+    text: str
+
+def score_steps(prm, prompt: str, steps: list[Step]) -> list[float]:
+    prefix: list[str] = []
+    scores: list[float] = []
+    for step in steps:
+        scores.append(prm(prompt=prompt, prefix=prefix, step=step.text))
+        prefix.append(step.text)
+    return scores
+
+def rerank_score(step_scores: list[float]) -> float:
+    return min(step_scores)
+```
+
+The key change from Chapter 2 is the interface, not the optimizer. An ORM scores the whole solution once. A PRM is queried repeatedly at step boundaries, and only afterward does a downstream system decide whether to keep the per-step scores separate or reduce them to one trajectory score. Here the reduction is `min(...)` because best-of-$N$ reranking is one common use case, not because every PRM must aggregate that way.
+
 [^ch3-prm-formulation]: Lightman et al. formalize PRM training as step-level classification with labels such as positive, negative, and neutral.[@lightman2023letsverify] The key point is that the core object is the per-step prediction, while any solution-level score is a separate reduction chosen for a particular use case.
 
 ## How step labels are obtained
@@ -95,6 +118,20 @@ $$
 $$ {#eq-ch3-mc-estimate}
 
 This is elegant because it requires no human labels at all — only an outcome verifier and the ability to generate completions. But the estimates are noisy. A step can be labeled "correct" because the model is good at recovering from errors downstream, or "incorrect" because the remaining steps are hard even from a correct intermediate state. The signal reflects the model's completion ability as much as the step's logical validity.
+
+At code level, the idea is short enough to sketch directly if we assume the Chapter 2 `outcome_reward` is already available:
+
+```python
+def estimate_step_value(model, prefix_steps, gold_answer, K=8) -> float:
+    successes = 0
+    for _ in range(K):
+        completion = model.complete_from(prefix_steps)
+        if outcome_reward(completion, gold_answer) == 1.0:
+            successes += 1
+    return successes / K
+```
+
+This is why rollout-estimated process supervision sits somewhere between outcome and process reward. The final check is still outcome-based; what changes is that the outcome verifier is applied to many continuations from a partial solution rather than once at the end of a complete trajectory.
 
 ### Outcome-propagated pseudo-labels
 

@@ -11,7 +11,7 @@
 
 Chapters 2 and 3 presented verification as a single function call. The outcome verifier scores the endpoint; the process verifier scores intermediate steps. In both cases, the exposition assumed a single checker. In practice, most production RLVR systems use a stack: multiple verifier components layered together, each covering a different part of the correctness question.
 
-The reason is straightforward. No single verifier handles every output a model can produce. A symbolic math checker handles exact-match answers but returns nothing useful when the model's output is unparseable. A unit-test harness checks functional correctness but says nothing about code security or readability. A proof kernel accepts or rejects a formal proof term but cannot evaluate whether the theorem was worth proving. Each verifier has a checkable core — the set of inputs on which it produces a reliable signal — and a residual, the complement where it is silent or unreliable. Stacking verifiers is the attempt to shrink the residual.
+The reason is straightforward. No single verifier handles every output a model can produce. A symbolic math checker handles exact-match answers but returns nothing useful when the model's output is unparseable. A unit-test runner checks functional correctness but says nothing about code security or readability. A proof kernel accepts or rejects a formal proof term but cannot evaluate whether the theorem was worth proving. Each verifier has a checkable core — the set of inputs on which it produces a reliable signal — and a residual, the complement where it is silent or unreliable. Stacking verifiers is the attempt to shrink the residual.
 
 Three regimes sit along the implementation spectrum.
 
@@ -118,6 +118,36 @@ Common arbitration patterns include:
 - **Unanimous agreement**: require all components to agree before assigning a positive reward. Conservative but expensive, and it can suppress correct outputs that only one component recognizes.
 
 The choice of arbitration pattern determines the stack's effective false-positive and false-negative rates. Priority cascade is biased toward the first component's failure modes. Weighted aggregation can dilute strong signals with weak ones. Gated routing's errors depend on the routing model. There is no universally correct choice; the right pattern depends on the domain, the relative reliability of the components, and the cost budget.
+
+### A minimal hybrid verifier in code
+
+In code, a hybrid verifier can still be very small. The key is that exact checks fire first, while the learned component is asked only about the residual:
+
+```python
+def symbolic_reward(completion: str, gold: tuple[str, ...]) -> float | None:
+    answer = extract_answer(completion)
+    if answer is None:
+        return None
+    candidate = canonicalize_answer(answer)
+    return float(candidate == gold)
+
+def hybrid_reward(completion: str, gold: tuple[str, ...], judge) -> dict:
+    exact = symbolic_reward(completion, gold)
+    if exact is not None:
+        return {"reward": exact, "source": "programmatic"}
+
+    judge_score = judge(
+        completion=completion,
+        rubric="Is the final answer complete and consistent with the reasoning?"
+    )
+    if judge_score >= 0.8:
+        return {"reward": 1.0, "source": "judge"}
+    if judge_score <= 0.2:
+        return {"reward": 0.0, "source": "judge"}
+    return {"reward": 0.0, "source": "abstain"}
+```
+
+This is the software shape of the chapter. The interesting part is not that the code is long; it is that the stack forces a policy decision about fallback, abstention, and trust ordering.
 
 ## Outcome, process, and hybrid: the same trajectory, three ways
 
@@ -294,7 +324,7 @@ The lesson: ensembles and self-consistency are the simplest hybrid stacks, combi
 
 ## What the verifier stack sees and misses
 
-The stack's visibility is the union of its components' visibilities. A programmatic checker sees the extracted artifact and its structure. A learned judge sees the full response text and whatever context it is given. A test harness sees execution traces and output values. Together, the stack sees more than any single component.
+The stack's visibility is the union of its components' visibilities. A programmatic checker sees the extracted artifact and its structure. A learned judge sees the full response text and whatever context it is given. An execution environment sees traces and output values. Together, the stack sees more than any single component.
 
 It still misses three things.
 

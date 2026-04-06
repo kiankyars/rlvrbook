@@ -77,6 +77,43 @@ Each stage does different work:
 
 4. **Reward.** Map the verification outcome to a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
 
+## A minimal outcome verifier in code
+
+The core implementation can be very small. A toy math verifier for the quadratic example looks like this:
+
+```python
+import re
+
+ANSWER_RE = re.compile(r"<answer>\s*(.*?)\s*</answer>", re.DOTALL)
+
+def extract_answer(completion: str) -> str | None:
+    match = ANSWER_RE.search(completion)
+    return None if match is None else match.group(1).strip()
+
+def canonicalize_answer(answer: str) -> tuple[str, ...]:
+    text = answer.strip()
+    for ch in "{}()":
+        text = text.replace(ch, "")
+    pieces = []
+    for raw in text.split(","):
+        piece = raw.strip().replace("x =", "").replace("x=", "")
+        if piece:
+            pieces.append(piece)
+    return tuple(sorted(pieces))
+
+def verify_answer(candidate: tuple[str, ...], gold: tuple[str, ...]) -> bool:
+    return candidate == gold
+
+def outcome_reward(completion: str, gold: tuple[str, ...] = ("2", "3")) -> float:
+    answer = extract_answer(completion)
+    if answer is None:
+        return 0.0
+    candidate = canonicalize_answer(answer)
+    return float(verify_answer(candidate, gold))
+```
+
+This is intentionally simple, but it already exhibits the whole chapter: extraction, canonicalization, verification, and reward. Production-grade verifiers differ mostly in how robust each stage becomes, not in whether those stages exist.
+
 ::: {#fig-answer-normalization}
 
 ::: {.content-visible when-format="html"}
@@ -106,7 +143,7 @@ The practical verifier structure in Equation @eq-ch2-pipeline is the same across
 
 In math, extraction and canonicalization dominate. The checked object is usually a final answer rather than a full derivation, so the verifier lives or dies by whether it can reliably map many surface forms onto one mathematical object. Boxed-answer conventions, XML answer tags, and task-specific output contracts are not cosmetic; they are there to make deterministic parsing possible at scale.[@shao2024deepseekmath; @deepseekai2025r1] In our toy quadratic example, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should all receive the same reward if the task asks for the solution set. A weak canonicalizer turns semantic equivalence into reward noise.
 
-In code, the picture is almost inverted. Once the model has produced a code block, extraction is comparatively easy and canonicalization is usually minimal. The hard part is verification, because "is this program correct?" is answered by running it in a sandbox against tests, timeouts, and resource limits. Outcome-based RL for code has therefore focused on execution feedback and test-derived reward signals.[@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] But execution is only as strong as the harness: limited suites can certify incorrect programs, and richer suites can change model rankings substantially.[@liu2023evalplus] The verifier is grounded, but never exhaustive.
+In code, the picture is almost inverted. Once the model has produced a code block, extraction is comparatively easy and canonicalization is usually minimal. The hard part is verification, because "is this program correct?" is answered by running it in a sandbox against tests, timeouts, and resource limits. Outcome-based RL for code has therefore focused on execution feedback and test-derived reward signals.[@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] But execution is only as strong as the test suite and evaluation environment: limited suites can certify incorrect programs, and richer suites can change model rankings substantially.[@liu2023evalplus] The verifier is grounded, but never exhaustive.
 
 In formal proof, the final acceptance check is strongest of all. The model outputs a proof script or term, and the proof assistant kernel either accepts it or rejects it. Recent theorem-proving systems exploit exactly this property: the endpoint check is high-fidelity, deterministic, and much harder to fake than natural-language grading.[@xin2024deepseekprover; @xin2024deepseekproverv15] But that does not mean the whole task is solved. "Valid proof of the stated theorem" is a narrow objective. The hard part shifts away from final checking and toward theorem selection, search, decomposition, and interaction with the formal environment.
 
@@ -127,7 +164,7 @@ That blindness is not automatically a defect. If the endpoint is already a stron
 ## Open questions
 
 - When is binary scoring enough, and when does graded outcome feedback improve learning enough to justify the extra exploit surface it creates?
-- How should hidden tests and evaluation harnesses be designed so that repeated training does not simply overfit to a static benchmark?
+- How should hidden tests and evaluation setups be designed so that repeated training does not simply overfit to a static benchmark?
 - Which output contracts and normalization schemes remain stable across model families, prompting styles, and generations of post-trained models?
 - When should equivalence be defined syntactically for reproducibility, and when is semantic comparison worth the added complexity?
 

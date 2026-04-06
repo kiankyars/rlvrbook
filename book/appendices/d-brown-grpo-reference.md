@@ -4,11 +4,13 @@
 
 This appendix collects a compact, single-file GRPO script based on the Will Brown implementation shared publicly.
 
-The emphasis is on the harness pattern:
+The emphasis is on the minimal outcome-RLVR training-script pattern:
 
 - response contract and extraction,
 - multiple reward terms in one pass,
 - and explicit `GRPOTrainer` configuration.
+
+In the terminology of this book, this is not a frontier coding harness. It is a compact training script for GSM8K-style RLVR with programmatic rewards over final answers and response format.
 
 ```python
 # train_grpo.py

@@ -140,7 +140,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
       summary: "Execution against tests gives sharper feedback than most language tasks, but the verifier only sees behavior on the covered cases.",
       checked: "Program outputs, execution traces, unit-test outcomes, and sometimes compiler/runtime signals.",
       attack: "Overfitting to the visible suite, hard-coded answers, environment quirks, and shallow patches that satisfy narrow tests.",
-      blind: "Untested behaviors, reliability under distribution shift, efficiency, security, and maintainability outside the harness."
+      blind: "Untested behaviors, reliability under distribution shift, efficiency, security, and maintainability outside the instrumented environment."
     },
     proof: {
       title: "Proof",
@@ -215,7 +215,7 @@ This is also why RLVR and reasoning are easy to conflate, and the overlap is lar
 
 ## Verifiable Does Not Mean Complete
 
-Even strong reward signals remain proxies. A math reward may depend on brittle extraction. A code harness may miss behaviors outside the test suite. A proof system may validate a derivation without telling us whether the model's decomposition was insightful or robust. A grounded QA reward may verify some citations without guaranteeing that the answer used evidence faithfully.
+Even strong reward signals remain proxies. A code evaluator may miss behaviors outside the test suite. A math reward may depend on brittle extraction. A proof system may validate a derivation without telling us whether the model's decomposition was insightful or robust. A grounded QA reward may verify some citations without guaranteeing that the answer used evidence faithfully.
 
 That is not a criticism of RLVR so much as a statement of its operating conditions. The important questions are always: what is being checked, what is being missed, how expensive the check is, and how easily the signal can be gamed. Much of the rest of the book is about that gap between a usable reward signal and the fuller competence we actually want.
 

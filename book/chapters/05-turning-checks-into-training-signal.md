@@ -13,9 +13,11 @@ The same verifier can be useful or useless depending on how its outputs are turn
 
 This chapter should stay narrowly focused on signal design: how to make checks teachable, how to prevent verifier noise from dominating learning, and how to decide when simple rejection or search-based selection already captures most of the gain.
 
-## Post-training harnesses as separate infrastructure
+## A compact outcome-RLVR training script
 
-A common shorthand in this area is “post-training on a harness.” The harness is the structured system that turns verifiable checks into rewards and then into updates. It has five moving parts:
+Will Brown's public GRPO script is a good reference point because it shows the smallest complete loop from verifiable check to parameter update.[^ch5-brown-grpo-150line] It is an outcome-RLVR training script, not a process verifier and not what this book will call a frontier coding harness. The rewards inspect the final extracted answer and response format; they do not verify whether the intermediate reasoning steps are logically valid.
+
+For this chapter, the important point is structural. A compact training script has five moving parts:
 
 - A task source: prompts and target data.
 - A response contract: response format and extraction rules.
@@ -23,9 +25,93 @@ A common shorthand in this area is “post-training on a harness.” The harness
 - A signal policy: filtering, clipping, scaling, and schedule decisions.
 - A trainer configuration: rollout counts, clipping, entropy terms, and optimization settings.
 
-For practical implementations, this means you can change the same objective while changing only one harness component, and the behavior changes substantially. That is why it is more precise to say practitioners are changing the harness, not “just changing one hyperparameter.”
+For practical implementations, this means you can change the same objective while changing only one component of the script, and the behavior changes substantially. That is why it is often more precise to say practitioners are changing the reward plumbing, not “just changing one hyperparameter.” Frontier coding harnesses are a different object: long-horizon, environment-backed rollout systems over repositories, shells, tools, and hidden graders. Those belong in Chapter 10.
 
-For a concrete end-to-end script, the full Brown-style GRPO reference is in [Appendix D](../appendices/d-brown-grpo-reference.md).[^ch5-brown-grpo-150line]
+An excerpted Brown-style script makes the distinction concrete:
+
+```python
+import re
+import torch
+from datasets import load_dataset, Dataset
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from trl import GRPOConfig, GRPOTrainer
+
+SYSTEM_PROMPT = """
+Respond in the following format:
+
+<reasoning>
+...
+</reasoning>
+<answer>
+...
+</answer>
+"""
+
+def extract_xml_answer(text: str) -> str:
+    answer = text.split("<answer>")[-1]
+    answer = answer.split("</answer>")[0]
+    return answer.strip()
+
+def extract_hash_answer(text: str) -> str | None:
+    if "####" not in text:
+        return None
+    return text.split("####")[1].strip().replace(",", "").replace("$", "")
+
+def get_gsm8k_questions(split="train") -> Dataset:
+    data = load_dataset("openai/gsm8k", "main")[split]
+    return data.map(lambda x: {
+        "prompt": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": x["question"]},
+        ],
+        "answer": extract_hash_answer(x["answer"]),
+    })
+
+def correctness_reward_func(prompts, completions, answer, **kwargs) -> list[float]:
+    responses = [completion[0]["content"] for completion in completions]
+    extracted = [extract_xml_answer(r) for r in responses]
+    return [2.0 if r == a else 0.0 for r, a in zip(extracted, answer)]
+
+def strict_format_reward_func(completions, **kwargs) -> list[float]:
+    pattern = r"^<reasoning>\n.*?\n</reasoning>\n<answer>\n.*?\n</answer>\n$"
+    responses = [completion[0]["content"] for completion in completions]
+    matches = [re.match(pattern, r, flags=re.DOTALL) for r in responses]
+    return [0.5 if match else 0.0 for match in matches]
+
+training_args = GRPOConfig(
+    output_dir="outputs/Qwen-1.5B-GRPO",
+    run_name="Qwen-1.5B-GRPO-gsm8k",
+    learning_rate=5e-6,
+    bf16=True,
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=4,
+    num_generations=16,
+    max_prompt_length=256,
+    max_completion_length=786,
+    num_train_epochs=1,
+)
+
+model = AutoModelForCausalLM.from_pretrained(
+    "Qwen/Qwen2.5-1.5B-Instruct",
+    torch_dtype=torch.bfloat16,
+    attn_implementation="flash_attention_2",
+).to("cuda")
+
+tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-1.5B-Instruct")
+tokenizer.pad_token = tokenizer.eos_token
+
+trainer = GRPOTrainer(
+    model=model,
+    processing_class=tokenizer,
+    reward_funcs=[strict_format_reward_func, correctness_reward_func],
+    args=training_args,
+    train_dataset=get_gsm8k_questions(),
+)
+
+trainer.train()
+```
+
+This script is exactly why the Brown reference belongs in Chapter 5. It shows how outcome checks become training signal in a real RLVR loop. It does not introduce a process reward model, and it does not yet look like the frontier agentic coding systems discussed later in the book.
 
 ## Canonical Examples
 
@@ -53,4 +139,4 @@ It still misses off-policy exploration quality, latent competence, and any capab
 - When is graded reward genuinely better than carefully designed binary reward?
 - How can task filtering avoid turning the curriculum into a hidden benchmark hack?
 
-[^ch5-brown-grpo-150line]: Brown’s compact GRPO implementation is a practical reference for harness-level RLVR post-training with explicit parsing and reward components.[@brown2025grpo]
+[^ch5-brown-grpo-150line]: Brown’s compact GRPO implementation is a practical reference for outcome-RLVR training with explicit parsing and reward components.[@brown2025grpo]
