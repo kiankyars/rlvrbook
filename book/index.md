@@ -31,13 +31,17 @@ Fortunately, we live in a world where AI slop writing is still *very* intelligib
 
 ## Target Audience
 
+I wrote this book with the intent to cater to the largest audience possible. With that in mind, I increase the level of advancement through the chapters such that if you are new to RLVR, you are best served in the beginning chapters. If you are already experienced, you will gain the most from the later chapters.
+
 ## How to Use This Book
+
+The atomic unit of this book is the chapter map; a TL;DR at the beginning of every chapter. Although the chapters do minimally build off of each other, they are still self-contained such that they read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. The citations are plentiful to facilitate further research if there's a specific theme which captivates you.
 
 ## Acknowledgments
 
 I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfbook.com), and I am well aware that his textbook treats the subject of RLVR in quite some detail; notwithstanding, as he notes himself, this particular sub-field of ML is evolving so fast that much of the RLHF book's RLVR content will become outdated, and this book is intended to maintain pace with progress.
 
-I also acknowledge the wonderful developers of exclaidraw, which I used for this book's figures. Thanks to mc escher for being the artisitic soul of the book (FYI the art contained in this textbook were published at the latest in 1930, which means it's in the public domain in the United States). Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach!
+I also acknowledge the wonderful developers of Exclaidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artisitic soul of the book (FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States). Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach!
 
 ### [Github Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 

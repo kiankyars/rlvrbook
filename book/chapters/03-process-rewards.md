@@ -1,4 +1,4 @@
-# Process Verifiers
+# Process Rewards
 
 ![M. C. Escher, _The Bridge_ (1930).](../art/escher/03-the-bridge.jpg){width="80%" fig-align="center"}
 
@@ -19,7 +19,7 @@ In the second scenario, the model reasons correctly through every step — facto
 
 Both scenarios compress distinct kinds of signal. The second is a clear false negative: correct reasoning is suppressed because the final reported answer is incomplete. The first is more subtle. It is not a wholly bad trajectory, because the restart and recovery are exactly the kind of self-correction we may want the model to learn. But outcome reward still reinforces the failed factoring attempt and the successful recovery together, even though they should not receive the same effective update. This is one of the main motivations for process supervision. Uesato et al. found that process-based feedback produced substantially cleaner reasoning traces than outcome-based feedback even when final-answer accuracy was similar, and Lightman et al. later showed that process reward models outperform outcome-only reward models on harder math reasoning tasks.[@uesato2022solving; @lightman2023letsverify] We return in Chapter 5 to the harder question of how training systems can weight partially good trajectories without rewarding every token in the rollout equally.
 
-Instead of scoring only the final artifact, a process verifier assigns a label or score to each intermediate step. The hope is that denser feedback gives the optimizer better information about which parts of a trajectory to reinforce and which to suppress. But this hope is only warranted when two conditions hold: the intermediate steps must be externalized (written down in a form the verifier can read), and the notion of a "correct step" must be definable with enough fidelity to be useful.
+Instead of scoring only the final artifact, a process reward assigns a label or score to each intermediate step. The hope is that denser feedback gives the optimizer better information about which parts of a trajectory to reinforce and which to suppress. But this hope is only warranted when two conditions hold: the intermediate steps must be externalized (written down in a form the verifier can read), and the notion of a "correct step" must be definable with enough fidelity to be useful.
 
 ## A step-level rollout
 
@@ -33,7 +33,7 @@ Return to the quadratic from Chapter 2. The two tables below make the two failur
 | 4 | Collect the full solution set: $\{2, 3\}$ | $\checkmark$ |
 | 5 | Report the final artifact as `<answer>x = 2</answer>` | $\times$ |
 
-: A trajectory whose internal reasoning is correct but whose final reported artifact is incomplete. An outcome verifier assigns $r = 0$ because the checked answer is wrong. A process verifier can still preserve positive signal on the earlier correct steps. {#tbl-ch3-correct-rollout}
+: A trajectory whose internal reasoning is correct but whose final reported artifact is incomplete. An outcome verifier assigns $r = 0$ because the checked answer is wrong. A process reward can still preserve positive signal on the earlier correct steps. {#tbl-ch3-correct-rollout}
 
 Now consider a subtly flawed version of the same trajectory:
 
@@ -44,9 +44,9 @@ Now consider a subtly flawed version of the same trajectory:
 | 3 | Restart and correctly factor as $(x-2)(x-3)$ | $\checkmark$ |
 | 4 | Solve to get $\{2, 3\}$ | $\checkmark$ |
 
-: A trajectory where step 1 is incorrect but the model explicitly detects the mismatch and recovers. The outcome verifier assigns $r = 1$ because the final answer is right. A process verifier labels the initial factoring move as wrong while preserving positive signal for the diagnostic and recovery steps. {#tbl-ch3-flawed-rollout}
+: A trajectory where step 1 is incorrect but the model explicitly detects the mismatch and recovers. An outcome verifier assigns $r = 1$ because the final answer is right. A process reward labels the initial factoring move as wrong while preserving positive signal for the diagnostic and recovery steps. {#tbl-ch3-flawed-rollout}
 
-The two trajectories fail in opposite directions. In the first, outcome verification suppresses a mostly good rollout because the final reported answer is incomplete. In the second, it rewards a mixed rollout because the final answer is right. The process verifier distinguishes both cases. It can preserve signal on the correct intermediate reasoning in the first table while suppressing the bad initial factoring move and reinforcing the recovery in the second. This is the credit assignment advantage of process verification: it can separate the good parts of a trajectory from the bad parts even when endpoint-only reward cannot.
+The two trajectories fail in opposite directions. In the first, outcome verification suppresses a mostly good rollout because the final reported answer is incomplete. In the second, it rewards a mixed rollout because the final answer is right. The process reward distinguishes both cases. It can preserve signal on the correct intermediate reasoning in the first table while suppressing the bad initial factoring move and reinforcing the recovery in the second. This is the credit assignment advantage of process supervision: it can separate the good parts of a trajectory from the bad parts even when endpoint-only reward cannot.
 
 ## What a process reward model computes
 
@@ -189,23 +189,23 @@ The pattern across these results: PRMs help most when used for test-time selecti
 
 Process verification solves one problem — sparse credit assignment — by introducing another: the step-level label is itself a proxy that can be gamed, misspecified, or noisy.
 
-**Rewarding reasoning shape over reasoning substance.** A PRM trained on human labels of "good steps" learns what correct reasoning looks like in the training distribution. If that distribution is narrow — say, competition math solutions with a particular style — the PRM may reward well-formatted, confident-sounding steps that correlate with correctness but do not cause it. The model learns to produce reasoning that is checkable-looking rather than checkable. This is the process-level analogue of the outcome-level problem where models learn answer-format regularities rather than the underlying capability. The process verifier shifts the proxy from the endpoint to the path, but it does not eliminate the proxy.
+**Rewarding reasoning shape over reasoning substance.** A PRM trained on human labels of "good steps" learns what correct reasoning looks like in the training distribution. If that distribution is narrow — say, competition math solutions with a particular style — the PRM may reward well-formatted, confident-sounding steps that correlate with correctness but do not cause it. The model learns to produce reasoning that is checkable-looking rather than checkable. This is the process-level analogue of the outcome-level problem where models learn answer-format regularities rather than the underlying capability. The process reward shifts the proxy from the endpoint to the path, but it does not eliminate the proxy.
 
 **Annotation noise compounds.** MC rollout estimates have high variance. A step can be labeled "correct" because the model is good at recovering from errors, or "incorrect" because downstream steps are intrinsically hard. Human annotators disagree on whether an intermediate step is valid, especially when the step involves an unjustified leap that happens to be mathematically sound. Both noise sources create systematic biases. A model trained against noisy step labels can learn to exploit the noise — for example, by producing steps that are easy for the MC estimator to complete rather than steps that are logically strong.
 
 **The implicit-PRM blur.** Recent work challenges the assumption that explicit process supervision is necessary. Yuan et al. showed that an ORM trained with a log-likelihood-ratio parameterization contains an implicit PRM that can be extracted without any step-level labels, and that this implicit PRM outperforms Math-Shepherd using less than 1/38 of the training data.[@yuan2024free] Sullivan and Koller went further, proving that GRPO with an ORM is mathematically equivalent to a PRM-aware RL objective with an implicit Monte Carlo PRM.[@sullivan2025grpo] These results do not mean explicit PRMs are useless — they may still help in specific regimes — but they do mean the clean conceptual boundary between outcome and process supervision is blurrier than the early literature suggested. The question shifts from "should we use a PRM?" to "when does explicit process annotation provide enough marginal value over what outcome-based methods already capture implicitly?"
 
-## What the process verifier sees and misses
+## What the process reward sees and misses
 
-The process verifier sees externalized intermediate states: reasoning steps written in the chain of thought, subgoal completions in a proof, partial execution results in a code trace, cited evidence in a grounded answer. Its visibility is limited to what the model writes down.
+The process reward sees externalized intermediate states: reasoning steps written in the chain of thought, subgoal completions in a proof, partial execution results in a code trace, cited evidence in a grounded answer. Its visibility is limited to what the model writes down.
 
 It misses three things.
 
-First, latent cognition. Language models perform computation internally that is never externalized in the chain of thought. A model may "see" that a factoring approach will work without writing down the trial-and-error that led to that recognition. A process verifier that scores only the written steps cannot reward or penalize the internal computation that produced them. If the model compresses useful reasoning into a single externalized step, the verifier scores that step but has no visibility into whether the compression was sound.
+First, latent cognition. Language models perform computation internally that is never externalized in the chain of thought. A model may "see" that a factoring approach will work without writing down the trial-and-error that led to that recognition. A process reward that scores only the written steps cannot reward or penalize the internal computation that produced them. If the model compresses useful reasoning into a single externalized step, the verifier scores that step but has no visibility into whether the compression was sound.
 
-Second, beneficial shortcuts. Not all good reasoning follows the annotated step structure. A model that skips two intermediate steps because it recognizes a pattern is penalized by a strict process verifier that expects those steps to be present. The process labels encode a particular decomposition of the task; any decomposition that deviates from the labeled structure — even a better one — is invisible or penalized.
+Second, beneficial shortcuts. Not all good reasoning follows the annotated step structure. A model that skips two intermediate steps because it recognizes a pattern is penalized by a strict process reward that expects those steps to be present. The process labels encode a particular decomposition of the task; any decomposition that deviates from the labeled structure — even a better one — is invisible or penalized.
 
-Third, strategic value versus logical validity. A step can be logically correct but strategically useless — a valid algebraic manipulation that leads nowhere. A step can be logically questionable but strategically brilliant — an unjustified heuristic that consistently leads to the right answer. The process verifier scores logical validity (or its proxy). It does not score whether a step was the right move in the context of solving the problem.
+Third, strategic value versus logical validity. A step can be logically correct but strategically useless — a valid algebraic manipulation that leads nowhere. A step can be logically questionable but strategically brilliant — an unjustified heuristic that consistently leads to the right answer. The process reward scores logical validity (or its proxy). It does not score whether a step was the right move in the context of solving the problem.
 
 ## Open questions
 
@@ -213,6 +213,6 @@ Third, strategic value versus logical validity. A step can be logically correct 
 - How do process rewards interact with hidden reasoning or compressed internal computation that the model does not externalize?
 - When should process checks be strict (hard correctness labels that gate the reward) versus advisory (soft preferences that nudge the policy)?
 - Given the implicit-PRM results, when is explicit process supervision worth the marginal cost over well-designed outcome supervision with sufficient rollout diversity?
-- Can process verifiers be designed to reward strategic value rather than only logical validity, and what would the labeling scheme look like?
+- Can process rewards be designed to reward strategic value rather than only logical validity, and what would the labeling scheme look like?
 
 The boundary between outcome and process verification is not as sharp as the early literature suggested. Outcome rewards contain implicit step-level signal; process rewards introduce new proxies. When neither pure regime is sufficient — when outcome rewards are too sparse but process labels are too noisy or too expensive — the next move is to combine them, to learn the verifier itself, or to build layered verification stacks. That is the subject of Chapter 4.

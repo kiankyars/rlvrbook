@@ -1,24 +1,96 @@
 # RLVR Book
 
-## Conventions
+This repository contains **Reinforcement Learning from Verifiable Rewards**, a reference book on RLVR as a paradigm for learning from verifiable reward signals. The book is not organized around optimizer fashions or a general RL survey structure. Its purpose is to explain what kinds of rewards can be made verifiable, how those rewards are implemented in practice, how they become useful training signal, where the paradigm has been strongest, and where it breaks.
 
-- One Markdown file per chapter and per appendix.
-- Keep all manuscript source inside `book/`.
-- Keep all diagrams in `book/diagrams/` with chapter-prefixed filenames like `01-verifier-lens-overview.svg`.
-- Keep executable examples in `code/` and datasets in `data/`, not mixed into the manuscript tree.
-- Treat `build/` as generated output only.
+## Current Framing
+
+The current manuscript treats RLVR as the study of **learning from verifiable reward signals**. The reward channel is the durable object of study. Optimizers matter, but they are supporting machinery rather than the spine of the book.
+
+This book is not:
+
+- a general reinforcement learning textbook
+- a survey organized around optimizer variants
+- a pure paper timeline
+- a generic RLHF book with some RLVR chapters added on top
+
+## Current Table of Contents
+
+### Foundations
+
+1. **Introduction**
+
+### Verifier Design
+
+2. **Outcome Rewards**
+3. **Process Rewards**
+4. **Learned, Programmatic, and Hybrid Verifiers**
+
+### From Verifiers to Capability
+
+5. **Turning Checks into Training Signal**
+6. **Search and Test-Time Verification**
+
+### Failure Modes
+
+7. **Reward Hacking, Proxy Misspecification, and Verifier Robustness**
+8. **Faithfulness, Confidence, and What Verification Misses**
+
+### Domains and Frontiers
+
+9. **Canonical Domains: Math, Code, and Formal Proof**
+10. **Long-Context, Multimodal, and Agentic RLVR**
+11. **Open Problems and the Research Agenda**
+
+### Appendices
+
+- **A. Minimal RL and Post-Training Background**
+- **B. Benchmarks, Evals, and Contamination**
+- **C. Practical Verifier Design Checklist**
+- **D. Brown GRPO Reference**
+
+Appendix D is the compact outcome-RLVR GSM8K reference script. It is not a frontier coding harness.
+
+## Book Style
+
+- One Markdown file per chapter and appendix, compiled with Quarto to HTML and PDF.
+- Every main chapter opens with an M. C. Escher image.
+- Every main chapter begins with a short two-bullet chapter map.
+- Chapter structure is flexible beyond that; the book does not use a rigid universal template.
+- Core reusable terminology belongs in the appendix rather than being forced into every chapter.
+- HTML chapters use Quarto's native appendix handling for references and footnotes.
+
+## Code Layer
+
+The manuscript uses a graduated code plan:
+
+- Chapter 2: minimal outcome verifier
+- Chapter 3: small process-reward snippets
+- Chapter 4: small hybrid-verifier snippet
+- Chapter 5: one larger worked outcome-RLVR training script
+- Chapter 10: frontier coding harnesses as a distinct later topic
+
+## Figure Program
+
+- Chapter 1 already has the RLVR verifier stack and the interactive domain map.
+- Chapter 2 has answer normalization.
+- Chapter 3 has process-vs-outcome visualization.
+- Chapter 4 is intended to open with the verifier-stack residual diagram.
+
+The guiding visual language is technically rigorous diagrams, Escher chapter art, and light HTML interactivity where it materially improves comprehension.
 
 ## Commands
 
-- `scripts/build-book`: render the Quarto book to HTML and PDF.
-- `scripts/lint-book`: validate the scaffold shape and required chapter files.
-- `scripts/check-diagrams`: enforce diagram filename conventions.
-- `scripts/check-citations`: flag citekeys used in Markdown but missing from `book/bibliography.bib`.
+- `quarto render book`
+- `scripts/build-book`
+- `scripts/lint-book`
+- `scripts/check-citations`
+- `scripts/check-diagrams`
 
-## Writing Plan
+## Outreach
 
-1. Draft chapter 1 until the verifier-first framing is stable enough to constrain the rest of the book.
-2. Write chapters 2-4 next so the verifier taxonomy and design space are fixed early.
-3. Fill chapters 5-8 once the book has a settled vocabulary for signal design and failure modes.
-4. Write chapters 9-11 after the core conceptual spine is stable.
-5. Polish citations, diagrams, and cross-references only after the chapter drafts exist.
+Planned launch channels:
+
+- Hacker News
+- Discord
+- NL
+- https://cursor.com/blog/real-time-rl-for-composer

@@ -11,7 +11,7 @@ while IFS= read -r path; do
     continue
   fi
 
-  if [[ ! "$name" =~ ^[0-9]{2}-[a-z0-9-]+\.(svg|png|pdf|jpg|jpeg)$ ]]; then
+  if [[ ! "$name" =~ ^[0-9]{2}-[a-z0-9-]+\.(svg|png|pdf|jpg|jpeg|excalidraw)$ ]]; then
     echo "invalid diagram filename: $name" >&2
     status=1
   fi

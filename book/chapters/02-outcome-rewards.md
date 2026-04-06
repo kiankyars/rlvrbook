@@ -159,7 +159,7 @@ The central lesson is that outcome reward design is easiest to reason about when
 
 An outcome verifier sees only the final artifact that survives extraction: an answer string, a program, a proof term, a cited span set, or some other structured endpoint. It does not see how the model arrived there, so different trajectories that land on the same checked object are indistinguishable, while brittle interfaces can still split equivalent endpoints into different rewards.
 
-That blindness is not automatically a defect. If the endpoint is already a strong operationalization of the task, endpoint supervision may be enough. But when the endpoint is lossy, sparse, or delayed, a correct final answer says little about whether the reasoning was robust or causally responsible for success. That is the transition to process verifiers: asking whether some intermediate structure in the path can also be checked.
+That blindness is not automatically a defect. If the endpoint is already a strong operationalization of the task, endpoint supervision may be enough. But when the endpoint is lossy, sparse, or delayed, a correct final answer says little about whether the reasoning was robust or causally responsible for success. That is the transition to process rewards: asking whether some intermediate structure in the path can also be checked.
 
 ## Open questions
 

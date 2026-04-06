@@ -11,7 +11,7 @@ This appendix should read like a field manual that can be pasted into internal d
 - **Reward signal**: The scalar or graded feedback that learning actually sees after verification.
 - **Interface**: The part of the task exposed to checking, such as a final answer, a program, a proof state, a citation set, or an environment trajectory.
 - **Outcome verifier**: A checker that scores a completed solution rather than its intermediate steps.
-- **Process verifier**: A checker that scores intermediate reasoning, subgoals, or partial traces.
+- **Process reward**: A reward signal attached to intermediate reasoning, subgoals, or partial traces rather than only the final artifact.
 - **Programmatic verifier**: A rule-based checker implemented through deterministic logic, execution, or formal constraints.
 - **Learned verifier**: A model-based judge that predicts correctness, quality, or consistency.
 - **Verifier stack**: A layered pipeline that combines multiple checks before producing a reward or decision.

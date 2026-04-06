@@ -9,11 +9,9 @@
 
 ## The implementation spectrum
 
-Chapters 2 and 3 presented verification as a single function call. The outcome verifier scores the endpoint; the process verifier scores intermediate steps. In both cases, the exposition assumed a single checker. In practice, most production RLVR systems use a stack: multiple verifier components layered together, each covering a different part of the correctness question.
+In Chapter 2 we established the outcome verifier, which returns a scalar per rollout, and Chapter 3 presented process rewards, which score intermediate steps. Most production RLVR systems use a stack: multiple verifier components layered together, since most verifiers do not handle all model outputs. As an example, a unit test runner can check for functional correctness but has nothing to say about code security or readability. A proof kernel accepts or rejects a form of proof term but cannot know whether the theorem was worth proving. We can think of a verifier as accepting an input in high-dimensional space where it produces a reliable signal, and the complement to that hyper space is where the signal is silent. Stacking verifiers can reduce this complement.
 
-The reason is straightforward. No single verifier handles every output a model can produce. A symbolic math checker handles exact-match answers but returns nothing useful when the model's output is unparseable. A unit-test runner checks functional correctness but says nothing about code security or readability. A proof kernel accepts or rejects a formal proof term but cannot evaluate whether the theorem was worth proving. Each verifier has a checkable core — the set of inputs on which it produces a reliable signal — and a residual, the complement where it is silent or unreliable. Stacking verifiers is the attempt to shrink the residual.
-
-Three regimes sit along the implementation spectrum.
+Along this implementation axis, three regimes recur.
 
 **Programmatic verifiers** are deterministic, auditable, and brittle. They include regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules.[@kydlicek2025mathverify] When a programmatic verifier fires, you know exactly why. When it fails — when the input falls outside its checkable core — it fails silently. Chapters 2 and 3 already covered the main instances: outcome extraction pipelines, formal step checking, and test-suite execution.
 
@@ -24,8 +22,6 @@ Three regimes sit along the implementation spectrum.
 The design problem in a hybrid stack is not "which verifier is best." It is: where does each component's checkable core end, what does the arbitration logic do on the boundary, and how do the failure modes of different components interact when they are composed?
 
 ## Programmatic verifiers: where determinism is enough
-
-This section is brief because Chapters 2 and 3 already covered the main programmatic verifiers in detail. The purpose here is to frame them as stack components rather than standalone systems.
 
 A programmatic verifier is any checker whose logic is fully specified by code rather than learned from data. The key examples, organized by domain:
 

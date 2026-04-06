@@ -9,7 +9,7 @@
 
 ## Main Argument
 
-The book should close by synthesizing its claims into a concrete research program. Stronger process verifiers, more trustworthy learned judges, better separation of reasoning gains from search gains, and better integration with uncertainty, abstention, and safety all remain open.
+The book should close by synthesizing its claims into a concrete research program. Stronger process rewards, more trustworthy learned judges, better separation of reasoning gains from search gains, and better integration with uncertainty, abstention, and safety all remain open.
 
 The final chapter should leave the reader with a map of the next hard questions, not with the impression that RLVR is merely waiting for the next optimizer tweak.
 
