@@ -23,29 +23,30 @@ Instead of scoring only the final artifact, a process verifier assigns a label o
 
 ## A step-level rollout
 
-Return to the quadratic from Chapter 2. Here is the same derivation, but now each step carries a correctness label.
+Return to the quadratic from Chapter 2. The two tables below make the two failure patterns explicit at step level.
 
 | Step | Reasoning | Label |
 |:-----|:----------|:-----:|
 | 1 | Recognize the quadratic and decide to factor: $x^2 - 5x + 6 = (x-2)(x-3)$ | $\checkmark$ |
 | 2 | Set first factor to zero: $x - 2 = 0 \implies x = 2$ | $\checkmark$ |
 | 3 | Set second factor to zero: $x - 3 = 0 \implies x = 3$ | $\checkmark$ |
-| 4 | Collect solution set: $\{2, 3\}$ | $\checkmark$ |
+| 4 | Collect the full solution set: $\{2, 3\}$ | $\checkmark$ |
+| 5 | Report the final artifact as `<answer>x = 2</answer>` | $\times$ |
 
-: A correct derivation with step-level labels. An outcome verifier assigns $r = 1$ to the whole trajectory. A process verifier assigns $\checkmark$ to each step independently. {#tbl-ch3-correct-rollout}
+: A trajectory whose internal reasoning is correct but whose final reported artifact is incomplete. An outcome verifier assigns $r = 0$ because the checked answer is wrong. A process verifier can still preserve positive signal on the earlier correct steps. {#tbl-ch3-correct-rollout}
 
 Now consider a subtly flawed version of the same trajectory:
 
 | Step | Reasoning | Label |
 |:-----|:----------|:-----:|
 | 1 | Recognize the quadratic and attempt to factor: $x^2 - 5x + 6 = (x-1)(x-6)$ | $\times$ |
-| 2 | Set first factor to zero: $x - 1 = 0 \implies x = 1$ | $\checkmark$ given step 1 |
-| 3 | Notice the product $1 \cdot 6 \neq 6$ with sum $\neq 5$; restart and correctly factor as $(x-2)(x-3)$ | $\checkmark$ |
+| 2 | Expand to check: $(x-1)(x-6) = x^2 - 7x + 6$, so this branch cannot be right | $\checkmark$ |
+| 3 | Restart and correctly factor as $(x-2)(x-3)$ | $\checkmark$ |
 | 4 | Solve to get $\{2, 3\}$ | $\checkmark$ |
 
-: A trajectory where step 1 is incorrect but the model self-corrects in step 3. The outcome verifier assigns $r = 1$ because the final answer is right. A process verifier labels step 1 as wrong, preserving the signal that this factoring attempt should not be reinforced. {#tbl-ch3-flawed-rollout}
+: A trajectory where step 1 is incorrect but the model explicitly detects the mismatch and recovers. The outcome verifier assigns $r = 1$ because the final answer is right. A process verifier labels the initial factoring move as wrong while preserving positive signal for the diagnostic and recovery steps. {#tbl-ch3-flawed-rollout}
 
-The outcome verifier sees the same endpoint in both cases and returns the same reward. The process verifier distinguishes them. In the second trajectory, step 1 is labeled incorrect, so the optimizer can suppress the bad factoring attempt while reinforcing the self-correction in step 3. This is the credit assignment advantage of process verification: it can separate the good parts of a trajectory from the bad parts, even when the endpoint is the same.
+The two trajectories fail in opposite directions. In the first, outcome verification suppresses a mostly good rollout because the final reported answer is incomplete. In the second, it rewards a mixed rollout because the final answer is right. The process verifier distinguishes both cases. It can preserve signal on the correct intermediate reasoning in the first table while suppressing the bad initial factoring move and reinforcing the recovery in the second. This is the credit assignment advantage of process verification: it can separate the good parts of a trajectory from the bad parts even when endpoint-only reward cannot.
 
 ## What a process reward model computes
 
@@ -55,27 +56,29 @@ $$
 \text{ORM}(x, y) \in [0, 1]
 $$ {#eq-ch3-orm}
 
-A process reward model (PRM) is a function of partial trajectories. At each step $t$, it estimates the probability that step $t$ is correct given the prompt and all preceding steps:[^ch3-prm-formulation]
+A process reward model (PRM) is more naturally defined at the level of steps, not whole trajectories. Given a prompt $x$ and a stepwise solution with segments $s_1,\dots,s_K$, a PRM outputs a score for each step boundary:
 
 $$
-\text{PRM}(y_t \mid x, y_{1:t-1}) \approx P\bigl(\text{step } t \text{ is correct} \mid x, y_{1:t-1}\bigr)
+\text{PRM}(s_t \mid x, s_{<t})
 $$ {#eq-ch3-prm}
 
-The trajectory-level PRM score is typically defined as the minimum (or product) of step-level scores:
+In the human-labeled formulations of Uesato et al. and Lightman et al., this score is trained to predict whether the current step is good, bad, or neutral, or equivalently the probability that the step is valid given the preceding context.[^ch3-prm-formulation] In Math-Shepherd, the step score is instead estimated from rollouts: a step is scored by how often continuations from that partial solution reach the correct final answer.[@uesato2022solving; @lightman2023letsverify; @wang2024mathshepherd]
+
+If a downstream system needs a single score for an entire solution, that requires an additional reduction over step scores:
 
 $$
-\text{PRM}(x, y) = \min_{t \in \{1, \ldots, T\}} \text{PRM}(y_t \mid x, y_{1:t-1})
+\text{Score}(x, y) = \operatorname{Agg}\bigl(\text{PRM}(s_1 \mid x), \ldots, \text{PRM}(s_K \mid x, s_{<K})\bigr).
 $$ {#eq-ch3-prm-trajectory}
 
-The minimum formulation says: a trajectory is only as good as its weakest step. This is strict — one bad step tanks the entire score — but it matches the structure of mathematical derivations where a single invalid inference can invalidate everything downstream.
+That aggregation is not unique. Math-Shepherd uses the minimum step score when reranking full solutions in a best-of-$N$ verification setting, reflecting the intuition that one invalid step can sink an otherwise plausible derivation.[@wang2024mathshepherd] Other uses keep the step scores separate: process-supervised training can apply labels at each step boundary, and stepwise RL can deliver reward incrementally rather than collapsing the whole trajectory to one number.
 
-The connection to credit assignment is direct. In Chapter 2, the outcome reward was a single scalar spread across all tokens. The PRM replaces that single scalar with a per-step signal. When used to train a policy (via RL) or to select among candidates (via best-of-N), the step-level scores tell the system where the reasoning went right and where it went wrong. The optimizer no longer has to guess which tokens in a rewarded trajectory were actually responsible for the reward.
+The connection to credit assignment is direct. In Chapter 2, the outcome reward was a single scalar spread across all tokens. A PRM replaces that single scalar with a step-level signal. When used to train a policy or to select among candidates, these scores tell the system where the reasoning went right and where it went wrong. The optimizer no longer has to guess which parts of a rewarded trajectory were actually responsible for the reward.
 
-[^ch3-prm-formulation]: Lightman et al. formalize the PRM as a classifier trained on step-level human labels, predicting positive/negative/neutral for each step in a solution.[@lightman2023letsverify] The probabilistic interpretation follows from using the classifier's confidence as a score.
+[^ch3-prm-formulation]: Lightman et al. formalize PRM training as step-level classification with labels such as positive, negative, and neutral.[@lightman2023letsverify] The key point is that the core object is the per-step prediction, while any solution-level score is a separate reduction chosen for a particular use case.
 
 ## How step labels are obtained
 
-The PRM formulation assumes access to step-level correctness labels. Where do these come from? There are three regimes, ordered by label quality and cost.
+The PRM formulation assumes access to step-level correctness labels. Where do these come from? There are four broad regimes, ordered roughly by label fidelity and cost.
 
 ### Human annotation
 
@@ -93,18 +96,25 @@ $$ {#eq-ch3-mc-estimate}
 
 This is elegant because it requires no human labels at all — only an outcome verifier and the ability to generate completions. But the estimates are noisy. A step can be labeled "correct" because the model is good at recovering from errors downstream, or "incorrect" because the remaining steps are hard even from a correct intermediate state. The signal reflects the model's completion ability as much as the step's logical validity.
 
+### Outcome-propagated pseudo-labels
+
+The roughest variant takes only the trajectory-level outcome and propagates it to the steps inside the trajectory. If a sampled solution reaches the correct final answer, all of its steps are treated as positive; if it fails, all of its steps are treated as negative. This is the heuristic you had in mind. It is attractive because it is almost free once final-answer labels already exist, and recent work has explored more careful versions of it under the banner of weak supervision.[@sun2025freeprm]
+
+The weakness is obvious. A failed trajectory can contain many locally correct steps, and a successful trajectory can contain early mistakes that are later repaired. Naively copying the final outcome onto every step therefore injects severe label noise in exactly the cases where process supervision is supposed to help most. FreePRM is not just the naive heuristic; it starts from outcome-derived pseudo labels and then adds debiasing to reduce that noise.[@sun2025freeprm] But conceptually it belongs in this fourth bucket: process labels inferred directly from endpoint correctness rather than from human annotation, rollout-based continuation estimates, or formal step checking.
+
 ### Formal step checking
 
 In proof assistants such as Lean and Coq, each tactic application is checked by the kernel. If the tactic produces a valid proof state, it is correct; if it does not, the assistant rejects it immediately. This is process verification in its purest form: each step is checked against a formal specification, the check is exact, and it costs nothing beyond the kernel call.[@xin2024deepseekproverv15]
 
 The limitation is domain restriction. Formal step checking only works when the reasoning is expressed in a formal language with a decidable step-level validity criterion. Math written in natural language does not qualify. Code written in Python does not qualify (though individual function calls can be tested). The domains where formal step checking applies — theorem proving, type checking, certain program verification tasks — are exactly the domains where process verification is cheapest and most reliable.
 
-These three regimes define a tradeoff:
+These four regimes define a tradeoff:
 
 | Method | Label quality | Cost per step | Domain scope |
 |:-------|:-------------|:-------------|:------------|
 | Human annotation | High | High | Any domain humans can judge |
 | MC rollout estimation | Medium (noisy) | Medium (compute) | Any domain with an outcome verifier |
+| Outcome-propagated pseudo-labels | Low to medium (very noisy) | Low | Any domain with trajectory-level correctness labels |
 | Formal step checking | Exact | Near zero | Formal systems only |
 
 : The annotation bottleneck in process verification. No single method is both high-quality and broadly applicable. {#tbl-ch3-annotation-tradeoff}
@@ -114,6 +124,21 @@ These three regimes define a tradeoff:
 The question is not whether process rewards are theoretically better than outcome rewards. They obviously provide more information. The question is whether that extra information translates into measurably better models or better selection, given the cost of obtaining step-level labels.
 
 The empirical evidence is more nuanced than the theory might suggest.
+
+::: {#fig-ch3-process-vs-outcome-orm-vs-prm}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/03-process-vs-outcome-light.png){.light-content}
+
+![](../diagrams/03-process-vs-outcome-dark.png){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/03-process-vs-outcome-light.png)
+:::
+
+The empirical question is not whether step-level feedback exists in principle, but when that extra granularity changes selection or learning enough to justify its cost.
+:::
 
 Uesato et al. published the first systematic comparison in November 2022.[@uesato2022solving] Their finding was surprising: outcome-based and process-based feedback achieved similar final-answer accuracy on GSM8K. But process supervision dramatically reduced trace-level errors — from 14.0% to 3.4%. In other words, both methods got the right answer at similar rates, but the process-supervised model was far more likely to get the right answer for the right reasons. This distinction matters for robustness, interpretability, and downstream trust, even when the headline accuracy numbers look comparable.
 

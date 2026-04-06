@@ -117,3 +117,7 @@ Use for reference material, checklists, and background support. These should sta
 ## What This Book Is Not
 
 This is not a timeline of RLVR papers, not a general RL textbook, and not a survey organized around optimizer variants. It should stay disciplined about the verifier as the primary object of study.
+
+## Outreach
+hacker news
+discord
