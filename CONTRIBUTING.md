@@ -11,4 +11,4 @@ This includes, but is not limited to:
 - citation fixes
 - typo fixes
 
-All contributors will be added to the acknowledgments section in [book/index.md](book/index.md).
+All contributors will be added to the acknowledgments section in [book/index.md](book/index.md). Please keep each PR's scope to one chapter.
