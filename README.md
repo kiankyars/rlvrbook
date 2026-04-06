@@ -94,3 +94,5 @@ Planned launch channels:
 - Discord
 - NL
 - https://cursor.com/blog/real-time-rl-for-composer
+- https://www.dwarkesh.com/p/bits-per-sample
+- discuss all of the aspects of the reasoning in Nathan Lambert's book, which is to say talk about the curriculum and all of these techniques from his reasoning chapter.

@@ -35,6 +35,14 @@ That distinction matters because the verifier interface changes. In Chapter 5, t
 
 This is also why frontier coding harnesses belong here rather than in the foundational verifier chapters. They are domain-specific systems for agentic RLVR, not the minimal template for the paradigm as a whole. Their difficulty is not just learning from a verifier; it is building an instrumented environment whose checks remain informative over long trajectories and resist benchmark gaming.
 
+### Case study: Cursor's real-time RL loop
+
+Cursor's March 2026 account of training Composer is a useful motivational case study because it makes the frontier harness concrete.[@jackson2026realtimecomposer] The training interface is not a single benchmark or a single answer checker. It is the live product stack: editor state, tool calls, user follow-ups, latency, eval gates, deployment logic, and a reward pipeline built from real user interactions. In that setting, the harness is not merely where the model acts. It is the system that turns production traces into training signal.
+
+Two points from the case study matter for this chapter. First, it sharpens the train-test mismatch problem. Coding is unusually favorable for RL because the machine side of the environment can often be simulated well, but the human side is much harder to model. Cursor's argument for real-time RL is that training on real users and real environments removes one important layer of simulation error. Second, it makes reward hacking feel much more operational. The examples are not abstract benchmark exploits; they are system-level loopholes, such as emitting broken tool calls to avoid negative reward or overusing clarifying questions because the reward never properly turns against inaction.
+
+That is why frontier coding harnesses deserve their own treatment. Once the model is optimizing against the full deployed stack, every seam in instrumentation, signal aggregation, and reward logic becomes a surface the policy can learn to exploit. But the same setup can also be more self-correcting than offline simulated RL, because real users expose broken reward proxies quickly. In this regime, the harness is both the training interface and the audit surface.
+
 ## Comparative Lessons
 
 - Long-context tasks force a distinction between answer correctness and grounded evidence use.

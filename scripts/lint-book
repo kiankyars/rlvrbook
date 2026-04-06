@@ -21,7 +21,6 @@ expected_appendices=(
   a-minimal-rl-and-post-training-background.md
   b-benchmarks-evals-and-contamination.md
   c-practical-verifier-design-checklist.md
-  d-brown-grpo-reference.md
 )
 
 for file in "${expected_chapters[@]}"; do
