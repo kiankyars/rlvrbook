@@ -4,14 +4,14 @@
 
 ## Chapter Map
 
-- Define RLVR as learning from verifiable reward signals and explain which tasks admit them.
-- Explain why RLVR became central to reasoning models and preview the structure of the book.
+- Define RLVR as learning from verifiable reward signals and explain verifiable tasks.
+- Analyze why RLVR became central to reasoning models and preview the structure of the book.
 
 ## What RLVR Is
 
-RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in code generation with tests. Sometimes it is partial, as in grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is not a specific optimizer. It is the availability of a notion of task success. Once a task can expose useful correctness signals, reinforcement learning can optimize against them, search can exploit them at inference time, and systems can often improve far beyond what static supervised fine-tuning alone would produce.
+RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in unit tests. It can be partial, i.e. grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is the availability of a success notion. Once a task exposes useful correctness signals, reinforcement learning can optimize against them, search can exploit them at test time, and systems can improve far beyond what static supervised fine-tuning alone produces.
 
-Terminology note. This book uses *verifier* as the default term for the mechanism that checks a model output and produces the signal used for reward. Closely related terms in the literature include *checker*, *scorer*, and sometimes *judge*, though the exact interface varies by system.
+> Terminology note. This book uses *verifier* as the default term for the mechanism that checks output and produces a signal, related terms include *checker*, *scorer*, and sometimes *judge*.
 
 ::: {#fig-verifier-stack}
 
@@ -30,32 +30,32 @@ RLVR is defined by learning from verifiable reward signals; the optimizer can va
 
 ## Origins of RLVR
 
-In one sense RLVR is the oldest paradigm in reinforcement learning, since it learns from direct reward rather than preference comparison; what is new is its explicit application to language models through verifiers that can check answers, code, proofs, and traces.
+In one sense RLVR is the oldest paradigm in reinforcement learning, since it learns from direct reward rather than preference comparison, just like the classic RL environemnts, e.g. cartpole; what is new is the application to LLMs through verifiers that can check answers, code, proofs, and traces.
 
-I personally reflect back on the advent of reasoning models and reinforcement learning through a strange amnesia of an idea so simple with hindsight, but which took two years after ChatGPT to discover. This assessment, however, is unfair in the sense that the idea to make models think step by step long predates the 2024 reasoning-model wave.[^ch1-step-by-step] The broader prompting paradigm emerged across late 2021 and early 2022: scratchpads for intermediate computation appeared first, chain-of-thought prompting then formalized the use of intermediate reasoning traces, and the exact zero-shot prompt "Let's think step by step" was popularized a few months later.
+I personally reflect back on the advent of reasoning models and reinforcement learning through a strange amnesia of an idea so simple with hindsight, but which took two years after ChatGPT to discover. This assessment, however, is unfair in the sense that the idea to make models think step by step long predates the 2024 reasoning-model wave.[^ch1-step-by-step] The broader prompting paradigm emerged across late 2021 and early 2022: scratchpads for intermediate computation appeared first, chain-of-thought prompting then formalized the use of intermediate reasoning traces, and the exact prompt "Let's think step by step" was popularized a few months later.
 
 Before the reasoning-model wave of 2024, code generation had already explored reinforcement learning against executable verifiers: CodeRL (July 5, 2022), PPOCoder (January 31, 2023), and RLTF (July 10, 2023) all trained language models using unit tests or execution feedback as objective reward signals.[^ch1-code-priors]
 
-DeepSeekMath, published on February 5, 2024, was the first major open paper to apply this verifier-driven RL pattern to mathematical reasoning at LLM scale via GRPO.
+DeepSeekMath, published on February 5, 2024, was the first major open paper to apply verifier-driven RL to mathematical reasoning at LLM scale via the introduction of GRPO.
 
-Things heated up in September 2024, when OpenAI published "Learning to Reason with LLMs", indicating that they had used a train-time and test-time compute strategy to enhance model reasoning through reinforcement learning in math, and coding tasks.[^ch1-openai-o1] The name "Reinforcement Learning with Verifiable Rewards" (RLVR) was coined in the Tulu 3 paper, submitted on November 22, 2024.[^ch1-deepseekmath-rlvr-name] Finally, there was DeepSeek-R1, which demonstrated the full verifier-driven RL formula for bootstrapping reasoning models.[^ch1-deepseek-r1] To quote someone describing the atmosphere at Meta after R1 launched, “Engineers are moving frantically to dissect DeepSeek and copy anything and everything we can from it.” and according to Fortune, there were war rooms assembled to understand how a Chinese lab with substantially less resources was beating them.[^ch1-meta-reaction]
+Things heated up in September 2024, when OpenAI published "Learning to Reason with LLMs" (o1), indicating that they had used a train-time and test time compute strategy to enhance model reasoning through reinforcement learning in math, and coding tasks.[^ch1-openai-o1] The name "Reinforcement Learning with Verifiable Rewards" (RLVR) was coined in the Tulu 3 paper from November 22, 2024.[^ch1-deepseekmath-rlvr-name] Finally, there was DeepSeek-R1 at the start of 2025, which demonstrated the full verifier-driven RL formula for bootstrapping reasoning models.[^ch1-deepseek-r1] To quote someone describing the atmosphere at Meta after R1 launched, “Engineers are moving frantically to dissect DeepSeek and copy anything and everything we can from it,” and according to Fortune, there were war rooms assembled at Meta to understand how a Chinese lab with substantially less resources was beating them.[^ch1-meta-reaction]
 
 The trend we can extract from this short history is that model improvement increasingly depended on checkable interfaces.
 
 ## What Kinds of Tasks Admit Verifiable Rewards
-Tasks admit verifiable rewards when they expose an interface that can separate better behavior from worse behavior at acceptable cost. The strongest cases are the familiar ones. Math problems often allow answer checking up to normalization. Code can be run against visible and hidden tests. Formal proof systems can accept or reject proof states under explicit rules. These domains became central not because they exhaust the meaning of reasoning, but because they expose unusually clean signals.
+Tasks admit verifiable rewards when there is an interface to separate better behavior from worse behavior at acceptable cost. Math problems allow answer checking up to normalization. Code can be run against visible and hidden tests. Formal proof systems can accept or reject proof states under explicit rules. These domains became central not because they expose unusually clean signals.
 
-Other tasks are weaker but still useful. Long-context question answering may permit citation checks, evidence matching, or entailment-style grading. Tool-using agents may expose environment transitions, task completion criteria, or execution traces. These signals are often noisier, more expensive, and easier to exploit, but they can still support learning if the reward channel is informative enough.
+Other tasks are weaker but still useful. Long-context question answering may permit citation checks, evidence matching, or entailment-style grading. Tool-using agents have environment transitions, task completion criteria, or execution traces. These signals are often noisier, more expensive, and easier to exploit, but they can still support learning if the reward channel is informative enough.
 
-The practical lesson is that RLVR does not apply uniformly across all tasks. It is strongest where correctness is legible and weakest where the reward channel is sparse, ambiguous, or only loosely coupled to the capability we want.
+The takeaway is that there isn't a uniform notion of determining correctness across all conceivable tasks. It is strongest where correctness is legible and weakest where the reward channel is sparse, ambiguous, or only loosely coupled to the capabilities we want.
 
-A useful way to see the space is as a domain map. One axis is verification strength: how cleanly the checker separates better behavior from worse behavior. The other is verification granularity: whether the checked object is a coarse final artifact, a partially grounded intermediate object, or a fine-grained trajectory. The placements in Figure @fig-domain-map are a schematic synthesis of current verifier interfaces rather than a single measured benchmark score.[@shao2024deepseekmath; @liu2023rltf; @xin2024deepseekproverv15; @zhang2024longcite; @lu2023mathvista; @zhou2023webarena; @xie2024osworld]
+A useful way to see the space is as a domain map. One axis is verification strength: how cleanly the checker separates better behavior from worse behavior. The other is verification granularity: whether the checked object is a coarse final artifact, a partially grounded intermediate object, or a fine-grained trajectory.[@shao2024deepseekmath; @liu2023rltf; @xin2024deepseekproverv15; @zhang2024longcite; @lu2023mathvista; @zhou2023webarena; @xie2024osworld]
 
 ::: {#fig-domain-map}
 ::: {.content-visible when-format="html"}
 ```{=html}
-<div class="dm" data-default-domain="math">
-  <p class="dm-hint">Click a domain to see what its verifier checks, where it can be gamed, and what it misses.</p>
+<div class="dm">
+  <p class="dm-hint">Hover over a domain to see what its verifier checks, where it can be gamed, and what it misses.</p>
 
   <svg class="dm-svg" viewBox="0 0 700 420" aria-label="RLVR domain map: six domains plotted by verification strength and granularity.">
     <rect class="dm-bg" x="80" y="10" width="590" height="370" rx="6" />
@@ -114,13 +114,13 @@ A useful way to see the space is as a domain map. One axis is verification stren
     </g>
   </svg>
 
-  <div class="dm-detail" aria-live="polite">
-    <h5 class="js-dm-title">Math</h5>
-    <p class="dm-summary js-dm-summary"></p>
+  <div class="dm-detail is-empty" aria-live="polite">
+    <h5 class="js-dm-title">Hover over a domain</h5>
     <dl class="dm-facts">
-      <dt>Checked object</dt>  <dd class="js-dm-checked"></dd>
-      <dt>Attack surface</dt>  <dd class="js-dm-attack"></dd>
-      <dt>Blind spot</dt>      <dd class="js-dm-blind"></dd>
+      <dt>Summary</dt>         <dd class="dm-summary js-dm-summary">The notes below update as you move around the map.</dd>
+      <dt>Verifiable</dt>      <dd class="js-dm-verifiable"></dd>
+      <dt>Common failure</dt>  <dd class="js-dm-failure"></dd>
+      <dt>What it misses</dt>  <dd class="js-dm-misses"></dd>
     </dl>
   </div>
 </div>
@@ -130,70 +130,82 @@ A useful way to see the space is as a domain map. One axis is verification stren
   const D = {
     math: {
       title: "Math",
-      summary: "Symbolic normalization makes math unusually verifier-friendly, but most rewards still score the endpoint rather than the reasoning path.",
-      checked: "Final answer, normalized expression, or equivalence class (set, boxed value, symbolic form).",
-      attack: "Brittle extraction, formatting hacks, alternate-but-unparseable surface forms, and benchmark leakage.",
-      blind: "Whether the reasoning was faithful, reusable, or causally responsible for the final answer."
+      summary: "Strong endpoint check, weak process check.",
+      verifiable: "Normalized or equivalent final answer.",
+      failure: "Parser brittleness, format hacks, leakage.",
+      misses: "Reasoning faithfulness."
     },
     code: {
       title: "Code",
-      summary: "Execution against tests gives sharper feedback than most language tasks, but the verifier only sees behavior on the covered cases.",
-      checked: "Program outputs, execution traces, unit-test outcomes, and sometimes compiler/runtime signals.",
-      attack: "Overfitting to the visible suite, hard-coded answers, environment quirks, and shallow patches that satisfy narrow tests.",
-      blind: "Untested behaviors, reliability under distribution shift, efficiency, security, and maintainability outside the instrumented environment."
+      summary: "Strong on covered behavior, weak off-suite.",
+      verifiable: "Outputs, traces, and test results.",
+      failure: "Suite overfitting and hard-coded fixes.",
+      misses: "Untested behavior, security, efficiency."
     },
     proof: {
       title: "Proof",
-      summary: "Proof assistants offer the cleanest verifier because each step is checked against a formal kernel rather than a soft proxy.",
-      checked: "Theorem statement, sequence of proof states, and final proof object accepted by Lean, Coq, or similar.",
-      attack: "Mis-specified theorems, unsafe assumptions, helper-lemma leakage, and automation exploitation.",
-      blind: "Informal explanatory value, theorem selection, and whether the proof strategy transfers outside the formalization."
+      summary: "Kernel-checked steps, not soft proxies.",
+      verifiable: "Proof states and final proof object.",
+      failure: "Bad theorem specs and automation shortcuts.",
+      misses: "Informal insight and transfer."
     },
     long_context_qa: {
       title: "Long-context QA",
-      summary: "Citation-aware QA makes more of the answer checkable, but evidence presence does not guarantee faithful synthesis.",
-      checked: "Sentence-level citations, retrieved spans, support sets, and answer-evidence alignment over long documents.",
-      attack: "Citation stuffing, irrelevant but plausible evidence, sentence-boundary mismatch, and borrowed support without faithful use.",
-      blind: "Hidden hallucinations between supported sentences, causal use of evidence, and global consistency."
+      summary: "Evidence can be checked; synthesis usually cannot.",
+      verifiable: "Citations, spans, answer-evidence alignment.",
+      failure: "Citation stuffing and irrelevant support.",
+      misses: "Faithful use of evidence."
     },
     multimodal: {
       title: "Multimodal",
-      summary: "Multimodal benchmarks often expose exact answers, but perception ambiguity keeps the checker weaker than symbolic domains.",
-      checked: "Final answer and sometimes auxiliary structure: bounding boxes, chart values, OCR strings, or grounded references.",
-      attack: "Answer priors, shortcut cues, OCR artifacts, annotation ambiguity, and rewarding text without visual grounding pressure.",
-      blind: "Whether the model truly used the visual evidence and whether failures came from perception, grounding, or reasoning."
+      summary: "Answers are checkable; grounding stays noisy.",
+      verifiable: "Answer plus partial grounding signals.",
+      failure: "Shortcut cues, OCR noise, label ambiguity.",
+      misses: "Whether vision drove the answer."
     },
     agentic: {
       title: "Agentic",
-      summary: "Agents expose rich trajectories, but the success signal is brittle because environments are open-ended and easy to game.",
-      checked: "Tool calls, environment transitions, intermediate state changes, and task-completion scripts over long horizons.",
-      attack: "Reward hacking, simulator exploits, degenerate loops, and policies that succeed in the sandbox but not in practice.",
-      blind: "Side effects, robustness, safety, human acceptability, and transfer from benchmark scripts to real tasks."
+      summary: "Rich traces, brittle success checks.",
+      verifiable: "Tool calls, state changes, completion scripts.",
+      failure: "Reward hacking and simulator exploits.",
+      misses: "Side effects, safety, real-world transfer."
     }
   };
 
   document.querySelectorAll(".dm").forEach(root => {
     const pts = [...root.querySelectorAll(".dm-point")];
+    const detail = root.querySelector(".dm-detail");
     const el = (s) => root.querySelector(s);
 
     const show = (name) => {
       const d = D[name]; if (!d) return;
-      pts.forEach(p => p.classList.toggle("is-active", p.dataset.domain === name));
+      detail.classList.remove("is-empty");
       el(".js-dm-title").textContent = d.title;
       el(".js-dm-summary").textContent = d.summary;
-      el(".js-dm-checked").textContent = d.checked;
-      el(".js-dm-attack").textContent = d.attack;
-      el(".js-dm-blind").textContent = d.blind;
+      el(".js-dm-verifiable").textContent = d.verifiable;
+      el(".js-dm-failure").textContent = d.failure;
+      el(".js-dm-misses").textContent = d.misses;
+    };
+
+    const reset = () => {
+      detail.classList.add("is-empty");
+      el(".js-dm-title").textContent = "Hover over a domain";
+      el(".js-dm-summary").textContent = "The notes below update as you move around the map.";
+      el(".js-dm-verifiable").textContent = "";
+      el(".js-dm-failure").textContent = "";
+      el(".js-dm-misses").textContent = "";
     };
 
     pts.forEach(p => {
       const n = p.dataset.domain;
       p.addEventListener("mouseenter", () => show(n));
+      p.addEventListener("mouseleave", reset);
       p.addEventListener("focus", () => show(n));
+      p.addEventListener("blur", reset);
       p.addEventListener("click", () => show(n));
     });
 
-    show(root.dataset.defaultDomain || "math");
+    reset();
   });
 })();
 </script>
@@ -201,27 +213,28 @@ A useful way to see the space is as a domain map. One axis is verification stren
 :::
 
 ::: {.content-visible when-format="pdf"}
-The six domains, from strongest to weakest verification signal: **Proof** (formally accepted proof state; attack surface: theorem mis-specification; blind spot: informal usefulness). **Code** (execution against tests; attack surface: suite overfitting; blind spot: untested behavior). **Math** (normalized final answer; attack surface: parser brittleness; blind spot: reasoning faithfulness). **Long-context QA** (answer plus evidence alignment; attack surface: citation stuffing; blind spot: faithful synthesis). **Multimodal** (answer with partial grounding; attack surface: shortcut cues; blind spot: visual grounding). **Agentic** (trajectory plus task completion; attack surface: reward hacking; blind spot: real-world transfer).
+The six domains, from strongest to weakest verification signal: **Proof** (verifiable: formally accepted proof state; common failure: theorem mis-specification; misses: informal usefulness). **Code** (verifiable: execution against tests; common failure: suite overfitting; misses: untested behavior). **Math** (verifiable: normalized final answer; common failure: parser brittleness; misses: reasoning faithfulness). **Long-context QA** (verifiable: answer plus evidence alignment; common failure: citation stuffing; misses: faithful synthesis). **Multimodal** (verifiable: answer with partial grounding; common failure: shortcut cues; misses: visual grounding). **Agentic** (verifiable: trajectory plus task completion; common failure: reward hacking; misses: real-world transfer).
 :::
 
-What can be verified? A schematic domain map of RLVR by verification strength and verification granularity. The axes summarize common verifier interfaces in current practice rather than a single benchmark-derived score.
+What can be verified? A schematic domain map of RLVR by verification strength and verification granularity.
 :::
 
 ## Why RLVR Became Central to Reasoning Models
 
-RLVR and reasoning go hand in hand, but they are different. The former is a training paradigm, and the latter is a capability: multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are exactly the ones with strong verifiers: math, code, proofs, some grounded QA. That combination is rare. It means the same domains that demand search, decomposition, and iterative refinement are also the domains where reinforcement learning has the cleanest chance to work.
-
-This is also why RLVR and reasoning are easy to conflate, and the overlap is large because verifier-friendly domains have been the best places to scale reasoning performance. The result is that some of the most important progress in reasoning models has come from learning against verifiable rewards.
+RLVR and reasoning go hand in hand, but they are different. The former is a training paradigm, and the latter is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are exactly the ones with strong verifiers: math, code, proofs, some grounded QA. The result is that some of the most important progress in reasoning models has come from learning against verifiable rewards. It's therefore understandble that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance. 
 
 ## Verifiable Does Not Mean Complete
 
-Even strong reward signals remain proxies. A code evaluator may miss behaviors outside the test suite. A math reward may depend on brittle extraction. A proof system may validate a derivation without telling us whether the model's decomposition was insightful or robust. A grounded QA reward may verify some citations without guaranteeing that the answer used evidence faithfully.
+Even strong reward signals remain proxies, if we reuse our three core domain examples:
+1. A code evaluator may miss behaviors outside the test suite.
+2. A math reward may depend on brittle extraction. 
+3. A proof system may validate a derivation without telling us whether the model's decomposition was insightful or robust.
 
-That is not a criticism of RLVR so much as a statement of its operating conditions. The important questions are always: what is being checked, what is being missed, how expensive the check is, and how easily the signal can be gamed. Much of the rest of the book is about that gap between a usable reward signal and the fuller competence we actually want.
+These examples raise important questions to consider when applying RLVR: what is being checked, what is being missed, how expensive is the check, and how easily the signal can be gamed. We will dissect the gap between a usable reward signal and the outcome we want in the rest of the book. 
 
 ## What This Book Covers
 
-The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, and learned or hybrid verification pipelines. Chapter 5 asks when a check becomes useful learning signal rather than merely a filter. Chapter 6 turns to search and test-time verification, since RLVR in modern systems is inseparable from inference-time compute. Chapters 7 and 8 focus on the main failure modes: reward hacking, proxy misspecification, faithfulness, confidence, and the limits of what verification can certify. Chapters 9 and 10 compare the paradigm across its strongest and most difficult domains. Chapter 11 closes with the open problems.
+The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, and learned or hybrid verification pipelines. Chapter 5 demonstrates turning a verifier into a learning signal. Chapter 6 turns to search and test time verification, since RLVR in modern systems is inseparable from test time compute. Chapters 7 and 8 focus on the main failure modes: reward hacking, proxy misspecification, faithfulness, confidence, and the limits of what verification can certify. Chapters 9 and 10 compare the paradigm across its strongest and most difficult domains. Chapter 11 closes with the open problems.
 
 [^ch1-step-by-step]: A useful compressed lineage runs from scratchpads in late 2021, to chain-of-thought prompting in January 2022, to the exact zero-shot prompt "Let's think step by step" in May 2022 [@nye2021show; @wei2022chain; @kojima2022zeroshot].
 [^ch1-code-priors]: CodeRL was submitted on July 5, 2022 and used unit tests and a critic model to guide program synthesis [@le2022coderl]. PPOCoder was submitted on January 31, 2023 and used execution-based feedback with PPO [@shojaee2023ppocoder]. RLTF was submitted on July 10, 2023 and used online unit-test feedback of multiple granularities for code LLMs [@liu2023rltf].
