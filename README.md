@@ -13,42 +13,19 @@ This book is not:
 - a pure paper timeline
 - a generic RLHF book with some RLVR chapters added on top
 
-## Current Table of Contents
+## Review status
 
-### Foundations
-
-1. **Introduction**
-
-### Verifier Design
-
-2. **Outcome Rewards**
-3. **Process Rewards**
-4. **Learned, Programmatic, and Hybrid Verifiers**
-
-### From Verifiers to Capability
-
-5. **Turning Checks into Training Signal**
-6. **Search and Test-Time Verification**
-
-### Failure Modes
-
-7. **Reward Hacking, Proxy Misspecification, and Verifier Robustness**
-8. **Faithfulness, Confidence, and What Verification Misses**
-
-### Domains and Frontiers
-
-9. **Canonical Domains: Math, Code, and Formal Proof**
-10. **Long-Context, Multimodal, and Agentic RLVR**
-11. **Open Problems and the Research Agenda**
-
-### Appendices
-
-- **A. Minimal RL and Post-Training Background**
-- **B. Benchmarks, Evals, and Contamination**
-- **C. Practical Verifier Design Checklist**
-- **D. Brown GRPO Reference**
-
-Appendix D is the compact outcome-RLVR GSM8K reference script. It is not a frontier coding harness.
+[x] 1. Introduction
+[x] 2. Outcome Rewards
+[x] 3. Process Rewards
+[] 4. Learned, Programmatic, and Hybrid Verifiers
+[] 5. Turning Checks into Training Signal
+[] 6. Search and Test-Time Verification
+[] 7. Reward Hacking, Proxy Misspecification, and Verifier Robustness
+[] 8. Faithfulness, Confidence, and What Verification Misses
+[] 9. Canonical Domains: Math, Code, and Formal Proof
+[] 10. Long-Context, Multimodal, and Agentic RLVR
+[] 11. Open Problems and the Research Agenda
 
 ## Book Style
 
@@ -92,7 +69,8 @@ Planned launch channels:
 
 - Hacker News
 - Discord
+- Unsloth
 - NL
-- https://cursor.com/blog/real-time-rl-for-composer
-- https://www.dwarkesh.com/p/bits-per-sample
 - discuss all of the aspects of the reasoning in Nathan Lambert's book, which is to say talk about the curriculum and all of these techniques from his reasoning chapter.
+- On the likelihood → NLL rewording, "The expression above" should be "The previous expression" (or similar) — positional references like above/below can break in print when content lands on a different page.
+- Add code to every chapter?

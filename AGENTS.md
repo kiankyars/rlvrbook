@@ -6,13 +6,10 @@ The manuscript lives in [`book/`](/Users/kian/Developer/rlvrbook/book). Use [`bo
 
 ## Build, Test, and Development Commands
 
-- `quarto render book` builds the book locally.
 - `scripts/build-book` runs the repo’s build wrapper.
 - `scripts/lint-book` verifies chapter and appendix ordering against `book/_quarto.yml`.
 - `scripts/check-citations` ensures all citekeys used in Markdown exist in `bibliography.bib`.
 - `scripts/check-diagrams` enforces diagram naming conventions.
-
-Run the three `scripts/check-*` commands before opening a PR. If you change rendering behavior or styles, also run `quarto render book`.
 
 ## Editorial Guardrails
 
@@ -43,6 +40,8 @@ Use concise imperative messages and keep unrelated edits out of the same commit.
 - Prefers interactive HTML figures (inline SVG + JS) for the web build with a static image fallback for PDF.
 - PDF exports must show only the light-mode variant of dual-mode images; do not touch web dark/light switching when fixing PDF.
 - Use `uv` as the preferred Python package/environment manager.
+- Be hyper-rational.
+- Steel man all of the user's arguments.
 
 ## Learned Workspace Facts
 

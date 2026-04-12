@@ -406,7 +406,7 @@ This chapter sees the full signal path from verifier output to parameter update,
 
 It deliberately treats the optimizer as a black box that consumes shaped reward. GRPO, PPO, REINFORCE, and their variants differ in how they compute gradients from advantages, but the signal-design layer sits upstream of all of them. A poorly shaped reward produces bad training under any optimizer.
 
-It misses two things that belong to later chapters. First, what happens when the verifier operates at inference time without any parameter update — that is Chapter 6. Second, what happens when the signal path itself becomes the attack surface — when the model learns to exploit the reward function, the format bonuses, or the task filter rather than learning the intended capability — that is Chapter 7.
+It misses two things that belong to later chapters. First, what happens when the verifier operates at test time without any parameter update — that is Chapter 6. Second, what happens when the signal path itself becomes the attack surface — when the model learns to exploit the reward function, the format bonuses, or the task filter rather than learning the intended capability — that is Chapter 7.
 
 ## Open questions
 
@@ -416,7 +416,7 @@ It misses two things that belong to later chapters. First, what happens when the
 - Should format rewards phase out as training progresses, or does removing them cause regression?
 - How do these design choices interact with the verifier stack from Chapter 4? A hybrid stack that returns richer verdicts may tolerate different reward-shaping decisions than a binary outcome checker.
 
-Every design choice in this chapter assumes the same structure: generate rollouts, score them, compute advantages, update parameters. That is the training loop. But the same verifier that scores training rollouts can also improve outputs at inference time, without updating any parameters. Sampling multiple candidates and selecting the best, guiding search with step-level scores, or voting across reasoning paths — these all use the verifier, and they all produce gains that are routinely reported alongside training gains without separating the two. The verifier's inference-time role is the subject of Chapter 6.
+Every design choice in this chapter assumes the same structure: generate rollouts, score them, compute advantages, update parameters. That is the training loop. But the same verifier that scores training rollouts can also improve outputs at test time, without updating any parameters. Sampling multiple candidates and selecting the best, guiding search with step-level scores, or voting across reasoning paths — these all use the verifier, and they all produce gains that are routinely reported alongside training gains without separating the two. The verifier's test time role is the subject of Chapter 6.
 
 [^ch5-brown-grpo-150line]: Brown's compact GRPO implementation is a practical reference for outcome-RLVR training with explicit parsing and reward components.[@brown2025grpo]
 

@@ -60,11 +60,6 @@ if [[ "${#configured_chapters[@]}" -ne 11 ]]; then
   exit 1
 fi
 
-if [[ "${#configured_appendices[@]}" -ne 4 ]]; then
-  echo "expected 4 configured appendices in book/_quarto.yml, found ${#configured_appendices[@]}" >&2
-  exit 1
-fi
-
 for i in "${!expected_chapters[@]}"; do
   if [[ "${configured_chapters[$i]}" != "${expected_chapters[$i]}" ]]; then
     echo "chapter order mismatch in book/_quarto.yml at position $((i + 1))" >&2

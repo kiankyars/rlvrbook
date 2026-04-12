@@ -4,26 +4,21 @@
 
 ## Chapter Map
 
-- Explain how to build verifier stacks when a single hard-coded checker is not enough.
-- Show the main risk: combining imperfect signals without understanding where their errors compound.
+## Learned vs Programmatic Verifiers
 
-## The implementation spectrum
-
-In Chapter 2 we established the outcome verifier, which returns a scalar per rollout, and Chapter 3 presented process rewards, which score intermediate steps. Most production RLVR systems use a stack: multiple verifier components layered together, since most verifiers do not handle all model outputs. As an example, a unit test runner can check for functional correctness but has nothing to say about code security or readability. A proof kernel accepts or rejects a form of proof term but cannot know whether the theorem was worth proving. We can think of a verifier as accepting an input in high-dimensional space where it produces a reliable signal, and the complement to that hyper space is where the signal is silent. Stacking verifiers can reduce this complement.
-
-Along this implementation axis, three regimes recur.
+Chapters 2 and 3 organized verifiers by where they apply across a rollout: either on the final artifact or on intermediate steps. This chapter changes axes, we will discuss how the verifier itself is implemented, and on this axis, we have two types:
 
 **Programmatic verifiers** are deterministic, auditable, and brittle. They include regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules.[@kydlicek2025mathverify] When a programmatic verifier fires, you know exactly why. When it fails — when the input falls outside its checkable core — it fails silently. Chapters 2 and 3 already covered the main instances: outcome extraction pipelines, formal step checking, and test-suite execution.
 
-**Learned verifiers** are flexible, soft-scored, and opaque. A model — often an LLM — evaluates the target model's output and produces a judgment: a scalar score, a classification, or a natural-language critique. Learned verifiers can handle ambiguity, open-ended domains, and edge cases that no programmatic rule anticipates. But they inherit the biases and blind spots of the judge model, and their scores are not calibrated probabilities of correctness.
+**Learned verifiers** are flexible, soft-scored, and opaque. They can handle ambiguity, open-ended domains, and edge cases that programmatic rules don't. But they inherit the biases and blind spots of the judge model.
 
-**Hybrid stacks** layer programmatic and learned components together. The programmatic layer handles what it can check cheaply and exactly. The learned layer handles some or all of the residual. An arbitration function decides when to trust each component, when to defer, and how to aggregate their signals into a single reward.
+## Hybrid
 
-The design problem in a hybrid stack is not "which verifier is best." It is: where does each component's checkable core end, what does the arbitration logic do on the boundary, and how do the failure modes of different components interact when they are composed?
+Production RLVR systems layer verifier components together to have a  more robust reward signal. If you consider a unit test as one type of programmtic verifier, it can check for functional correctness, but has nothing to say about code security or readability. By the same token, a proof kernel checks validity, but it does not judge whether the proof is elegant. Therefore, we combine multiple verifiers together. A useful mental image is to think of each verifier as producing a useful signal over a subset of inputs in some high-dimensional vector space, with the signal being silent in that subset's complement.
 
-## Programmatic verifiers: where determinism is enough
+Stacking verifiers can reduce this complement, and the design problem in a hybrid stack is to determine how to compose rewards comenseratuly, and how failure modes interact when composed.
 
-A programmatic verifier is any checker whose logic is fully specified by code rather than learned from data. The key examples, organized by domain:
+## Programmatic verifiers
 
 | Domain | Programmatic checks | Checkable core |
 |:-------|:-------------------|:--------------|
@@ -32,43 +27,34 @@ A programmatic verifier is any checker whose logic is fully specified by code ra
 | Proof | Kernel acceptance (Lean, Coq, Isabelle) | Formal validity of each tactic or proof term |
 | Format | Regex, XML schema, JSON schema, tag-structure validation | Output-contract compliance |
 
-: Programmatic verifiers by domain. Each has a well-defined checkable core and a residual it cannot address. {#tbl-ch4-programmatic}
+: Programmatic verifiers by domain. {#tbl-ch4-programmatic}
 
-The shared property: programmatic verifiers never hallucinate. Their failure modes are enumerable, because the code that implements them is auditable. A symbolic equivalence checker either recognizes two expressions as equal or it does not; it never invents a spurious equivalence. A test suite either passes or fails; it never fabricates a test result.
+One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to miss edge cases, security vulnerabilities, and correctness properties that no test covers.[@liu2023evalplus]
 
-The shared limitation: programmatic verifiers only cover the checkable core of a task. The Math-Verify pipeline from Chapter 2 handles answers it can parse and canonicalize, but it returns no signal on malformed outputs, open-ended explanations, or problems whose answer format was not anticipated.[@kydlicek2025mathverify] A test suite checks the behaviors the test author thought to specify, but it misses edge cases, security vulnerabilities, and correctness properties that no test covers.[@liu2023evalplus] A proof kernel checks formal validity, but it says nothing about whether the proof is elegant, readable, or useful.
+## Learned verifiers
 
-This is why programmatic verifiers are foundations rather than complete solutions. They anchor the stack with high-precision, low-cost signals. The question is what to do about the residual.
-
-## Learned verifiers: when a model judges a model
-
-When a programmatic verifier cannot produce a signal — when the output falls outside the checkable core, or the task is too open-ended for any rule-based check — the alternative is to use a model as a judge. A learned verifier is trained (or prompted) to evaluate another model's output and produce a score or critique.
+A learned verifier is trained or prompted to evaluate another model's output and produce a score or critique.
 
 ### LLM-as-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. formalized this as the LLM-as-Judge paradigm.[@zheng2023judging] The setup is direct: give a capable model (such as GPT-4) the prompt and the candidate response, ask it to rate the response on a scale or compare two responses, and use the result as a reward signal or selection criterion.
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. formalized this as the LLM-as-Judge paradigm.[@zheng2023judging] A LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion.
 
-The headline result is that strong LLM judges agree with human preferences over 80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-Judge viable as a scalable approximation to human evaluation in domains where programmatic checking is impossible.
+The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-Judge viable as a scalable approximation to human evaluation in domains where programmatic checking is impossible.
 
-But the agreement rate hides systematic biases. Zheng et al. identify four: position bias (the judge prefers whichever response appears first), verbosity bias (longer responses are rated higher regardless of quality), self-enhancement bias (a model rates its own outputs higher than a different model's outputs of equal quality), and limited mathematical reasoning (the judge makes errors when evaluating mathematical correctness that a symbolic checker would catch trivially). These are not random noise; they are structured error patterns that a policy can learn to exploit.
+Neverthless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 
-### Generative verifiers
+1. position bias (the judge prefers whichever response appears first)
+2. verbosity bias (longer responses are rated higher regardless of quality)
+3. self-enhancement bias (a model rates its own outputs higher than a different model's outputs of equal quality)
+4. limited mathematical reasoning (the judge makes errors when evaluating mathematical correctness that a symbolic checker would catch trivially)
 
-Hosseini et al. introduced GenRM, a verifier trained with next-token prediction rather than discriminative classification.[@hosseini2024genrm] The key insight: a generative verifier can produce chain-of-thought reasoning before making its judgment, and it can be sampled multiple times to get a majority vote over verification attempts. This is verification-time compute applied to the verifier itself.
+#### Scaling LLM-as-Judge
 
-The empirical gains are substantial. On GSM8K in a best-of-16 setting, GenRM pushes accuracy from 73% to 93.4%. On harder math tasks (easy-to-hard transfer on MATH), it nearly doubles the discriminative baseline. The generative framing lets the verifier reason about why a solution is wrong, rather than just scoring it. It also means the verifier can improve with more samples at inference time, just as a policy can improve with more rollouts.
-
-The limitation is cost. Each verification sample is a full forward pass through a large model, and majority voting requires multiple samples. GenRM is most practical when verification is done over a small set of candidates (best-of-$N$ selection) rather than over every token in a training run.
-
-### CriticGPT
-
-McAleese et al. took a different approach: instead of scoring outputs, train a model to write natural-language critiques.[@mcaleese2024criticgpt] CriticGPT was trained via RLHF to identify bugs in code, producing free-form critiques that explain what is wrong and where.
-
-The results are instructive for verifier-stack design. CriticGPT critiques were preferred over human critiques 63% of the time on naturally occurring code bugs. Human-machine teams using CriticGPT caught more bugs than either humans or the model alone. But the model also hallucinated bugs — producing confident critiques of code that was actually correct. The practical lesson: a learned critic is more useful as a component in a stack (where its output can be cross-checked) than as a standalone verifier (where its hallucinations go unchallenged).
+Hosseini et al. introduced GenRM, sampling a judge multiple times to get a majority vote over trajectories.[@hosseini2024genrm]
 
 ### The calibration problem
 
-Learned verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains — performing well on chat-style evaluation but poorly on reasoning and safety tasks — and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles.[@lambert2024rewardbench]
+Learned verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles.[@lambert2024rewardbench]
 
 For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" (effectively certainty) and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. Treating both as commensurable scalars and averaging them is a common mistake that dilutes the programmatic signal.
 
@@ -80,7 +66,7 @@ Consider the trajectory from Chapter 3 where the model reasons correctly through
 
 Now consider a trajectory where every step looks plausible but step 3 contains a subtle sign error that happens to cancel out by step 5, producing the correct final answer. The programmatic checker returns $r = 1$: the answer matches. A learned judge, if it reasons carefully, might catch the sign error — but it might also miss it, especially if the error is in a domain (algebra) where LLM judges are known to be unreliable. Worse, the judge might hallucinate an error that is not there, flagging a correct step as wrong because of its own limited mathematical reasoning.
 
-This is the core tension: learned judges extend coverage beyond the programmatic checkable core, but they introduce a new class of errors — hallucinated verdicts — that programmatic checkers never produce.
+### Agent-as-Judge
 
 ## Hybrid stacks: combining programmatic and learned verification
 
