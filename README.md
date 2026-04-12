@@ -18,8 +18,8 @@ This book is not:
 [x] 1. Introduction
 [x] 2. Outcome Rewards
 [x] 3. Process Rewards
-[] 4. Learned, Programmatic, and Hybrid Verifiers
-[] 5. Turning Checks into Training Signal
+[x] 4. Learned, Programmatic, and Hybrid Verifiers (need to look at git diff)
+[x] 5. Turning Checks into Training Signal
 [] 6. Search and Test-Time Verification
 [] 7. Reward Hacking, Proxy Misspecification, and Verifier Robustness
 [] 8. Faithfulness, Confidence, and What Verification Misses
@@ -72,5 +72,5 @@ Planned launch channels:
 - Unsloth
 - NL
 - discuss all of the aspects of the reasoning in Nathan Lambert's book, which is to say talk about the curriculum and all of these techniques from his reasoning chapter.
-- On the likelihood → NLL rewording, "The expression above" should be "The previous expression" (or similar) — positional references like above/below can break in print when content lands on a different page.
 - Add code to every chapter?
+- Upweighting: Warren

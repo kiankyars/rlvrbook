@@ -66,3 +66,21 @@ $$ {#eq-appa-multiturn-objective}
 In many verifier-driven setups, \(r_t\approx 0\) for \(t<T\) and a scalar terminal reward \(r_T=R_\phi(x,y_{1:T})\) carries the verification signal from the environment.
 
 In this book, we use \(x\) for prompts and \(y\) for generated outputs (or turn-level outputs), and we write the verifier or environment as a score function \(R_\phi\) or \(r_\phi\) that maps prompts and completions, or full trajectories, to reward.
+
+## What the Optimizer Does
+
+In RLVR, the verifier decides what was rewarded; the optimizer decides how that reward changes the policy. For a sampled completion \(y\) from a policy \(\pi_\theta(\cdot \mid x)\), the policy-gradient intuition is simple: if the completion receives positive advantage, increase the log-probability of the sampled tokens; if it receives negative advantage, decrease it.
+
+The advantage is the reward relative to a baseline. A rollout with reward \(r_i\) is not judged only by its absolute score, but by whether it was better or worse than the reference level used for that prompt or batch:
+
+$$
+\hat A_i = r_i - b_i.
+$$ {#eq-appa-advantage}
+
+Different optimizers mainly differ in how they choose this baseline and how they limit the size of the update. PPO uses a learned value function as the baseline and constrains policy movement with a clipped update.[@schulman2017proximal] In LLM post-training, implementations often also add KL regularization to a reference policy. GRPO, introduced in DeepSeekMath, removes the learned value model and estimates the baseline from the rewards in the sampled rollout group.[@shao2024deepseekmath] In the group-relative form used in Chapter 5, this becomes:
+
+$$
+\hat A_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}.
+$$ {#eq-appa-grpo-advantage}
+
+For this book, the important point is not the optimizer family name. It is the interface: verifier scores become advantages, advantages become token-level probability updates, and update constraints such as KL penalties, clipping, gradient clipping, and small adapters limit how far the policy can move. A better optimizer cannot rescue a reward that checks the wrong thing; it can only optimize the signal it is given.

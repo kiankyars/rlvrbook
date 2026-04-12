@@ -49,7 +49,7 @@ After a thousand training steps, the model defaults to brute-force. On visible t
 
 ## A taxonomy of verifier exploits
 
-The two examples above illustrate specific layers of a broader taxonomy. Each layer maps to a verifier component introduced in earlier chapters.
+The number-slotting and template-overfitting examples illustrate specific layers of a broader taxonomy. Each layer maps to a verifier component introduced in earlier chapters.
 
 ### Layer 1: Extraction exploits
 
@@ -226,7 +226,7 @@ Proxy reward at KL=10 is approximately 0.95 in all cases. Stronger verifiers del
 
 ## When search amplifies exploits
 
-Chapter 6 closed with a question: when does inference-time search amplify reward hacking rather than competence? The answer follows directly from the taxonomy above.
+Chapter 6 closed with a question: when does inference-time search amplify reward hacking rather than competence? The answer follows directly from this taxonomy.
 
 Best-of-$N$ selection picks the highest-scoring candidate from $N$ samples. If the verifier is perfect, this always helps — the best candidate is the most correct. But if the verifier has exploitable gaps, more samples increase the probability of finding a candidate that exploits the gap rather than solving the task.
 

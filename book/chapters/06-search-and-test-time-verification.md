@@ -265,4 +265,6 @@ Third, the distinction between "the best sample passes the verifier" and "the sy
 - How should the field standardize reporting to separate training gains from search gains? Is there a consensus protocol emerging?
 - When does test time search amplify reward hacking rather than competence? Sampling more candidates increases the chance of finding one that exploits the verifier — a point we return to in Chapter 7.
 
+## What comes next
+
 Selection and search exploit the verifier's signal to improve outputs at test time. RL exploits the same signal to improve the policy itself. Both assume the signal is trustworthy. Chapter 7 asks what happens when it is not — when the verifier becomes the attack surface and optimization finds ways to satisfy the checker without solving the task

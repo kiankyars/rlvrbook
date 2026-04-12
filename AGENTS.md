@@ -21,7 +21,7 @@ This book is not:
 
 ## Writing Style & Naming Conventions
 
-Do not replace any human-written prose with LLM text unless explicitly instructed to. Write in plain Markdown with short paragraphs and explicit headings. Each chapter may use a different structure. Every main chapter should preserve the current house style: Escher image at the top, then a short two-bullet chapter map, then flexible chapter-specific structure. Core reusable terminology belongs in the appendix rather than being forced into every chapter. Prefer ASCII unless a source requires otherwise. Use sentence case in prose headings and kebab-case for filenames.
+Do not replace any human-written prose with LLM text unless explicitly instructed to. Write in plain Markdown with short paragraphs and explicit headings. Each chapter may use a different structure. Every main chapter should preserve the current house style: Escher image at the top, then a short two-bullet chapter map, then flexible chapter-specific structure. Core reusable terminology belongs in the appendix rather than being forced into every chapter. Avoid positional references such as "above", "below", "the figure below", or "the table above"; use explicit cross-references like `@fig-...` / `@tbl-...` or stable wording such as "the previous expression". Prefer ASCII unless a source requires otherwise. Use sentence case in prose headings and kebab-case for filenames.
 
 ## Citations, Figures, and Code
 

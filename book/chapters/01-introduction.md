@@ -117,7 +117,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
   <div class="dm-detail is-empty" aria-live="polite">
     <h5 class="js-dm-title">Hover over a domain</h5>
     <dl class="dm-facts">
-      <dt>Summary</dt>         <dd class="dm-summary js-dm-summary">The notes below update as you move around the map.</dd>
+      <dt>Summary</dt>         <dd class="dm-summary js-dm-summary">The detail panel updates as you move around the map.</dd>
       <dt>Verifiable</dt>      <dd class="js-dm-verifiable"></dd>
       <dt>Common failure</dt>  <dd class="js-dm-failure"></dd>
       <dt>What it misses</dt>  <dd class="js-dm-misses"></dd>
@@ -190,7 +190,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
     const reset = () => {
       detail.classList.add("is-empty");
       el(".js-dm-title").textContent = "Hover over a domain";
-      el(".js-dm-summary").textContent = "The notes below update as you move around the map.";
+      el(".js-dm-summary").textContent = "The detail panel updates as you move around the map.";
       el(".js-dm-verifiable").textContent = "";
       el(".js-dm-failure").textContent = "";
       el(".js-dm-misses").textContent = "";
@@ -234,7 +234,7 @@ These examples raise important questions to consider when applying RLVR: what is
 
 ## What This Book Covers
 
-The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, and learned or hybrid verification pipelines. Chapter 5 demonstrates turning a verifier into a learning signal. Chapter 6 turns to search and test time verification, since RLVR in modern systems is inseparable from test time compute. Chapters 7 and 8 focus on the main failure modes: reward hacking, proxy misspecification, faithfulness, confidence, and the limits of what verification can certify. Chapters 9 and 10 compare the paradigm across its strongest and most difficult domains. Chapter 11 closes with the open problems.
+The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, programmatic, learned and hybrid verification pipelines. Chapter 5 demonstrates turning a verifier into a learning signal. Chapter 6 turns to search and test time verification, since RLVR in modern systems is inseparable from test time compute. Chapters 7 and 8 focus on the main failure modes: reward hacking, proxy misspecification, faithfulness, confidence, and the limits of what verification can certify. Chapter 9 compares the paradigm across its strongest and most difficult domains. Chapter 10 closes with the open problems.
 
 [^ch1-step-by-step]: A useful compressed lineage runs from scratchpads in late 2021, to chain-of-thought prompting in January 2022, to the exact zero-shot prompt "Let's think step by step" in May 2022 [@nye2021show; @wei2022chain; @kojima2022zeroshot].
 [^ch1-code-priors]: CodeRL was submitted on July 5, 2022 and used unit tests and a critic model to guide program synthesis [@le2022coderl]. PPOCoder was submitted on January 31, 2023 and used execution-based feedback with PPO [@shojaee2023ppocoder]. RLTF was submitted on July 10, 2023 and used online unit-test feedback of multiple granularities for code LLMs [@liu2023rltf].
