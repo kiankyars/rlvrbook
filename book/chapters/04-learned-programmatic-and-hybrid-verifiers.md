@@ -1,22 +1,23 @@
 # Learned, Programmatic, and Hybrid Verifiers
 
-![M. C. Escher, _Dolphins_ (1923).](../art/escher/04-dolphins.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Dolphins_ (1923).](../escher/04-dolphins.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
-## Learned vs Programmatic Verifiers
+- Distinguish the programmatic verifier core of RLVR from learned verifiers.
+- Explain why production systems use hybrid stacks, and the failure modes introduced.
+
+## Programmatic versus Learned Verifiers
 
 Chapters 2 and 3 organized verifiers by where they apply across a rollout: either on the final artifact or on intermediate steps. This chapter changes axes, we will discuss how the verifier itself is implemented, and on this axis, we have two types:
 
-**Programmatic verifiers** are deterministic, auditable, and brittle. They include regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules.[@kydlicek2025mathverify] When a programmatic verifier fires, you know exactly why. When it fails — when the input falls outside its checkable core — it fails silently. Chapters 2 and 3 already covered the main instances: outcome extraction pipelines, formal step checking, and test-suite execution.
+**Programmatic verifiers** are deterministic, auditable, and brittle. They are the native RLVR object: regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules.[@kydlicek2025mathverify] When a programmatic verifier fires, you know exactly why. Chapters 2 and 3 already covered the main instances: outcome extraction pipelines, formal step checking, and test-suite execution.
 
-**Learned verifiers** are flexible, soft-scored, and opaque. They can handle ambiguity, open-ended domains, and edge cases that programmatic rules don't. But they inherit the biases and blind spots of the judge model.
+**Learned verifiers** are flexible, soft-scored, and opaque. They are not verifiable rewards in the narrow sense. Instead, they are learned surrogate signals: a model is trained or prompted to judge another model's output when no direct checker can carry the whole burden. This covers ambiguity, open-endedness and edge cases, but inherits the biases and blind spots of the judge model.
 
-## Hybrid
+## Hybrid stacks
 
-Production RLVR systems layer verifier components together to have a  more robust reward signal. If you consider a unit test as one type of programmtic verifier, it can check for functional correctness, but has nothing to say about code security or readability. By the same token, a proof kernel checks validity, but it does not judge whether the proof is elegant. Therefore, we combine multiple verifiers together. A useful mental image is to think of each verifier as producing a useful signal over a subset of inputs in some high-dimensional vector space, with the signal being silent in that subset's complement.
-
-Stacking verifiers can reduce this complement, and the design problem in a hybrid stack is to determine how to compose rewards comenseratuly, and how failure modes interact when composed.
+Production RLVR systems layer verifier components together to robustify reward signal. Unit tests can check functional correctness, but can't judge code security or readability. By the same token, a proof kernel checks validity, but it does not judge whether the theorem was worth proving. Therefore, we combine multiple verifiers together. A useful mental image is to think of each verifier as producing a useful signal over a subset of inputs in some high-dimensional vector space, with the signal being silent in that subset's complement. Stacking verifiers can reduce this complement, and the design problem in a hybrid stack is to determine how to compose rewards comenseratuly, and how failure modes interact when composed.
 
 ## Programmatic verifiers
 
@@ -31,30 +32,23 @@ Stacking verifiers can reduce this complement, and the design problem in a hybri
 
 One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to miss edge cases, security vulnerabilities, and correctness properties that no test covers.[@liu2023evalplus]
 
-## Learned verifiers
-
-A learned verifier is trained or prompted to evaluate another model's output and produce a score or critique.
-
-### LLM-as-Judge
+## LLM-as-Judge
 
 The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. formalized this as the LLM-as-Judge paradigm.[@zheng2023judging] A LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion.
 
-The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-Judge viable as a scalable approximation to human evaluation in domains where programmatic checking is impossible.
+The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-Judge viable in domains where programmatic checking is impossible. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories.[@hosseini2024genrm]
 
-Neverthless, agreement rates hide systematic biases, of which Zheng et al. identified four:
+
+Nevertheless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 
 1. position bias (the judge prefers whichever response appears first)
 2. verbosity bias (longer responses are rated higher regardless of quality)
 3. self-enhancement bias (a model rates its own outputs higher than a different model's outputs of equal quality)
 4. limited mathematical reasoning (the judge makes errors when evaluating mathematical correctness that a symbolic checker would catch trivially)
 
-#### Scaling LLM-as-Judge
-
-Hosseini et al. introduced GenRM, sampling a judge multiple times to get a majority vote over trajectories.[@hosseini2024genrm]
-
 ### The calibration problem
 
-Learned verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles.[@lambert2024rewardbench]
+Learned surrogate verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles.[@lambert2024rewardbench]
 
 For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" (effectively certainty) and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. Treating both as commensurable scalars and averaging them is a common mistake that dilutes the programmatic signal.
 
@@ -65,12 +59,6 @@ Return to the quadratic from Chapter 2. The model solves $x^2 - 5x + 6 = 0$ and 
 Consider the trajectory from Chapter 3 where the model reasons correctly through every step but writes only `<answer>x = 2</answer>` instead of the full solution set $\{2, 3\}$. A programmatic checker that parses the answer tag and compares against the ground truth returns $r = 0$: the extracted answer does not match. A learned judge, given the full reasoning trace, can recognize that the derivation is correct and the error is only in the final reporting step. It might return a high score on reasoning quality and a low score on answer completeness, distinguishing the two failure modes.
 
 Now consider a trajectory where every step looks plausible but step 3 contains a subtle sign error that happens to cancel out by step 5, producing the correct final answer. The programmatic checker returns $r = 1$: the answer matches. A learned judge, if it reasons carefully, might catch the sign error — but it might also miss it, especially if the error is in a domain (algebra) where LLM judges are known to be unreliable. Worse, the judge might hallucinate an error that is not there, flagging a correct step as wrong because of its own limited mathematical reasoning.
-
-### Agent-as-Judge
-
-## Hybrid stacks: combining programmatic and learned verification
-
-A hybrid verifier stack layers programmatic and learned components and defines arbitration logic to combine their outputs. The design question is not which single verifier to use, but how to partition the verification problem across components and how to handle disagreements.
 
 ### Architecture: programmatic-first, learned fallback
 
@@ -94,8 +82,8 @@ where each $v_i$ is a verifier component that may return a score, a categorical 
 
 Common arbitration patterns include:
 
-- **Priority cascade**: check $v_1$ first; if it returns a verdict, use it; otherwise check $v_2$, and so on. This is the programmatic-first architecture above.
-- **Weighted aggregation**: compute $r = \sum_i w_i \, v_i(x, y)$ for learned weights $w_i$. This treats the stack as an ensemble but requires that the component scores are commensurable, which (as noted above) is often false.
+- **Priority cascade**: check $v_1$ first; if it returns a verdict, use it; otherwise check $v_2$, and so on. This is the programmatic-first architecture from the previous section.
+- **Weighted aggregation**: compute $r = \sum_i w_i \, v_i(x, y)$ for learned weights $w_i$. This treats the stack as an ensemble but requires that the component scores are commensurable, which the calibration discussion shows is often false.
 - **Gated routing**: a classifier decides which component to invoke based on input features. This avoids running all components on every input but introduces a routing model that is itself a potential failure point.
 - **Unanimous agreement**: require all components to agree before assigning a positive reward. Conservative but expensive, and it can suppress correct outputs that only one component recognizes.
 
@@ -323,5 +311,7 @@ Third, the distinction between "all components agree" and "the answer is actuall
 - How can verifier-stack audits remain tractable as systems grow more layered? Is there a practical ceiling on stack depth beyond which debugging costs exceed the gains?
 - Can the marginal value of each stack component be quantified before deployment, or must it be measured empirically on the target task distribution?
 - What is the right training regime for a learned judge that will be used inside a hybrid stack — should it be trained on the distribution of inputs the programmatic layer cannot resolve, rather than on the full distribution?
+
+## What comes next
 
 The verifier stack defines what gets checked and how. It does not yet define how those checks become training signal. A stack that returns binary pass/fail verdicts, a stack that returns graded scores, and a stack that returns step-level annotations will produce very different learning dynamics even if they agree on which outputs are correct. The signal-design choices that transform a verifier stack's outputs into something an optimizer can use — binary versus graded scoring, filtering, curriculum, and reward shaping — are the subject of Chapter 5.
