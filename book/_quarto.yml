@@ -26,7 +26,7 @@ book:
         - chapters/06-search-and-test-time-verification.md
     - part: "Failure Modes"
       chapters:
-        - chapters/07-reward-hacking-proxy-misspecification-and-verifier-robustness.md
+        - chapters/07-reward-hacking-and-verifier-robustness.md
         - chapters/08-faithfulness-confidence-and-what-verification-misses.md
     - part: "Domains and Frontiers"
       chapters:

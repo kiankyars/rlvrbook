@@ -116,7 +116,7 @@ When comparing these paradigms, we should be asking whether the granular informa
 The question is whether extra granularity improves learning enough to justify its cost.
 :::
 
-Uesato et al. published the first systematic comparison in November 2022.[@uesato2022solving] Their finding was surprising: outcome-based and process-based feedback achieved similar final-answer accuracy on GSM8K. But process supervision dramatically reduced trace-level errors — from 14.0% to 3.4%. In other words, both methods got the right answer at similar rates, but the process-supervised model was far more likely to get the right answer for the right reasons. Although capabilities are the same, this distinction matters for robustness, interpretability, and downstream trust.
+Uesato et al. published the first systematic comparison in November 2022.[@uesato2022solving] Their finding was surprising: outcome-based and process-based feedback achieved similar final-answer accuracy on GSM8K. But process supervision reduced trace-level errors from 14.0% to 3.4%, i.e. both methods got the right answer at similar rates, but the process-supervised model was far more likely to get the right answer for the right reasons. Although capabilities are the same, this distinction matters for robustness, interpretability, and downstream trust.
 
 ## Limitations
 
@@ -132,8 +132,7 @@ The boundary between outcome and process verification is blurrier than the early
 
 ## Open questions
 
-- Which tasks admit stable step-level labels without excessive annotation overhead, and how can we identify them before investing in annotation infrastructure?
-- How do process rewards interact with hidden reasoning or compressed internal computation that the model does not externalize?
-- When should process checks be strict (hard correctness labels that gate the reward) versus advisory (soft preferences that nudge the policy)?
-- Given the implicit-PRM results, when is explicit process supervision worth the marginal cost over well-designed outcome supervision with sufficient rollout diversity?
+- Which tasks admit step-level labels with the least annotation overhead?
+- How do process rewards interact with hidden reasoning or compressed internal computation?
+- When is explicit process supervision worth the marginal cost over well-designed outcome supervision?
 - Can process rewards be designed to reward strategic value rather than only logical validity, and what would the labeling scheme look like?

@@ -9,11 +9,11 @@ Reinforcement learning from verifiable rewards studies how models can improve by
 
 ## New to RLVR
 
-Read [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-proxy-misspecification-and-verifier-robustness.md).
+Read [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md).
 
 ## Building Systems
 
-Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Chapter 5](chapters/05-turning-checks-into-training-signal.md), [Chapter 7](chapters/07-reward-hacking-proxy-misspecification-and-verifier-robustness.md), and [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md).
+Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Chapter 5](chapters/05-turning-checks-into-training-signal.md), [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md), and [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md).
 
 ## Frontier Research
 

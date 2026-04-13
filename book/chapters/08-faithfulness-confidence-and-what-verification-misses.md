@@ -37,6 +37,28 @@ This matters for RLVR because process rewards make visible reasoning an optimiza
 
 The key point is not that process rewards are bad. The key point is that process rewards certify the trace, not the hidden computation. A perfect process verifier over written steps can still miss the fact that the answer was produced by a shortcut, memory, or latent feature that never appears in the trace.
 
+### Faithfulness as an intervention problem
+
+The hard version of faithfulness is causal, not textual. Let $X$ be the prompt, $R$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,R,Y)$. Neither directly observes $H$.
+
+The artifact-level question is:
+
+$$
+\Pr(Y \text{ correct} \mid X,R).
+$$
+
+That asks whether the trace is compatible with a correct answer. The causal question is different:
+
+$$
+\Pr(Y=y \mid \operatorname{do}(R=r), X)
+\quad \text{versus} \quad
+\Pr(Y=y \mid \operatorname{do}(R=r'), X).
+$$
+
+If replacing the reasoning trace with a counterfactual trace $r'$ barely changes the final answer, then the displayed trace was weak evidence about the mechanism. If corrupting a key step changes the answer in the predicted direction, the trace is more plausibly involved in the computation. This is why interventions on reasoning traces are stronger evidence than simply grading the trace.
+
+The identifiability problem is the deeper point. Two systems can have the same observable distribution $\Pr(R,Y \mid X)$ and different hidden mechanisms $H$. One system may compute the answer through the trace; another may compute the answer first and rationalize afterward. Any verifier restricted to $(X,R,Y)$ cannot separate those mechanisms in general. It can only add tests that make the shortcut less likely.
+
 ## Calibration: knowing what you know
 
 Correctness verifiers check whether an answer is right. They do not automatically check whether the model knows how confident it should be. A model that is right 70 percent of the time and says "I am certain" every time has a calibration problem, but the problem is not visible from the correct cases alone.
@@ -48,6 +70,49 @@ Tian et al. studied calibration in RLHF-trained models and found an important sp
 Binary RLVR gives almost no direct signal about uncertainty. If the model says "the answer is 7" and it is correct, it receives the same endpoint reward whether it was appropriately uncertain or wildly overconfident. If the model abstains or hedges when the benchmark expects a single final answer, it often receives no correctness reward at all. Unless the reward function explicitly includes calibration, the default incentive is to answer, not to know when not to answer.
 
 Graded rewards can encode calibration in principle. A system could reward accurate confidence intervals, penalize overconfidence on wrong answers, and reward abstention when the model is genuinely uncertain. But that requires another verifier: a calibration evaluator that sees enough examples to compare stated confidence to empirical accuracy. Calibration is therefore not free. It is a separate signal-design problem layered on top of correctness.
+
+### Calibration as a scoring problem
+
+Calibration is distributional. If the model emits a confidence $p(x) \in [0,1]$ and correctness is $C(x) \in \{0,1\}$, perfect calibration means
+
+$$
+\mathbb{E}[C \mid p(X)=p] = p.
+$$
+
+In finite data, this is usually approximated by bins:
+
+$$
+\mathbb{E}[C \mid p(X) \in B_j]
+\approx
+\mathbb{E}[p(X) \mid p(X) \in B_j].
+$$
+
+This immediately shows why a single verified answer cannot certify confidence. Calibration is a relationship between stated probabilities and empirical frequencies across many examples.
+
+If we want RLVR to train confidence, the reward should use a proper scoring rule, not just a correctness bit.[@gneiting2007strictly] Two standard examples are the Brier loss
+
+$$
+S_{\mathrm{Brier}}(p,C) = (p-C)^2
+$$
+
+and the log loss
+
+$$
+S_{\log}(p,C)
+=
+- C \log p - (1-C)\log(1-p).
+$$
+
+A calibrated RLVR reward could then take the form
+
+$$
+r(x,y,p)
+=
+r_{\mathrm{correct}}(x,y)
+- \lambda S(p, C(x,y)),
+$$
+
+where $C(x,y)$ is the verifier's correctness label. The tradeoff is real: increasing $\lambda$ teaches confidence and abstention, but it also changes the optimization target away from pure task success. That is not a reason to avoid calibration rewards. It is a reason to report them separately from correctness gains.
 
 ## Behavioral correctness is not the same as understanding
 
@@ -95,32 +160,6 @@ The operational position for RLVR is simple: verification certifies behavior und
 
   <div class="vl-summary" id="vl-summary" aria-live="polite"></div>
 </div>
-
-<style>
-.vl-widget { max-width: 900px; margin: 1.2em auto; font-family: var(--bs-body-font-family, system-ui, sans-serif); }
-.vl-hint { font-size: 0.88em; color: var(--bs-secondary-color, #6c757d); margin-bottom: 0.6em; }
-.vl-tabs { display: flex; flex-wrap: wrap; gap: 0.35em; margin-bottom: 0.9em; }
-.vl-tab { border: 1px solid var(--bs-border-color, #dee2e6); background: var(--bs-body-bg, #fff); color: var(--bs-body-color, #212529); border-radius: 999px; padding: 0.45em 0.8em; font-size: 0.88em; cursor: pointer; }
-.vl-tab:hover { background: var(--bs-tertiary-bg, #f8f9fa); }
-.vl-tab.vl-active { background: var(--bs-primary, #2c7be5); border-color: var(--bs-primary, #2c7be5); color: #fff; }
-.vl-grid { display: grid; grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.15fr); gap: 1rem; align-items: start; }
-.vl-response, .vl-properties { border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 10px; padding: 0.9em; background: var(--bs-body-bg, #fff); }
-.vl-title { font-weight: 650; margin-bottom: 0.55em; }
-.vl-card { border-left: 4px solid var(--bs-primary, #2c7be5); padding: 0.2em 0 0.2em 0.8em; font-size: 0.9em; line-height: 1.45; background: var(--bs-tertiary-bg, #f8f9fa); border-radius: 0 8px 8px 0; }
-.vl-card p { margin: 0.45em 0; }
-.vl-note { margin-top: 0.75em; color: var(--bs-secondary-color, #6c757d); font-size: 0.84em; }
-.vl-row { display: grid; grid-template-columns: 1fr 90px; gap: 0.75em; align-items: center; padding: 0.55em 0; border-bottom: 1px solid var(--bs-border-color, #dee2e6); }
-.vl-row:last-child { border-bottom: none; }
-.vl-prop { font-size: 0.9em; }
-.vl-status { text-align: center; border-radius: 999px; padding: 0.25em 0.55em; font-size: 0.82em; font-weight: 650; }
-.vl-yes { color: #0f5132; background: rgba(25, 135, 84, 0.14); }
-.vl-partial { color: #7c4a03; background: rgba(217, 119, 6, 0.16); }
-.vl-no { color: #842029; background: rgba(220, 53, 69, 0.14); }
-.vl-summary { margin-top: 0.8em; padding: 0.7em 0.9em; border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 10px; background: var(--bs-tertiary-bg, #f8f9fa); font-size: 0.9em; line-height: 1.5; }
-@media (max-width: 820px) {
-  .vl-grid { grid-template-columns: 1fr; }
-}
-</style>
 
 <script>
 (() => {

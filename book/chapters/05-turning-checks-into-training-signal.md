@@ -162,7 +162,6 @@ training_args = GRPOConfig(
     per_device_train_batch_size=1,
     gradient_accumulation_steps=4,
     num_generations=16,
-    max_prompt_length=256,
     max_completion_length=786,
     num_train_epochs=1,
     save_steps=100,
@@ -237,28 +236,11 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
 <button class="rsp-tab" role="tab" data-tab="format" aria-selected="false">Correctness + format</button>
 </div>
 <table class="rsp-table">
-<thead><tr><th>#</th><th>Correctness</th><th>Format</th><th>Reward</th><th>Advantage</th><th style="width:40%">Signal</th></tr></thead>
+<thead><tr><th>#</th><th>Correctness</th><th>Format</th><th>Reward</th><th>Advantage</th><th class="rsp-signal-col">Signal</th></tr></thead>
 <tbody id="rsp-body"></tbody>
 </table>
 <div class="rsp-summary" id="rsp-summary" aria-live="polite"></div>
 </div>
-<style>
-.rsp-widget{font-family:var(--bs-font-sans-serif,system-ui,sans-serif);max-width:640px;margin:1.5rem auto}
-.rsp-hint{font-size:.9rem;color:var(--bs-secondary,#6c757d);margin-bottom:.75rem}
-.rsp-tabs{display:flex;gap:.5rem;margin-bottom:1rem}
-.rsp-tab{padding:.4rem 1rem;border:1px solid var(--bs-border-color,#dee2e6);border-radius:4px;background:var(--bs-body-bg,#fff);color:var(--bs-body-color,#212529);cursor:pointer;font-size:.85rem;transition:background .15s}
-.rsp-tab:hover{background:var(--bs-tertiary-bg,#f0f0f0)}
-.rsp-tab-active{background:var(--bs-primary,#2c7be5);color:#fff;border-color:var(--bs-primary,#2c7be5)}
-.rsp-table{width:100%;border-collapse:collapse;font-size:.85rem}
-.rsp-table th,.rsp-table td{padding:.35rem .5rem;border-bottom:1px solid var(--bs-border-color,#dee2e6);text-align:left}
-.rsp-table th{font-weight:600}
-.rsp-bar-cell{position:relative}
-.rsp-bar{height:16px;border-radius:2px;transition:width .3s ease}
-.rsp-bar-pos{background:#22c55e}
-.rsp-bar-neg{background:#ef4444}
-.rsp-bar-warn{background:#f59e0b}
-.rsp-summary{margin-top:.75rem;font-size:.85rem;padding:.5rem;border-left:3px solid var(--bs-primary,#2c7be5);background:var(--bs-tertiary-bg,#f8f9fa)}
-</style>
 <script>
 (function(){
   var data={
@@ -274,7 +256,7 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
         {id:8,correctness:'\u2717',format:'N/A',reward:'0.0',adv:-0.77}
       ],
       mean:0.75,
-      summary:'Clean signal: all correct rollouts reinforced equally (+1.29), all incorrect suppressed equally (\u22120.77). Advantage sign matches correctness.'
+      summary:'Group mean: 0.75. Advantage sign matches correctness for every rollout.'
     },
     format:{
       rows:[
@@ -288,7 +270,7 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
         {id:8,correctness:'\u2717',format:'\u2717',reward:'0.0',adv:-1.36}
       ],
       mean:1.85,
-      summary:'Diluted signal: rollout 4 is incorrect but its advantage is \u22120.04 \u2014 the optimizer barely suppresses it. Format rewards mask the correctness error.'
+      summary:'Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.'
     }
   };
   var maxMag=1.5;
@@ -330,7 +312,7 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
 | 1–3     | Correct     | N/A    | 2.0    | +1.29     |
 | 4–8     | Wrong       | N/A    | 0.0    | −0.77     |
 
-Group mean: 0.75. Signal is clean — advantage sign matches correctness for every rollout.
+Group mean: 0.75. Advantage sign matches correctness for every rollout.
 
 **Correctness + format rewards** (same eight rollouts):
 
@@ -345,7 +327,7 @@ Group mean: 0.75. Signal is clean — advantage sign matches correctness for eve
 | 7       | Wrong       | ✗      | 0.2    | −1.21     |
 | 8       | Wrong       | ✗      | 0.0    | −1.36     |
 
-Group mean: 1.85. Signal is diluted — rollout 4 is incorrect but barely suppressed.
+Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.
 
 :::
 
@@ -362,7 +344,7 @@ This works for GSM8K because a 1.5B instruct model sits at roughly the right com
 
 If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we're effectively training on formatting. Converslet, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
-The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band.[^ch5-rejection-sampling][@shao2024deepseekmath][@deepseekai2025r1] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training.[@bengio2009curriculum]
+The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band.[^ch5-rejection-sampling][@shao2024deepseekmath; @deepseekai2025r1] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training.[@bengio2009curriculum]
 
 ### Group normalization versus KL penalty
 
@@ -370,7 +352,7 @@ The script uses `GRPOConfig`, which implements group relative policy optimizatio
 
 $$\hat{A}_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}$$
 
-This eliminates the value model, and in fact, Ahmadian et al. showed that REINFORCE-style methods (no learned value function) match PPO when reward design and hyperparameters are tuned carefully.[@ahmadian2024back] The drawback here is no explicit constraint on policy drift. PPO's clipped surrogate or KL penalty keeps the policy close to a reference. GRPO relies on implicit regularization — `max_grad_norm=0.1` clips gradient magnitude, the LoRA adapter constrains the rank of parameter updates, and group normalization centers the expected gradient at zero within each group. This works for short training runs on well-filtered tasks. For longer runs, the policy can drift far enough that the verifier's scores become unreliable — the model has left the distribution the reward functions were designed for. This is a specific failure mode covered in Chapter 7.
+This eliminates the value model, and in fact, Ahmadian et al. showed that REINFORCE-style methods (no learned value function) match PPO when reward design and hyperparameters are tuned carefully.[@ahmadian2024back] The drawback here is no explicit constraint on policy drift. PPO's clipped surrogate or KL penalty keeps the policy close to a reference. GRPO uses gradient clipping, a constrained LoRA adapter update, and group normalization to this end.
 
 ### Rollout budget and variance
 
@@ -399,12 +381,10 @@ powerful only when the surrounding system turns it into a signal dense enough to
 - How should adaptive task filtering be evaluated so that a curriculum tracking the model's competence improves the target distribution rather than overfitting to the moving filter?
 - Is there a compute-optimal $N$ analogous to scaling laws for model size?
 - Should format rewards phase out as training progresses, or does removing them cause regression?
-- Which signal transformations are robust across domains?
-- When is graded reward genuinely better than carefully designed binary reward?
 
 ## What comes next
 
-Every design choice in this chapter assumes the same structure: generate rollouts, score them, compute advantages, update parameters. That is the training loop. But the same verifier that scores training rollouts can also improve outputs at test time, without updating any parameters. Sampling multiple candidates and selecting the best, guiding search with step-level scores, or voting across reasoning paths — these all use the verifier, and they all produce gains that are routinely reported alongside training gains without separating the two. The verifier's test time role is the subject of Chapter 6.
+This chapter is concerned with the training loop, but the same verifier that scores training rollouts can also improve outputs at test time without parameter updates, which is the subject of Chapter 6.
 
 [^ch5-brown-grpo-150line]: Brown's compact GRPO implementation is a practical reference for outcome-RLVR training with explicit parsing and reward components.[@brown2025grpo]
 [^ch5-rejection-sampling]: Rejection sampling means sampling candidate problems or candidate rollouts, scoring them with the verifier, and keeping only the ones that meet a target criterion, e.g. example prompts whose rollouts are sometimes but not always correct.

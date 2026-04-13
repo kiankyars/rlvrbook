@@ -4,17 +4,14 @@
 
 ## Chapter Map
 
-- A verifier can improve a system without any parameter update; this chapter covers what that looks like and why it matters.
-- Most reported reasoning-model results conflate gains from training with gains from search; this chapter separates them.
+- A verifier can improve a system without parameter updates.
+- Disambiguating test vs train time compute.
 
 ## Test Time
 
-Chapters 2 through 5 treated the verifier as a source of training signal. The model generates rollouts, the verifier scores them, and the optimizer updates parameters. This chapter is about what verifiers do at test time, without any parameter update at all, which is split up into one of two broad techniques:
-1. selection
-2. search
-. To motivate the test time use of verifiers, let's say a paper states that an RL-trained model achieves 90% on MATH using best-of-64 selection with an ORM. 90% number reflects both the training-time gain (the policy is better than it was before RL) and the test time gain (the best of 64 candidates is better than a single sample). Therefore, it is important to be aware of both factors when judging results and working with verifiers.
+Chapters 2 through 5 treated the verifier as a source of training signal. The model generates rollouts, the verifier scores them, and the optimizer updates parameters. Test time verifier use is split up into the two groups, we'll start with selection:
 
-## Selection: verifier as ranker
+## Selection
 
 | Technique | Decision rule | Verifier use | Best when | Main limitation |
 | --- | --- | --- | --- | --- |
@@ -28,15 +25,15 @@ $$
 \text{Score}(x, y) = \operatorname{Agg}\bigl(\text{PRM}(s_1 \mid x), \ldots, \text{PRM}(s_K \mid x, s_{<K})\bigr).
 $$
 
-There are many such reductions. Math-Shepherd uses the minimum step score when reranking full solutions in a best-of-$N$ verification setting, reflecting the intuition that one invalid step can sink an otherwise plausible derivation.[@wang2024mathshepherd]
+Lightman et al. showed why this reduction matters at test time: on the MATH benchmark, PRM-based reranking in a best-of-$N$ setting outperformed ORM-based reranking, with the gap widening as the number of candidates increased.[@lightman2023letsverify]
 
-Lightman et al. gave a canonical example of why this matters at test time: on the MATH benchmark, PRM-based reranking in a best-of-$N$ setting outperformed ORM-based reranking, with the gap widening as the number of candidates increased.[@lightman2023letsverify]
+The remaining design choice is how to collapse step scores into a trajectory score. Math-Shepherd uses the minimum step score when reranking full solutions, reflecting the intuition that one invalid step can sink an otherwise plausible derivation.[@wang2024mathshepherd]
 
-Best-of-$N$ is surprisingly powerful. Let $p$ be the probability that a single sample is correct. Then a single sample is wrong with probability $1 - p$. If we assume the $N$ samples are independent, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$. The event we care about is the complement of that event, namely that at least one sample is correct, so the success probability is
+The basic arithmetic behind best-of-$N$ is powerfully simple. Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$. We can write the complement, which is at least one correct sample, as:
 $$
 1 - (1 - p)^N.
 $$
-That is the basic arithmetic behind pass@$N$: sampling helps because repeated draws compound failure probability downward. Even a weak policy with $p = 0.1$ has
+pass@$N$ sampling helps because repeated draws compound failure probability downward. Even a weak policy with $p = 0.1$ has
 $$
 1 - 0.9^{10} \approx 0.65
 $$
@@ -46,30 +43,11 @@ $$
 $$
 among $N = 20$. Real model samples are not truly independent, so the formula is an idealization rather than an exact law, but it captures the core reason best-of-$N$ can buy large gains from modest per-sample competence.
 
-### pass@$k$ and the evaluation concept
+### pass@$k$
 
-Chen et al. defined pass@$k$: the probability that at least one of $k$ samples passes all tests.[@chen2021codex] This metric separates the policy from multi-sampling, and the gap between them quantifies how much the reported result depends on the evaluation protocol rather than the model. For example, the original Codex paper reported 28.8% pass@1 on HumanEval but 70.2% pass@100 — a 2.4x multiplier from sampling alone.[@chen2021codex]
+Chen et al. defined pass@$k$: the probability that at least one of $k$ samples passes all tests.[@chen2021codex] This metric quantifies how much the reported result depends on the evaluation protocol rather than the model. For example, the original Codex paper reported 28.8% pass@1 on HumanEval but 70.2% pass@100 from sampling alone.[@chen2021codex]
 
-### Compute-optimal selection
-
-One question which naturally arises from verification is the exploration/exploitation argument, with exploration corresponding to more generations and exploitation corresponding to more time spent on verification. Snell et al. asked: given a fixed compute budget, how should you split it between generating more candidates and spending more on verification?[@snell2024scaling] Their conclusion is that the optimal allocation depends on problem difficulty. For hard problems where per-sample success is rare, PRM-guided selection can be 4x more efficient than naive best-of-$N$, and a smaller model with more search can match or exceed the performance of a 14x larger model at matched compute.
-
-## Search: verifier as controller
-
-| Technique | Control loop | Verifier use | Best when | Main limitation |
-| --- | --- | --- | --- | --- |
-| PRM-guided beam search | Expand or prune partial branches online | Score intermediate states during generation | The verifier is fast enough to sit on the inner loop | Latency dominates if scoring is expensive |
-| Draft-and-check loops | Generate, test, backtrack, retry | Gate progress with tests, compilation, or checkpoints | Code and agentic tasks allow cheap external checks | Retries can be slow and brittle |
-| Tool-gated continuation | Call a tool, inspect the result, revise the next step | Treat tool outputs as live verification signals | Tool use grounds the next action | Behavior depends on tool quality and availability |
-| MCTS with exact verification [@trinh2025alphaproof] | Search a tree of actions under verifier feedback | Check each step exactly with a formal system | A deployable step-level verifier exists | Mostly limited to formal domains |
-
-The difference here from selection is that search changes the output distributio, while selection only filters. A model that uses a verifier to prune branches, backtrack, and redirect can explore parts of the solution space that no single forward pass would reach. Search is more powerful, but also more expensive and more sensitive to verifier latency and accuracy.
-
-For this chapter, only deployable test time verification counts. Test suites, proof kernels, live environments, and some learned judges can actually be run by the system at serving time.[@chen2021codex; @liu2023evalplus; @xin2024deepseekprover; @xin2024deepseekproverv15; @trinh2025alphaproof] Benchmark-only answer-key grading in math is useful for measuring proposal quality, but it is not a deployable verifier and should not be confused with real test time capability.[@kydlicek2025mathverify; @shao2024deepseekmath; @deepseekai2025r1]
-
-## search vs. amortization
-
-::: {#fig-ch6-search-vs-amortization}
+::: {#fig-ch6-pass-at-k}
 
 ::: {.content-visible when-format="html"}
 
@@ -107,25 +85,6 @@ For this chapter, only deployable test time verification counts. Test suites, pr
 
   <div class="sva-summary" id="sva-summary" aria-live="polite"></div>
 </div>
-
-<style>
-.sva-widget { max-width: 640px; margin: 1.2em auto; font-family: var(--bs-body-font-family, system-ui, sans-serif); }
-.sva-hint { font-size: 0.88em; color: var(--bs-secondary-color, #6c757d); margin-bottom: 0.5em; }
-.sva-controls { display: flex; flex-wrap: wrap; gap: 1em; align-items: center; margin-bottom: 0.6em; }
-.sva-slider-row { display:flex; align-items:center; gap:0.5em; }
-.sva-label { font-size: 0.9em; }
-.sva-svg { width: 100%; height: auto; }
-.sva-summary { margin-top: 0.5em; padding: 0.6em 0.8em; border-radius: 6px;
-  background: var(--bs-tertiary-bg, #f8f9fa); color: var(--bs-body-color, #212529);
-  border: 1px solid var(--bs-border-color, #d0d7de); font-size: 0.88em; line-height: 1.5; }
-
-html[data-bs-theme="dark"] .sva-summary,
-body.quarto-dark .sva-summary {
-  background: #1f2937;
-  color: #e5e7eb;
-  border-color: #374151;
-}
-</style>
 
 <script>
 (() => {
@@ -219,52 +178,114 @@ body.quarto-dark .sva-summary {
 Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR from Table 1 of Khan et al.[@khan2026plasticity] The RLVR-trained model starts higher and still benefits from search, but the gap narrows as the candidate budget grows.
 :::
 
+### Selection under verifier noise
+
+The pass@$N$ expression assumes that the checker is the target property. In RLVR systems, that is almost never the full story. Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, verifier true-positive rate $\beta = \Pr(V=1 \mid C=1)$, and verifier false-positive rate $\alpha = \Pr(V=1 \mid C=0)$, then the probability of at least one accepted candidate among $N$ samples is
+
+$$
+\Pr(\exists i : V_i = 1)
+= 1 - \bigl(1 - \beta p - \alpha(1-p)\bigr)^N.
+$$
+
+This is not the same as the probability that the returned answer is correct. The verifier tail has its own precision:
+
+$$
+\Pr(C=1 \mid V=1)
+=
+\frac{\beta p}{\beta p + \alpha(1-p)}.
+$$
+
+That denominator is the dangerous term. When $p$ is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. For a hard problem with $p=0.05$, $\beta=0.9$, and $\alpha=0.01$, the verifier-accepted tail is only
+
+$$
+\frac{0.9 \cdot 0.05}{0.9 \cdot 0.05 + 0.01 \cdot 0.95}
+\approx 0.83
+$$
+
+correct. If $\alpha$ rises to $0.05$, tail precision drops to
+
+$$
+\frac{0.9 \cdot 0.05}{0.9 \cdot 0.05 + 0.05 \cdot 0.95}
+\approx 0.49.
+$$
+
+Best-of-$N$ therefore depends on the verifier's precision in the selected tail, not merely on its average accuracy. This is the bridge to Chapter 7: more search increases the chance of finding a correct sample, but it also increases the chance of finding a false positive that the verifier cannot reject.
+
+### Compute-optimal selection
+
+One question which naturally arises from verification is the exploration/exploitation argument, with exploration corresponding to more generations and exploitation corresponding to more time spent on verification. Snell et al. asked: given a fixed compute budget, how should you split it between generating more candidates and spending more on verification?[@snell2024scaling] Their conclusion is that the optimal allocation depends on problem difficulty. For hard problems where per-sample success is rare, PRM-guided selection can be 4x more efficient than naive best-of-$N$, and a smaller model with more search can match or exceed the performance of a 14x larger model at matched compute.
+
+## Search: verifier as controller
+
+| Technique | Control loop | Verifier use | Best when | Main limitation |
+| --- | --- | --- | --- | --- |
+| PRM-guided beam search | Expand or prune partial branches online | Score intermediate states during generation | The verifier is fast enough to sit on the inner loop | Latency dominates if scoring is expensive |
+| Draft-and-check loops | Generate, test, backtrack, retry | Gate progress with tests, compilation, or checkpoints | Code and agentic tasks allow cheap external checks | Retries can be slow and brittle |
+| Tool-gated continuation | Call a tool, inspect the result, revise the next step | Treat tool outputs as live verification signals | Tool use grounds the next action | Behavior depends on tool quality and availability |
+| MCTS with exact verification [@trinh2025alphaproof] | Search a tree of actions under verifier feedback | Check each step exactly with a formal system | A deployable step-level verifier exists | Mostly limited to formal domains |
+
+The difference here from selection is that search changes the output distribution, while selection only filters. A model that uses a verifier to prune branches, backtrack, and redirect can explore parts of the solution space that no single forward pass would reach. Search is more powerful, but also more expensive and more sensitive to verifier latency and accuracy.
+
+For this chapter, only deployable test time verification counts. Test suites, proof kernels, live environments, and some learned judges can actually be run by the system at serving time.[@chen2021codex; @liu2023evalplus; @xin2024deepseekprover; @xin2024deepseekproverv15; @trinh2025alphaproof] Benchmark-only answer-key grading in math is useful for measuring proposal quality, but it is not a deployable verifier and should not be confused with real test time capability.[@kydlicek2025mathverify; @shao2024deepseekmath; @deepseekai2025r1]
+
+### Search as controlled verification
+
+Selection can be written as
+
+$$
+y^\star = \arg\max_{y_i \sim \pi_\theta(\cdot \mid x)} v(x,y_i),
+\qquad i = 1,\ldots,N,
+$$
+
+where the verifier only acts after the model has produced complete candidates. Search is different because verifier outputs alter the future trajectory. A simple abstraction is a history-dependent controller:
+
+$$
+h_t = (x, a_1, o_1, \ldots, a_{t-1}, o_{t-1}), \qquad
+a_t \sim \pi_{\mathrm{search}}(\cdot \mid h_t),
+$$
+
+where observations $o_t$ can include compiler errors, unit-test failures, proof-state feedback, retrieved documents, or learned verifier scores. The objective is no longer "sample $N$ and choose the best." It is closer to
+
+$$
+\max_{\pi_{\mathrm{search}}}
+\mathbb{E}\!\left[
+U(s_T)
+- \lambda_g \sum_{t=1}^{T} c_{\mathrm{gen}}(a_t)
+- \lambda_v \sum_{t=1}^{T} c_{\mathrm{verify}}(o_t)
+\right],
+$$
+
+where $U(s_T)$ is final utility, and the two costs represent generation and verification. This is why verifier latency matters. A verifier that is excellent but slow can be a good post-hoc ranker and a bad inner-loop controller. A cheap noisy verifier can be useful for pruning but dangerous if its errors compound across steps.
+
 ## Why RL still matters: amortization
 
 If best-of-$N$ plus a test suite is so powerful, why bother with RL at all?
 
-**Latency.** Search requires generating and scoring multiple candidates. An RL-trained model that has internalized the verified patterns produces a better output in a single forward pass. At serving time, the difference between one generation and 64 is the difference between 200ms and 13 seconds.
+**Latency.** Search requires generating and scoring multiple candidates. An RL-trained model that has internalized the verified patterns produces a similar output in a single forward pass.
 
-**Cost.** At deployment, compute is money. A model that has amortized search gains into its weights serves cheaper per query than one that requires $N$ candidates and $N$ verifier calls. If test time search costs 64x more compute, the RL-trained model's pass@1 is the more relevant number for production.
+**Cost.** At deployment, compute is money. A model that has amortized search gains into its weights serves cheaper per query than one that requires $N$ candidates and $N$ verifier calls.
 
-**Coverage.** Search helps only when the verifier is available. A code model that learned robust patterns from RL on test-suite-verified tasks will generalize, at least partially, to coding tasks where no test suite exists — code review, refactoring, documentation generation. The RL-trained policy has internalized patterns from verified tasks that transfer to unverified settings. Pure search cannot do this: it requires the verifier to be present at test time.
+**Amortized transfer.** Search helps only when the verifier is available. A code model that learned robust patterns from RL on test-suite-verified tasks will generalize, at least partially, to coding tasks where no test suite exists; pure search cannot do this.
 
-**Exploration.** Search over the current policy's sampling distribution can only find solutions the policy can already almost produce. RL changes the sampling distribution itself. It reinforces strategies that lead to verified success and suppresses strategies that do not, shifting the model's probability mass toward better solutions. After RL, even pass@1 reflects a better distribution, not just a better selection from the old one.
+**Exploration.** Search over the current policy's sampling distribution can only find solutions the policy can already almost produce. RL reinforces strategies that lead to verified success and suppresses strategies that do not, shifting the model's probability mass toward better solutions.
 
-**Expert iteration as the explicit bridge.** STaR makes the amortization loop explicit: generate solutions, filter by verifier, fine-tune on successes, repeat.[@zelikman2022star] Each round distills the search-assisted distribution into the policy's parameters. The model gets better, so the next round of search starts from a higher baseline. RLVR via GRPO or PPO is a more continuous version of the same loop — the amortization happens at every gradient step rather than in discrete rounds.
+## Reporting results
 
-## Reporting results fairly
+A fair model report makes the policy, the verifier, and the test time compute budget legible as separate sources of performance:
 
-The confound between training gains and search gains creates a practical problem for the reader of any RLVR paper. Four principles help.
+**Matched test time compute.** The fairest comparison is the RL-trained model at pass@1 against the base model with search at the same total FLOP budget, amortizing the RL model's training cost over all queries it will serve.
 
-**Matched test time compute.** Compare the RL-trained model at pass@1 against the base model with search at the same total FLOP budget. If the RL model gets a single generation while the base model gets 64, the comparison is fair only if the total compute is matched. A base model at pass@64 uses roughly 64x the test time compute of a single pass; the RL model's training cost must also be accounted for, but amortized over all queries it will serve.
-
-**Explicit verifier access.** State whether the reported result uses a verifier the deployed system could actually run at test time, or whether it relies on privileged benchmark-only grading such as answer-key matching. Also state whether it is the same verifier used during training. A result that depends on privileged grading should not be read as a deployable capability claim.
+**Explicit verifier access.** State whether the reported result uses a verifier the deployed system could actually run at test time.
 
 **Separation of gains.** Report pass@1 (no search), pass@$N$ (selection), and search-guided results separately. This lets the reader see how much improvement comes from the policy, how much from selection, and how much from active search. A model with high pass@1 and modest pass@$N$ has internalized most of the capability. A model with low pass@1 and high pass@$N$ is leaning on search.
 
-**The Snell et al. framework.** Compute-optimal allocation between test time search and training depends on problem difficulty.[@snell2024scaling] On easy problems, the base model's per-sample accuracy is already high and additional search provides diminishing returns — the budget is better spent on training or on harder problems. On hard problems, search is essential and a smaller model plus heavy search can outperform a larger model at pass@1. Difficulty determines the optimal split.
-
-## What verification at test time sees and misses
-
-The verifier sees whatever it sees in Chapters 2 through 4, amplified by sampling diversity. Multiple samples explore different solution strategies — different algorithms, different edge-case handling, different code structures — increasing the chance that at least one candidate falls in the verifier's checkable core. If the test suite covers the relevant behaviors and any of the 16 candidates implements them correctly, selection will find it.
-
-It misses three things.
-
-First, systematic model biases that all samples share. If the model always makes the same off-by-one error on a particular class of inputs, 64 samples of that error do not help. Selection provides diversity over the model's sampling distribution; it does not repair systematic gaps in that distribution. This is exactly the gap that RL training can close, by shifting the distribution itself.
-
-Second, capabilities that exist in no sample from the current policy. Search cannot find what the policy cannot generate. If the model has never seen a particular algorithm and has zero probability of producing it, no amount of search will discover it. RL, by contrast, can shift probability mass toward novel strategies if they are reinforced by the verifier — though this requires the strategies to appear at least occasionally in rollouts.
-
-Third, the distinction between "the best sample passes the verifier" and "the system reliably solves the task." Best-of-$N$ selection has high variance on small benchmarks. The best candidate might pass all tests, but if you resampled, a different set of 16 candidates might not contain a correct solution. pass@$N$ reports an expected probability, not a guarantee. Selection creates the illusion of capability at the instance level while the underlying policy remains unreliable.
-
 ## Open questions
 
-- When is additional search a better investment than additional training, and how should the tradeoff be evaluated across difficulty levels and domains?
 - How should test time compute budgets scale with problem difficulty, model size, and verifier cost?
-- Can learned verifiers be made fast enough for online search — step-level scoring during generation — or are they limited to post-hoc selection over completed outputs?
-- How should the field standardize reporting to separate training gains from search gains? Is there a consensus protocol emerging?
-- When does test time search amplify reward hacking rather than competence? Sampling more candidates increases the chance of finding one that exploits the verifier — a point we return to in Chapter 7.
+- Can learned verifiers be made fast enough for online search?
+- How should the field standardize reporting to separate training gains from search gains?
+- When does test time search amplify reward hacking rather than competence?
 
 ## What comes next
 
-Selection and search exploit the verifier's signal to improve outputs at test time. RL exploits the same signal to improve the policy itself. Both assume the signal is trustworthy. Chapter 7 asks what happens when it is not — when the verifier becomes the attack surface and optimization finds ways to satisfy the checker without solving the task
+Chapter 7 asks what happens when the verifier becomes the attack surface and optimization finds ways to satisfy the checker without solving the task.

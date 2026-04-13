@@ -53,7 +53,7 @@ A useful abstraction of outcome-verification pipelines is in three steps:
 
 2. **Canonicalize.** Map the extracted artifact to a representation that is stable under harmless surface variation. In math this can mean parsing `(2,3)`, `{3,2}`, and `x=2, x=3` into the same set object.
 
-3. **Reward.** Assign a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Graded alternatives exist — partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric — but they introduce their own failure modes, which we return to later.
+3. **Reward.** Assign a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric are possible too.
 
 Current RLVR libraries do not have an agreed upon `extract -> canonicalize -> reward` interface. In practice, one usually writes or selects a task-specific reward function: in Transformer Reinforcement Learning (TRL), a `reward_func`; in veRL (Volcano Engine Reinforcement Learning for LLMs), a scoring function or reward manager.[@vonwerra2020trl; @sheng2024hybridflow] For math-style tasks, those reward functions often delegate most of the work to answer-verification libraries such as Math-Verify, whose documented grading architecture is explicit: answer extraction, conversion to a common representation, and gold comparison.[@kydlicek2025mathverify]
 
@@ -120,7 +120,7 @@ Where the engineering difficulty concentrates is strongly domain-dependent. In m
 
 Although the verifier only checks the outcome, the optimizer updates the entire trajectory. In REINFORCE-style algorithms (including GRPO), the scalar reward from the outcome check is used to upweight or downweight the log-probability of every token in the completion. If the answer is correct, the whole chain of reasoning that produced it becomes more likely. If it is wrong, the whole chain becomes less likely.
 
-This is the blunt instrument at the heart of outcome-based RLVR. The verifier has no opinion about which tokens in the reasoning trace were helpful and which were noise — it assigns a single number to the whole sequence. The optimizer then spreads that number uniformly across all token-level decisions. This works surprisingly well in practice, because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed. But it also means that outcome rewards cannot isolate a specific reasoning step as good or bad. That distinction is exactly what process rewards (Chapter 3) provide.
+This is the blunt instrument at the heart of outcome-based RLVR. The verifier has no opinion on individual tokens in the reasoning trace, it assigns one scalar per completion. The optimizer then spreads that number uniformly across all token-level decisions. This works surprisingly well in practice, because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed. But it also means that outcome rewards cannot isolate a specific reasoning step as good or bad. That distinction is exactly what process rewards (Chapter 3) provide.
 
 ::: {#fig-ch2-outcome-full-trajectory-update fig-cap="Outcome verification checks only the extracted endpoint, but the update is applied across the entire sampled trajectory."}
 
@@ -149,107 +149,6 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
 
   <div class="ds-summary" id="ds-summary" aria-live="polite"></div>
 </div>
-
-<style>
-.ds-widget { max-width: 980px; margin: 1.2em auto; font-family: var(--bs-body-font-family, system-ui, sans-serif); }
-.ds-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.85rem; margin-bottom: 0.9rem; }
-.ds-hint { margin: 0; max-width: 680px; font-size: 0.9em; color: var(--bs-secondary-color, #6c757d); line-height: 1.45; }
-.ds-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem; }
-.ds-tabs { display: inline-flex; border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 999px; overflow: hidden; }
-.ds-tab { background: transparent; border: none; padding: 0.45em 0.95em; cursor: pointer; font-size: 0.9em; color: var(--bs-body-color, #212529); }
-.ds-tab:hover { background: var(--bs-tertiary-bg, #f8f9fa); }
-.ds-tab.ds-active { background: var(--bs-primary, #2c7be5); color: #fff; }
-.ds-reward-badge { padding: 0.42em 0.8em; border-radius: 999px; font-size: 0.84em; font-weight: 600; border: 1px solid transparent; }
-.ds-reward-success { color: #166534; background: rgba(22, 101, 52, 0.10); border-color: rgba(22, 101, 52, 0.18); }
-.ds-reward-failure { color: #b91c1c; background: rgba(185, 28, 28, 0.08); border-color: rgba(185, 28, 28, 0.18); }
-.ds-chain { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.9rem; align-items: start; }
-.ds-slot { min-width: 0; }
-.ds-slot-title { margin-bottom: 0.35rem; font-size: 0.83em; font-weight: 600; color: var(--bs-body-color, #212529); }
-.ds-chart {
-  position: relative;
-  height: 182px;
-  border: 1px solid var(--bs-border-color, #dee2e6);
-  border-radius: 14px;
-  background:
-    linear-gradient(to top, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0.02)),
-    repeating-linear-gradient(
-      to top,
-      transparent 0,
-      transparent 23%,
-      rgba(148, 163, 184, 0.18) 23%,
-      rgba(148, 163, 184, 0.18) 24%
-    );
-  padding: 0.8rem 0.55rem 0.55rem;
-}
-.ds-slot.ds-checked .ds-chart {
-  border: 2px dashed var(--bs-primary, #2c7be5);
-  background:
-    linear-gradient(to top, rgba(44, 123, 229, 0.10), rgba(44, 123, 229, 0.02)),
-    repeating-linear-gradient(
-      to top,
-      transparent 0,
-      transparent 23%,
-      rgba(148, 163, 184, 0.18) 23%,
-      rgba(148, 163, 184, 0.18) 24%
-    );
-}
-.ds-bars { position: absolute; inset: 0.95rem 0.6rem 0.6rem; display: flex; align-items: flex-end; gap: 0.42rem; }
-.ds-bar {
-  flex: 1;
-  min-height: 8px;
-  border-radius: 12px 12px 5px 5px;
-  background: #cbd5e1;
-  transition: height 220ms ease, background-color 220ms ease, transform 220ms ease, opacity 220ms ease;
-}
-.ds-bar.is-sampled {
-  background: #2563eb;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-}
-.ds-sampled-row { display: flex; align-items: center; gap: 0.45rem; margin-top: 0.55rem; min-width: 0; }
-.ds-update-arrow { font-size: 1.05em; font-weight: 700; line-height: 1; }
-.ds-update-up { color: #166534; }
-.ds-update-down { color: #b91c1c; }
-.ds-sampled-label {
-  min-width: 0;
-  font-size: 0.8em;
-  line-height: 1.35;
-  color: var(--bs-body-color, #212529);
-  overflow-wrap: anywhere;
-}
-.ds-slot-note { margin-top: 0.22rem; font-size: 0.74em; color: var(--bs-secondary-color, #6c757d); }
-.ds-check-label {
-  position: absolute;
-  top: 0.45rem;
-  right: 0.5rem;
-  padding: 0.18rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.67em;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--bs-primary, #2c7be5);
-  background: rgba(44, 123, 229, 0.12);
-}
-.ds-legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.8rem; font-size: 0.82em; color: var(--bs-secondary-color, #6c757d); }
-.ds-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; }
-.ds-swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--bs-border-color, #dee2e6); }
-.ds-swatch-sampled { background: #2563eb; border-color: rgba(37, 99, 235, 0.35); }
-.ds-swatch-other { background: #cbd5e1; border-color: rgba(148, 163, 184, 0.35); }
-.ds-summary {
-  margin-top: 0.75rem;
-  padding: 0.8rem 0.95rem;
-  border-radius: 12px;
-  border: 1px solid var(--bs-border-color, #dee2e6);
-  background: var(--bs-tertiary-bg, #f8f9fa);
-  font-size: 0.89em;
-  line-height: 1.5;
-}
-@media (max-width: 980px) {
-  .ds-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 620px) {
-  .ds-chain { grid-template-columns: 1fr; }
-}
-</style>
 
 <script>
 (() => {

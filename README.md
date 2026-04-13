@@ -18,13 +18,16 @@ This book is not:
 [x] 1. Introduction
 [x] 2. Outcome Rewards
 [x] 3. Process Rewards
-[x] 4. Learned, Programmatic, and Hybrid Verifiers (need to look at git diff)
+[x] 4. Learned, Programmatic, and Hybrid Verifiers
 [x] 5. Turning Checks into Training Signal
-[] 6. Search and Test-Time Verification
-[] 7. Reward Hacking, Proxy Misspecification, and Verifier Robustness
+[x] 6. Search and Test-Time Verification (still need to verify equations)
+[x] 7. Reward Hacking and Verifier Robustness (still need to verify equations)
 [] 8. Faithfulness, Confidence, and What Verification Misses
 [] 9. Long-Context, Multimodal, and Agentic RLVR
 [] 10. Open Problems and the Research Agenda
+[x] a
+[] b
+[] c
 
 ## Book Style
 
@@ -74,3 +77,4 @@ Planned launch channels:
 - Add code to every chapter?
 - Upweighting: Warren
 - QA
+- Subagents on every chapter
