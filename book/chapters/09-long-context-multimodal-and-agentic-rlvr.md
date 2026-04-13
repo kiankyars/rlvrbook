@@ -1,6 +1,6 @@
 # Long-Context, Multimodal, and Agentic RLVR
 
-![M. C. Escher, _Cimino Barbarano_ (1929).](../art/escher/10-cimino-barbarano.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Cimino Barbarano_ (1929).](../escher/09-cimino-barbarano.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
@@ -29,7 +29,7 @@ These settings move the field away from single clean checkers and toward partial
 
 ## Frontier coding harnesses
 
-This is the place in the book where *harness* should become a first-class term. A frontier coding harness is not a compact GSM8K training script with a few reward functions. It is an environment-backed system for long-horizon rollouts: a repository state, a shell, tools, tests, hidden graders, task termination criteria, and instrumentation over the full trajectory.
+This is the place in the book where *harness* should become a first-class term. It is an environment-backed system for long-horizon rollouts: a repository state, a shell, tools, tests, hidden graders, task termination criteria, and instrumentation over the full trajectory.
 
 That distinction matters because the verifier interface changes. In Chapter 5, the Brown-style script turns a final extracted answer into reward. In a coding harness, the checked object is much larger: file edits, command traces, test outcomes, runtime failures, partial progress markers, and the final repository state. Reward is usually assembled from several checks rather than one exact comparison.
 

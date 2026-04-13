@@ -23,9 +23,8 @@ This book is not:
 [] 6. Search and Test-Time Verification
 [] 7. Reward Hacking, Proxy Misspecification, and Verifier Robustness
 [] 8. Faithfulness, Confidence, and What Verification Misses
-[] 9. Canonical Domains: Math, Code, and Formal Proof
-[] 10. Long-Context, Multimodal, and Agentic RLVR
-[] 11. Open Problems and the Research Agenda
+[] 9. Long-Context, Multimodal, and Agentic RLVR
+[] 10. Open Problems and the Research Agenda
 
 ## Book Style
 
@@ -44,7 +43,7 @@ The manuscript uses a graduated code plan:
 - Chapter 3: small process-reward snippets
 - Chapter 4: small hybrid-verifier snippet
 - Chapter 5: one larger worked outcome-RLVR training script
-- Chapter 10: frontier coding harnesses as a distinct later topic
+- Chapter 9: frontier coding harnesses as a distinct later topic
 
 ## Figure Program
 
@@ -74,3 +73,4 @@ Planned launch channels:
 - discuss all of the aspects of the reasoning in Nathan Lambert's book, which is to say talk about the curriculum and all of these techniques from his reasoning chapter.
 - Add code to every chapter?
 - Upweighting: Warren
+- QA

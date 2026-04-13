@@ -1,6 +1,6 @@
 # Process Rewards
 
-![M. C. Escher, _The Bridge_ (1930).](../art/escher/03-the-bridge.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _The Bridge_ (1930).](../escher/03-the-bridge.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 

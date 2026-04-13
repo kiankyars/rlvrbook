@@ -1,6 +1,6 @@
 # Faithfulness, Confidence, and What Verification Misses
 
-![M. C. Escher, _Morano Calabria_ (1930).](../art/escher/08-morano-calabria.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Morano Calabria_ (1930).](../escher/08-morano-calabria.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
@@ -223,4 +223,4 @@ It does not provide a solution to those limits. It also does not catalog every d
 - Does RLVR training systematically degrade faithfulness by rewarding reasoning-shaped traces, and can this be measured during training?
 - What is the minimal mechanistic interpretability capability needed to partially verify faithfulness?
 
-Chapters 7 and 8 describe the two sides of the failure landscape: exploitability under optimization pressure and structural limits of observability. Chapter 9 applies that frame to the strongest RLVR domains — math, code, and formal proof — where verification is unusually powerful but the blind spots differ.
+Chapters 7 and 8 describe the two sides of the failure landscape: exploitability under optimization pressure and structural limits of observability. Chapter 9 applies that frame to long-context, multimodal, and agentic RLVR, where verification becomes broader, noisier, and more dependent on instrumentation.

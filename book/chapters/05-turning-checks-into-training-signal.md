@@ -1,6 +1,6 @@
 # Turning Checks into Training Signal
 
-![M. C. Escher, _The Drowned Cathedral_ (1929).](../art/escher/05-the-drowned-cathedral.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _The Drowned Cathedral_ (1929).](../escher/05-the-drowned-cathedral.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 

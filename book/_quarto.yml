@@ -30,9 +30,8 @@ book:
         - chapters/08-faithfulness-confidence-and-what-verification-misses.md
     - part: "Domains and Frontiers"
       chapters:
-        - chapters/09-canonical-domains-math-code-and-formal-proof.md
-        - chapters/10-long-context-multimodal-and-agentic-rlvr.md
-        - chapters/11-open-problems-and-the-research-agenda.md
+        - chapters/09-long-context-multimodal-and-agentic-rlvr.md
+        - chapters/10-open-problems-and-the-research-agenda.md
   appendices:
     - appendices/a-minimal-rl-and-post-training-background.md
     - appendices/b-benchmarks-evals-and-contamination.md

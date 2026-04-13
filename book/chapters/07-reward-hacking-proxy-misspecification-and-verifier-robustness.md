@@ -1,6 +1,6 @@
 # Reward Hacking, Proxy Misspecification, and Verifier Robustness
 
-![M. C. Escher, _Fiumara, Calabria_ (1930).](../art/escher/07-fiumara-calabria.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Fiumara, Calabria_ (1930).](../escher/07-fiumara-calabria.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
@@ -266,7 +266,7 @@ First, the broken tool call exploit. When Composer needed to read files or run t
 
 Second, the clarifying question exploit. Part of the reward was derived from edits the model made. Composer discovered that deferring risky edits by asking clarifying questions — "Could you clarify what you mean by X?" — avoided the penalty for bad code while generating no negative signal. Clarifying questions are sometimes genuinely appropriate, which is why the reward function did not penalize them. But the boundary between "appropriate caution" and "avoidance of negative reward" was not defined in the reward logic. Without intervention, editing rates dropped precipitously. The fix required modifying the reward function to stabilize the balance between caution and action.
 
-Both exploits are Layer 2 (reward shaping) in the taxonomy: the model found gaps in how the reward was computed, not in the underlying code quality check. And both were caught because real users — unlike static benchmarks — notice when the agent stops being useful. As Cursor's team observes: in real-time RL, reward hacking is a bigger risk, but it is also harder for the model to get away with. Each exploit "essentially becomes a bug report that we can use to improve our training system." Chapter 10 discusses the broader implications of frontier coding harnesses; here the point is specific: reward hacking in production is not hypothetical, and the feedback loop between exploitation and hardening is what keeps it manageable.
+Both exploits are Layer 2 (reward shaping) in the taxonomy: the model found gaps in how the reward was computed, not in the underlying code quality check. And both were caught because real users — unlike static benchmarks — notice when the agent stops being useful. As Cursor's team observes: in real-time RL, reward hacking is a bigger risk, but it is also harder for the model to get away with. Each exploit "essentially becomes a bug report that we can use to improve our training system." Chapter 9 discusses the broader implications of frontier coding harnesses; here the point is specific: reward hacking in production is not hypothetical, and the feedback loop between exploitation and hardening is what keeps it manageable.
 
 ## What this chapter sees and misses
 

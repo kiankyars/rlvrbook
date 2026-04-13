@@ -1,6 +1,6 @@
 # Introduction
 
-![M. C. Escher, _Tower of Babel_ (1928).](../art/escher/01-tower-of-babel.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Tower of Babel_ (1928).](../escher/01-tower-of-babel.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 

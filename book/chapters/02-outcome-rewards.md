@@ -1,6 +1,6 @@
 # Outcome Rewards
 
-![M. C. Escher, _Castrovalva_ (1930).](../art/escher/02-castrovalva.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Castrovalva_ (1930).](../escher/02-castrovalva.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
@@ -399,11 +399,13 @@ update over sampled token groups:  ↓  ↓  ↓  ↓  ↓
 
 The verifier structure in Equation @eq-ch2-pipeline is the same across the main RLVR domains. Let's discuss the domain-dependent difficulties:
 
-In math, the verifier lives or dies by whether it can reliably map many surface forms onto one mathematical object. Boxed-answer conventions, XML answer tags, and task-specific output contracts are what makes deterministic parsing possible at scale.[@shao2024deepseekmath; @deepseekai2025r1] In our toy quadratic example, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should all receive the same reward if the task asks for the solution set. A weak canonicalizer doesn't merge semantically equivalent answers, introducing reward noise.
+| Domain | Checked object | Typical verifier | Main bottleneck | What it misses |
+|---|---|---|---|---|
+| Math | Final answer or structured mathematical object | Answer extraction, canonicalization, symbolic equivalence, or reference comparison [@shao2024deepseekmath; @deepseekai2025r1] | Output contracts and normalization | Reasoning faithfulness and benchmark shortcuts |
+| Code | Program, patch, or execution result | Sandboxed tests, hidden tests, timeouts, and optional static checks [@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] | Test coverage and flaky infrastructure | Untested behavior, security, and maintainability |
+| Formal proof | Proof term, tactic trace, or proof state | Proof-assistant kernel acceptance [@xin2024deepseekprover; @xin2024deepseekproverv15] | Search, decomposition, and formalization burden | Informal usefulness, theorem choice, and proof-strategy quality |
 
-In code, the hard part is verification, because "is this program correct?" is answered by running it in a sandbox against tests, timeouts, and resource limits. Outcome-based RL for code has therefore focused on execution feedback and test-derived reward signals.[@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] But execution is only as strong as the test suite and evaluation environment: limited suites can certify incorrect programs, and richer suites can change model rankings substantially.[@liu2023evalplus]
-
-The outcome of theorem-proving systems is high-fidelity, deterministic, and much harder to fake than natural-language grading.[@xin2024deepseekprover; @xin2024deepseekproverv15] The hard part shifts away from final checking and toward theorem selection, search, decomposition, and interaction with the formal environment.
+The point is that the engineering bottlenecks depend on what the verifier can inspect. In math, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should receive the same reward when the task asks for the solution set. In code, limited suites can certify incorrect programs and richer suites can change model rankings substantially.[@liu2023evalplus] In formal proof, final acceptance is strong, but the difficulty shifts toward theorem selection, search, decomposition, and interaction with the formal environment.
 
 ## Brittleness
 

@@ -12,9 +12,8 @@ expected_chapters=(
   06-search-and-test-time-verification.md
   07-reward-hacking-proxy-misspecification-and-verifier-robustness.md
   08-faithfulness-confidence-and-what-verification-misses.md
-  09-canonical-domains-math-code-and-formal-proof.md
-  10-long-context-multimodal-and-agentic-rlvr.md
-  11-open-problems-and-the-research-agenda.md
+  09-long-context-multimodal-and-agentic-rlvr.md
+  10-open-problems-and-the-research-agenda.md
 )
 
 expected_appendices=(
@@ -50,13 +49,13 @@ done < <(rg -o 'appendices/[a-z]-[^"]+\.md' "$ROOT/book/_quarto.yml")
 chapter_count="$(find "$ROOT/book/chapters" -maxdepth 1 -type f -name '[0-9][0-9]-*.md' | wc -l | tr -d ' ')"
 appendix_count="$(find "$ROOT/book/appendices" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')"
 
-if [[ "$chapter_count" != "11" ]]; then
-  echo "expected 11 chapter files, found $chapter_count" >&2
+if [[ "$chapter_count" != "10" ]]; then
+  echo "expected 10 chapter files, found $chapter_count" >&2
   exit 1
 fi
 
-if [[ "${#configured_chapters[@]}" -ne 11 ]]; then
-  echo "expected 11 configured chapters in book/_quarto.yml, found ${#configured_chapters[@]}" >&2
+if [[ "${#configured_chapters[@]}" -ne 10 ]]; then
+  echo "expected 10 configured chapters in book/_quarto.yml, found ${#configured_chapters[@]}" >&2
   exit 1
 fi
 

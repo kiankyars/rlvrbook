@@ -1,6 +1,6 @@
 # Open Problems and the Research Agenda
 
-![M. C. Escher, _Alfedena Abruzzi_ (1929).](../art/escher/11-alfedena-abruzzi.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Alfedena Abruzzi_ (1929).](../escher/10-alfedena-abruzzi.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
