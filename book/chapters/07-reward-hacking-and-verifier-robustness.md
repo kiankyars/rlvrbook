@@ -246,4 +246,4 @@ Hardening measures cost compute, engineering time, or both. We justify their use
 
 ## What comes next
 
-Every failure in this chapter has the same shape: the verifier was exploited because it checked something narrower than what we cared about. In every case, the exploit was in principle fixable — a better extractor, more tests, a debiased judge, a KL constraint. Chapter 8 asks a harder question: what happens when the gap between what the verifier checks and what we care about cannot be closed by better engineering? Faithfulness, calibration, and the relationship between verified correctness and genuine understanding are structural limits of the verification paradigm, not bugs in any particular verifier. That is the subject of Chapter 8.
+Every failure in this chapter has the same shape: the verifier was exploited because it checked something narrower than what we cared about. In every case, the exploit was in principle fixable: a better extractor, more tests, a debiased judge, or a KL constraint.

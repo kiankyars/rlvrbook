@@ -24,10 +24,10 @@ book:
       chapters:
         - chapters/05-turning-checks-into-training-signal.md
         - chapters/06-search-and-test-time-verification.md
-    - part: "Failure Modes"
+    - part: "Optimization Pressure"
       chapters:
         - chapters/07-reward-hacking-and-verifier-robustness.md
-        - chapters/08-faithfulness-confidence-and-what-verification-misses.md
+        - chapters/08-when-verifiable-rewards-become-capability.md
     - part: "Domains and Frontiers"
       chapters:
         - chapters/09-long-context-multimodal-and-agentic-rlvr.md
@@ -36,6 +36,7 @@ book:
     - appendices/a-minimal-rl-and-post-training-background.md
     - appendices/b-benchmarks-evals-and-contamination.md
     - appendices/c-practical-verifier-design-checklist.md
+    - appendices/d-core-terminology.md
 
 bibliography: bibliography.bib
 

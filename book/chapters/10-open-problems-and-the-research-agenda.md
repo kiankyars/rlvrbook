@@ -132,7 +132,7 @@ where $V'$ is an independent or stronger verifier. This separates learned capabi
 
 Binary correctness rewards make every accepted answer look equally safe. They do not tell the model when to abstain, when to ask for more evidence, or when the verifier itself is uncertain.
 
-Chapter 8 framed calibration as a scoring problem. The open problem is to make calibration part of RLVR without destroying the task reward. If $C(x,y)\in\{0,1\}$ is the correctness label and $p_\theta(x,y)$ is the model's stated probability of correctness, a calibrated reward can include a proper scoring term:
+Calibration is a scoring problem, not a single-example correctness problem. The open problem is to make calibration part of RLVR without destroying the task reward. If $C(x,y)\in\{0,1\}$ is the correctness label and $p_\theta(x,y)$ is the model's stated probability of correctness, a calibrated reward can include a proper scoring term:
 
 $$
 r(x,y,p_\theta)
@@ -184,7 +184,7 @@ The following table is the book's condensed research agenda.
 | Credit assignment | Correct terminal rewards can be too delayed to guide early actions | Compare outcome-only reward with one verifiable intermediate signal under matched compute | SNR-style diagnostics for evidence selection, tool use, and recovery actions | Chapters 2, 3, 5, 9 |
 | Search separation | Test-time verification can hide weak amortized policy gains | Report pass@1, pass@$N$, independent-verifier pass@$N$, generation compute, and verifier compute | Standard scorecards that separate policy quality, search quality, and verifier quality | Chapters 5, 6 |
 | Contamination | RLVR can activate memorized shortcuts that look like reasoning gains | Partial-prompt audits and clean held-out sets before and after RLVR | Mechanistic or behavioral contamination dashboards during training | Chapters 1, 7, 8 |
-| Calibration and abstention | Correctness rewards do not teach when not to answer | Add proper scoring or abstention rewards and report accuracy-calibration tradeoffs | Risk-limited updates weighted by verifier confidence and task risk | Chapters 6, 8 |
+| Calibration and abstention | Correctness rewards do not teach when not to answer | Add proper scoring or abstention rewards and report accuracy-calibration tradeoffs | Risk-limited updates weighted by verifier confidence and task risk | Chapters 4, 6 |
 | Harness validity | Agentic RLVR turns the whole environment into the reward surface | Ablate tools, timeouts, filters, and rerankers while holding the task distribution fixed | Full harness provenance: tools, sandboxes, filters, rewards, patches, and production instrumentation | Chapter 9 |
 | Adaptive RLVR | Policy, verifier, curriculum, and harness co-evolve | Log each verifier/curriculum change and evaluate pre/post on a stable audit suite | Treat verifier updates like model updates: versioned, audited, and stress-tested | Chapters 4, 5, 7, 9 |
 

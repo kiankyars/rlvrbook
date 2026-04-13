@@ -11,7 +11,7 @@ expected_chapters=(
   05-turning-checks-into-training-signal.md
   06-search-and-test-time-verification.md
   07-reward-hacking-and-verifier-robustness.md
-  08-faithfulness-confidence-and-what-verification-misses.md
+  08-when-verifiable-rewards-become-capability.md
   09-long-context-multimodal-and-agentic-rlvr.md
   10-open-problems-and-the-research-agenda.md
 )
@@ -20,6 +20,7 @@ expected_appendices=(
   a-minimal-rl-and-post-training-background.md
   b-benchmarks-evals-and-contamination.md
   c-practical-verifier-design-checklist.md
+  d-core-terminology.md
 )
 
 for file in "${expected_chapters[@]}"; do

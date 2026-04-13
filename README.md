@@ -22,12 +22,13 @@ This book is not:
 [x] 5. Turning Checks into Training Signal
 [x] 6. Search and Test-Time Verification (still need to verify equations)
 [x] 7. Reward Hacking and Verifier Robustness (still need to verify equations)
-[] 8. Faithfulness, Confidence, and What Verification Misses
+[] 8. When Verifiable Rewards Become Capability
 [] 9. Long-Context, Multimodal, and Agentic RLVR
 [] 10. Open Problems and the Research Agenda
 [x] a
-[] b
-[] c
+[x] b
+[x] c
+[x] d
 
 ## Book Style
 

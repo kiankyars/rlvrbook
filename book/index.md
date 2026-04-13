@@ -17,7 +17,7 @@ Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Cha
 
 ## Frontier Research
 
-Read [Chapter 8](chapters/08-faithfulness-confidence-and-what-verification-misses.md), [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 10](chapters/10-open-problems-and-the-research-agenda.md).
+Read [Chapter 8](chapters/08-when-verifiable-rewards-become-capability.md), [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 10](chapters/10-open-problems-and-the-research-agenda.md).
 
 ## Flagship Figure
 
@@ -42,7 +42,7 @@ The atomic unit of this book is the chapter map; a TL;DR at the beginning of eve
 
 ## Changelog
 
-- 2026-04-12: Removed the standalone canonical domains chapter, folded the math/code/formal-proof comparison into Chapter 2, and renumbered the frontier and open-problems chapters.
+- 2026-04-13: Officially announced v0 of the book!
 
 ## Acknowledgments
 
