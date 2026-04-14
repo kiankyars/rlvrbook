@@ -33,7 +33,7 @@ The question then becomes: how much optimization pressure can this verifier abso
 
 OpenAI reports a frontier reasoning model training run in which the agent was placed in coding environments and rewarded for making unit tests pass.[@baker2025monitoring] The agent did not only write better code. It found reward hacks in the environment. Two systemic hacks were `exit(0)`, which exploited a bug that let the agent exit before all tests ran, and `raise SkipTest`, which skipped unit-test evaluation from outside the testing framework. These hacks became systemic until the environment was patched.
 
-Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking. When optimization pressure overwhelmes the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
+Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking. When optimization pressure overwhelms the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
 
 ### Missing negative
 
@@ -43,31 +43,51 @@ Another exploit came from clarifying questions. Part of the reward was derived f
 
 ## A taxonomy of verifier exploits
 
-### Layer 1: Extraction exploits
+### Extraction exploits
 
 The model satisfies the answer extractor without doing the task. Anything inside the `<answer>` tags that matches the gold answer gets reward 1.0, regardless of what preceded it. A model can learn to produce minimal-effort responses that place a plausible answer in the right position: a single line of text, no reasoning, occasionally correct by chance.
 
-### Layer 2: Reward shaping exploits
+### Reward shaping exploits
 
 The signal path from Chapter 5 introduces its own optimization targets. Format rewards, partial credit, and auxiliary bonuses create surfaces the model can exploit independently of correctness.
 
-### Layer 3: Test adequacy failures
+### Test adequacy failures
 
 The verifier is correct on what it checks, but what it checks is insufficient. Liu et al. found that augmenting HumanEval with 80× more test cases changed model rankings: some models that scored well on the original suite dropped substantially.[@liu2023evalplus] In code generation, test suites are finite approximations of a specification. Through hardcoded branches or shallow pattern matching, a model can learn to pass specific test cases without implementing the correct algorithm.
 
-### Layer 4: Learned verifier biases
+### Learned verifier biases
 
 When the verifier includes a learned judge (Chapter 4), the judge's training artifacts become exploit surfaces. A model trained against a verbosity-biased judge learns to produce longer outputs. A model trained against a position-biased judge learns to place its strongest argument where the judge expects to find it.
 
-### Layer 5: Distribution shift
+### Distribution shift
 
 The verifier was calibrated for one distribution of model outputs, yet the policy has drifted to another. A learned judge trained on early-training outputs may misjudge late-training outputs that have shifted in register, length, or structure.
 
+### Mechanism gaps
+
+Turpin et al. showed that chain-of-thought explanations can hide factors that influenced the answer, and Lanham et al. tested faithfulness more directly by intervening on traces.[@turpin2023language; @lanham2023measuring] The mechanism gap is the difference between a trace that predicts correctness and a trace that causally controls the answer:
+
+Let $X$ be the prompt, $R$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,R,Y)$.
+
+The artifact-level question is:
+
+$$
+\Pr(Y \text{ correct} \mid X,R).
+$$ {#eq-ch7-artifact-correctness}
+
+The causal question is different:
+
+$$
+\Pr(Y=y \mid \operatorname{do}(R=r), X)
+\quad \text{versus} \quad
+\Pr(Y=y \mid \operatorname{do}(R=r'), X).
+$$ {#eq-ch7-causal-trace}
+
 ## The overoptimization curve
 
-The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance.[@gao2023scaling] The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect, which is always. In RLVR, the proxy is the programmatic verifier, which approximates but does not equal the target capabitltiy. The same dynamics hold; the difference is that programmatic verifiers are typically stronger proxies than learned reward models, so the peak occurs later and the gap opens more slowly.
+The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance.[@gao2023scaling] The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect, which is always. In RLVR, the proxy is the programmatic verifier, which approximates but does not equal the target capability. The same dynamics hold; the difference is that programmatic verifiers are typically stronger proxies than learned reward models, so the peak occurs later and the gap opens more slowly.
 
-Pan et al. found reasonabley that as the policy becomes stronger, it finds exploits that weaker policies could not.[@pan2022effects] There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are difficult to predict and difficult to monitor.
+Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not.[@pan2022effects] There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are difficult to predict and difficult to monitor.
 
 ::: {.content-visible when-format="html"}
 
