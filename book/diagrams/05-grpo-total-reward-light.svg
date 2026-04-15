@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="504pt" height="315pt" viewBox="0 0 504 315" role="img" aria-label="Chapter 5 GRPO total reward curve">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="252.0" y="19" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#111827">Chapter 5 GRPO total shaped reward</text>
+<rect x="58" y="28" width="434" height="242" fill="#ffffff" stroke="#111827" stroke-width="1"/>
+<line x1="58.000" y1="28" x2="58.000" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="58.000" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">0</text>
+<line x1="112.250" y1="28" x2="112.250" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="112.250" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">25</text>
+<line x1="166.500" y1="28" x2="166.500" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="166.500" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">50</text>
+<line x1="220.750" y1="28" x2="220.750" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="220.750" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">75</text>
+<line x1="275.000" y1="28" x2="275.000" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="275.000" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">100</text>
+<line x1="329.250" y1="28" x2="329.250" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="329.250" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">125</text>
+<line x1="383.500" y1="28" x2="383.500" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="383.500" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">150</text>
+<line x1="437.750" y1="28" x2="437.750" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="437.750" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">175</text>
+<line x1="492.000" y1="28" x2="492.000" y2="270" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="492.000" y="287" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">200</text>
+<line x1="58" y1="270.000" x2="492" y2="270.000" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="273.500" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">0</text>
+<line x1="58" y1="232.769" x2="492" y2="232.769" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="236.269" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">0.5</text>
+<line x1="58" y1="195.538" x2="492" y2="195.538" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="199.038" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">1</text>
+<line x1="58" y1="158.308" x2="492" y2="158.308" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="161.808" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">1.5</text>
+<line x1="58" y1="121.077" x2="492" y2="121.077" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="124.577" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">2</text>
+<line x1="58" y1="83.846" x2="492" y2="83.846" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="87.346" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">2.5</text>
+<line x1="58" y1="46.615" x2="492" y2="46.615" stroke="#d1d5db" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="50" y="50.115" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#111827">3</text>
+<text x="275.0" y="308" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" fill="#111827">Training step</text>
+<text x="14" y="149.0" text-anchor="middle" transform="rotate(-90 14 149.0)" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" fill="#111827">Mean total reward</text>
+<path d="M 60.170 240.965 L 68.850 253.025 L 79.700 256.987 L 90.550 259.301 L 101.400 260.677 L 112.250 266.280 L 123.100 264.903 L 133.950 262.505 L 144.800 259.695 L 155.650 253.855 L 166.500 244.012 L 177.350 232.252 L 188.200 221.844 L 199.050 204.928 L 209.900 189.362 L 220.750 170.966 L 231.600 162.456 L 242.450 151.335 L 253.300 146.448 L 264.150 134.262 L 275.000 129.576 L 285.850 120.846 L 296.700 115.818 L 307.550 95.151 L 318.400 91.899 L 329.250 74.139 L 340.100 65.964 L 350.950 55.380 L 361.800 57.047 L 372.650 53.167 L 383.500 56.337 L 394.350 59.073 L 405.200 60.276 L 416.050 59.181 L 426.900 56.945 L 437.750 58.986 L 448.600 50.033 L 459.450 45.344 L 470.300 47.095 L 481.150 43.116 L 492.000 42.259" fill="none" stroke="#111827" stroke-width="2.4" stroke-linecap="square" stroke-linejoin="round"/>
+<text x="71" y="48" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" fill="#6b7280">correctness + format</text>
+</svg>

@@ -9,7 +9,7 @@
 
 ## A compact outcome-RLVR training script
 
-[Will Brown's](https://x.com/willccbb/status/1886788410351796232) legendary GRPO script shows the smallest complete loop from verifiable check on outcome rewards to parameter update on a 1.5B model.[^ch5-brown-grpo-150line] Let's go through it with a fine-toothed comb.
+[Will Brown's](https://x.com/willccbb/status/1886788410351796232) GRPO script shows the smallest complete loop from verifiable check on outcome rewards to parameter update on a 1.5B model.[^ch5-brown-grpo-150line]
 
 ```py
 import re
@@ -334,7 +334,49 @@ Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.
 Comparison of eight rollouts under correctness versus correctness & format design.
 :::
 
-The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The script sits at the boundary (2.0 vs 2.0), this works on GSM8K because the model learns formatting quickly enough that they become constant across rollouts and vanish from the advantage. On harder tasks where formatting takes longer to learn, this balance can fail.
+The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The script we covered sits at the boundary (2.0 vs 2.0). @fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of the same GRPO script, where the format reward does in fact dominate.
+
+:::: {#fig-ch5-grpo-reward-components fig-cap="Mean reward of correctness vs format over time."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/05-grpo-reward-components-light.png){.light-content}
+
+![](../diagrams/05-grpo-reward-components-dark.png){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/05-grpo-reward-components-light.png)
+:::
+
+::::
+
+:::: {#fig-ch5-grpo-format-reward-share fig-cap="Format reward becomes more than half of the observed shaped reward."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/05-grpo-format-reward-share-light.png){.light-content}
+
+![](../diagrams/05-grpo-format-reward-share-dark.png){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/05-grpo-format-reward-share-light.png)
+:::
+
+::::
+
+:::: {#fig-ch5-grpo-total-reward fig-cap="Total shaped reward rises as correctness and format reward improve together."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/05-grpo-total-reward-light.svg){.light-content}
+
+![](../diagrams/05-grpo-total-reward-dark.svg){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/05-grpo-total-reward-light.svg)
+:::
+
+::::
 
 ### Task filtering and the competence band
 
