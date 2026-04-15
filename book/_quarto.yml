@@ -1,5 +1,7 @@
 project:
   type: book
+  preview:
+    navigate: false
 
 book:
   title: "Reinforcement Learning from Verifiable Rewards"
@@ -27,16 +29,15 @@ book:
     - part: "Optimization Pressure"
       chapters:
         - chapters/07-reward-hacking-and-verifier-robustness.md
-        - chapters/08-when-verifiable-rewards-become-capability.md
+        - chapters/08-reasoning-model-recipes.md
     - part: "Domains and Frontiers"
       chapters:
         - chapters/09-long-context-multimodal-and-agentic-rlvr.md
         - chapters/10-open-problems-and-the-research-agenda.md
   appendices:
     - appendices/a-minimal-rl-and-post-training-background.md
-    - appendices/b-benchmarks-evals-and-contamination.md
-    - appendices/c-practical-verifier-design-checklist.md
-    - appendices/d-core-terminology.md
+    - appendices/b-practical-verifier-design-checklist.md
+    - appendices/c-core-terminology.md
 
 bibliography: bibliography.bib
 

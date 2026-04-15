@@ -17,7 +17,7 @@ Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Cha
 
 ## Frontier Research
 
-Read [Chapter 8](chapters/08-when-verifiable-rewards-become-capability.md), [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 10](chapters/10-open-problems-and-the-research-agenda.md).
+Read [Chapter 8](chapters/08-reasoning-model-recipes.md), [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 10](chapters/10-open-problems-and-the-research-agenda.md).
 
 ## Flagship Figure
 
@@ -48,7 +48,7 @@ The atomic unit of this book is the chapter map; a TL;DR at the beginning of eve
 
 I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfbook.com), and I am well aware that his textbook treats the subject of RLVR in quite some detail; notwithstanding, as he notes himself, this particular sub-field of ML is evolving so fast that much of the RLHF book's RLVR content will become outdated, and this book is intended to maintain pace with progress.
 
-I also acknowledge the wonderful developers of Exclaidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artisitic soul of the book (FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States). Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach (same for Colah from distillpub)!
+I also acknowledge the wonderful developers of Exclaidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artisitic soul of the book (FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States). Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach (same for Colah from distillpub)! Lastly, thanks to the quarto devs for making the software this book is based on!
 
 ### [Github Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 

@@ -1,7 +1,5 @@
 # Minimal RL and Post-Training Background
 
-This appendix gives the minimum RL and post-training background needed for the book. It fixes the notation used in the main chapters, explains how verifier scores become policy updates, and separates policy optimization from selection methods that use a verifier without changing model weights.
-
 ## Objective, States, and Rewards
 
 At its core, reinforcement learning optimizes the expected discounted return of trajectories in a Markov decision process:

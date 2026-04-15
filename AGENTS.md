@@ -7,7 +7,6 @@ The manuscript lives in [`book/`](/Users/kian/Developer/rlvrbook/book). Use [`bo
 ## Build, Test, and Development Commands
 
 - `scripts/build-book` runs the repo’s build wrapper.
-- `scripts/lint-book` verifies chapter and appendix ordering against `book/_quarto.yml`.
 - `scripts/check-citations` ensures all citekeys used in Markdown exist in `bibliography.bib`.
 - `scripts/check-diagrams` enforces diagram naming conventions.
 
