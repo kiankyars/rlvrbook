@@ -28,7 +28,7 @@ Prime Intellect's Verifiers library gives a compact abstraction of an agentic en
 
 DeepSWE is a software coding agent trained with the rLLM platform that uses Qwen3-32B as the brains of the harness and is trained with GRPO, resulting in 42.2% Pass@1, 71.0% Pass@16, and 59.2% when using a verifier to select between the 16 rollouts.[@rllm2026deepswe]
 
-The training enviornment is a subset of R2E-Gym (an alternative to Verifiers), i.e. dockerized and executable software-engineering tasks with natural-language task descriptions, repositories, unit tests, and reward calculation by running tests; 512 parallel Docker containers are used for training.[@jain2025r2egym]
+The training environment is a subset of R2E-Gym (an alternative to Verifiers), i.e. dockerized and executable software-engineering tasks with natural-language task descriptions, repositories, unit tests, and reward calculation by running tests; 512 parallel Docker containers are used for training.[@jain2025r2egym]
 
 A DeepSWE-style rollout has this shape:
 
@@ -41,7 +41,7 @@ A DeepSWE-style rollout has this shape:
 7. The harness records the trajectory, output patch, exit reason, timeout state, and reward.
 8. The RL trainer filters unusable trajectories and updates the policy from successful or informative rollouts.
 
-The crux here is that the harness itself shapes the policy (the qwen model we are postraiting) through returned its observations, unique tools, valid action syntax, and timeout rules. That is to say furthermore, that putting that post-trained model in an equivalent harness that only had different tool names or action syntax would lead to worse results, since the model learns the traces of the harness it's trained on.
+The crux here is that the harness itself shapes the policy (the Qwen model we are post-training) through returned its observations, unique tools, valid action syntax, and timeout rules. That is to say furthermore, that putting that post-trained model in an equivalent harness that only had different tool names or action syntax would lead to worse results, since the model learns the traces of the harness it's trained on.
 
 ## DeepSWE as long-context RLVR
 

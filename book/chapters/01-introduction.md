@@ -222,11 +222,11 @@ What can be verified? A schematic domain map of RLVR by verification strength an
 
 ## RLVR and Reasoning
 
-RLVR and reasoning go hand in hand, but they are different. The former is a training paradigm, and the latter is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are exactly the ones with strong verifiers: math, code, proofs, some grounded QA. The result is that some of the most important progress in reasoning models has come from learning against verifiable rewards. It's therefore understandble that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance. 
+RLVR and reasoning go hand in hand, but they are different. The former is a training paradigm, and the latter is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are exactly the ones with strong verifiers: math, code, proofs, some grounded QA. The result is that some of the most important progress in reasoning models has come from learning against verifiable rewards. It's therefore understandable that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance. 
 
 ## Verifiable versus Complete
 
-Even verifiers are susceiptble to becoming proxies, from our three core domain examples:
+Even verifiers are susceptible to becoming proxies, from our three core domain examples:
 
 1. A code evaluator may miss behaviors outside the test suite.
 2. A math reward may depend on brittle extraction. 

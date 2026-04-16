@@ -120,7 +120,7 @@ Uesato et al. published the first systematic comparison in November 2022.[@uesat
 
 ## Limitations
 
-Process verification adressess the sparse credit assignment through steps which, in turn, can be gamed, misspecified, or noisy.
+Process verification addresses the sparse credit assignment through steps which, in turn, can be gamed, misspecified, or noisy.
 
 **Rewarding reasoning shape over reasoning substance.** A PRM trained on labeled "good steps" can learn what correct reasoning looks like in its training distribution rather than what actually makes a solution correct. Not all good reasoning follows the annotated step structure. A model that skips two intermediate steps because it recognizes a pattern is penalized by a strict process reward that expects those steps to be present.
 
