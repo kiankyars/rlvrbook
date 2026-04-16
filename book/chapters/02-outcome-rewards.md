@@ -281,13 +281,21 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
 
 ```text
 Successful trajectory
-factor as (x-2)(x-3) -> set x = 2 -> set x = 3 -> collect {2,3} -> <answer>{2,3}</answer>
-                                                                  checked artifact: PASS
+factor as (x-2)(x-3)
+  -> set x = 2
+  -> set x = 3
+  -> collect {2,3}
+  -> <answer>{2,3}</answer>
+checked artifact: PASS
 update over sampled token groups:  ↑  ↑  ↑  ↑  ↑
 
 Unsuccessful trajectory
-factor as (x-2)(x-3) -> set x = 2 -> set x = 3 -> collect {2,3} -> <answer>x = 2</answer>
-                                                                  checked artifact: FAIL
+factor as (x-2)(x-3)
+  -> set x = 2
+  -> set x = 3
+  -> collect {2,3}
+  -> <answer>x = 2</answer>
+checked artifact: FAIL
 update over sampled token groups:  ↓  ↓  ↓  ↓  ↓
 ```
 :::
