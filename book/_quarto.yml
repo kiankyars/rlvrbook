@@ -92,4 +92,13 @@ format:
           {\LARGE\bfseries #1\par}
           \vspace{1em}
         }
+        \AtBeginDocument{%
+          \RenewDocumentCommand{\marginnote}{O{} +m O{}}{%
+            \par\smallskip
+            \noindent\begin{quote}
+            #2
+            \end{quote}
+            \smallskip
+          }%
+        }
         \makeatother
