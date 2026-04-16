@@ -8,11 +8,9 @@
 
 ## From reward functions to harnesses
 
-Agents break the picture of cleanest RLVR examples in earlier chapters had a small checked artifact. A math model writes a final answer, the extractor normalizes it, and the reward function compares it to a gold answer. A compact GRPO script can show the whole loop because the task interface is narrow.
+Agents break the picture of the clean RLVR examples in earlier chapters, where a compact GRPO script could show the whole loop thanks to the task interface's narrowness. When dealing with agents, the output of a rollout may include any of a repository state, a browser state, an image, a shell transcript, tool arguments, observations, generated files, runtime failures, partial progress markers, and a termination decision.
 
-. The checked object expands beyond the final answer. It may include a repository state, a browser state, an image, a shell transcript, tool arguments, observations, generated files, runtime failures, partial progress markers, and a termination decision. The reward function remains important. The **harness** becomes the central object.
-
-Here, a harness means the environment-backed interface that turns a model rollout into something trainable and auditable. Prime Intellect's Verifiers library gives a compact version of the abstraction: an environment contains a dataset of task inputs, a model harness with tools, sandboxes, and context management, and a reward function or rubric.[@brown2025verifiers] rLLM describes the same idea from the training side: run the agent, collect traces, compute rewards, and update the model.[@tan2025rllm] Chapter 9 uses that conceptual jump.
+Prime Intellect's Verifiers library gives a compact abstraction of an agentic environment which contains a dataset of task inputs, a model harness with tools, sandboxes, and context management, and a reward function or rubric.[@brown2025verifiers] rLLM describes the same idea from the training side: run the agent, collect traces, compute rewards, and update the model.[@tan2025rllm]
 
 ::: {#fig-ch9-agentic-harness-stack fig-cap="An agentic RLVR harness makes the trajectory, environment state, and verifier stack part of the training interface."}
 
@@ -26,17 +24,13 @@ Here, a harness means the environment-backed interface that turns a model rollou
 
 :::
 
-The harness brings long context, multimodality, and agency into one training interface. Long context forces evidence selection. Multimodality forces grounded perception. Agency forces action sequencing. In all three cases, the verifier sees the records and checks that the harness exposes.
+## DeepSWE
 
-## The running example: DeepSWE and R2E-Gym
+DeepSWE is a software coding agent trained with the rLLM platform that uses Qwen3-32B as the brains of the harness and is trained with GRPO, resulting in 42.2% Pass@1, 71.0% Pass@16, and 59.2% when using a verifier to select between the 16 rollouts.[@rllm2026deepswe]
 
-DeepSWE in rLLM, evaluated through R2E-Gym, gives this chapter its strongest open running example. It sits close to the current open frontier, uses an environment-backed software task, runs long-context multi-turn trajectories, and reports rewards plus test-time scaling.
+The training enviornment is a subset of R2E-Gym (an alternative to Verifiers), i.e. dockerized and executable software-engineering tasks with natural-language task descriptions, repositories, unit tests, and reward calculation by running tests; 512 parallel Docker containers are used for training.[@jain2025r2egym]
 
-rLLM's DeepSWE example trains a software-engineering agent on top of Qwen3-32B, using GRPO with compact filtering on an R2E-Gym subset and evaluating on SWE-Bench Verified.[@rllm2026deepswe] The public example reports a 65,536-token maximum context, Docker and Kubernetes environment isolation, 512 parallel Docker containers for training, and a SWE agent action space consisting of search, view, edit, create, and execute. It reports DeepSWE-Preview at 42.2% Pass@1, 71.0% Pass@16, and 59.2% after test-time scaling on SWE-Bench Verified.[@rllm2026deepswe]
-
-R2E-Gym supplies the environment side: executable software-engineering tasks with natural-language task descriptions, repositories, unit tests, and reward calculation by running tests.[@jain2025r2egym] The repository describes R2E-Gym as more than 8.1K problems across 13 repositories, with generated executable environments and hybrid verifier support. The hard part is producing enough environments where the model can act, fail, recover, and receive a signal coupled to real software behavior.
-
-An illustrative DeepSWE-style rollout has this shape:
+A DeepSWE-style rollout has this shape:
 
 1. The task is a natural-language issue against a repository at a fixed commit.
 2. The model searches for relevant symbols and files.
@@ -47,19 +41,16 @@ An illustrative DeepSWE-style rollout has this shape:
 7. The harness records the trajectory, output patch, exit reason, timeout state, and reward.
 8. The RL trainer filters unusable trajectories and updates the policy from successful or informative rollouts.
 
-The setup remains RLVR, with the verifier moved outward. The final unit-test reward forms one endpoint of a larger interface. The harness also shapes the policy through returned observations, exposed tools, valid action syntax, timeout rules, and compact filtering.
+The crux here is that the harness itself shapes the policy (the qwen model we are postraiting) through returned its observations, unique tools, valid action syntax, and timeout rules. That is to say furthermore, that putting that post-trained model in an equivalent harness that only had different tool names or action syntax would lead to worse results, since the model learns the traces of the harness it's trained on.
 
 ## DeepSWE as long-context RLVR
 
-DeepSWE works better as a long-context case than a synthetic "needle in a haystack" task because the long context is operational. The model needs to decide which parts of a repository matter, which files to inspect, which error messages to remember, and which earlier edits constrain the next action. The context acts as working memory over a changing environment.
+DeepSWE works better as a long-context case than a synthetic "needle in a haystack" task because the long context is operational. The model needs to decide which parts of a repository matter, which files to inspect, which error messages to remember, and which earlier edits constrain the next action. The context acts as working memory over a changing environment. The verifier still sees the task through a narrow aperture. It can check whether tests pass. It can record tool calls and timeouts. It can compare candidate patches at test time. It cannot, however, certify that the model understood the codebase, found the minimal fix, preserved maintainability, or avoided every untested regression. The outcome-reward limitation from Chapter 2 now spans an even longer and more expensive trajectory.
 
-The verifier still sees the task through a narrow aperture. It can check whether tests pass. It can record tool calls and timeouts. It can compare candidate patches at test time. It cannot certify that the model understood the codebase, found the minimal fix, preserved maintainability, or avoided every untested regression. Chapter 2's outcome-reward limitation now spans a longer and more expensive trajectory.
-
-Software engineering works as a bridge domain. It has more structure than open-ended web tasks because code can be executed. It has less structure than formal proof because unit tests are incomplete. The harness gives the model a live environment, while the reward remains a partial proxy for the software property we care about.
 
 ## Why sparse agentic rewards need help
 
-Agent-RLVR makes the sparse-reward problem explicit. Da et al. start from the observation that conventional RLVR becomes brittle in agentic settings because long multi-step tasks have high failure rates and sparse rewards.[@da2025agentrlvr] Their proposed fix is guidance: the agent first attempts a software-engineering task, unit tests validate the trajectory, guidance is added from cues such as plans, error feedback, and environment interactions, and the agent reattempts the task before the policy update. On SWE-Bench Verified, they report improving Qwen-2.5-72B-Instruct from 9.4% to 22.4% Pass@1, with an additional test-time reward-model boost to 27.8%.[@da2025agentrlvr]
+Agent-RLVR makes the sparse-reward problem explicit. Da et al. start from the observation that conventional RLVR becomes brittle in agentic settings because long multi-step tasks have high failure rates and sparse rewards.[@da2025agentrlvr] Their proposed fix is guidance: the agent first attempts a software-engineering task, unit tests validate the trajectory, guidance is added from cues such as plans, error feedback, and environment interactions, and the agent reattempts the task before the policy update. On SWE-Bench Verified, they report improving Qwen-2.5-72B-Instruct from 9.4% to 22.4% Pass@1.[@da2025agentrlvr]
 
 rLLM plus R2E-Gym carries the main example because it exposes more of the harness. Agent-RLVR still teaches a useful lesson: when almost all unguided rollouts fail, a terminal pass/fail reward can be too sparse to train against. Guidance, curriculum, filtering, or test-time reranking can become part of the practical RLVR system, even when the final reward comes from the environment.
 
@@ -97,18 +88,6 @@ Read the current open ecosystem as a set of complementary harness designs.
 | Agent Lightning | General agents | Decoupling architecture | Unified transition interface and hierarchical RL | Shows how existing agents can be connected to RL training without rewriting the agent runtime.[@luo2025agentlightning] |
 | ART | General Python agents | Ergonomic trainer | User-defined trajectory reward with GRPO | Shows the small-API version of agent RL integration.[@openpipe2025art] |
 | AgentFly | Multi-turn and multimodal agents | Tool/reward framework | Decorator-defined tools and rewards, async execution | Shows a veRL-based alternative with multimodal support.[@wang2025agentfly] |
-
-"Open-source RL harness" is underspecified. For a high-value textbook example, choose rLLM DeepSWE/R2E-Gym. For a general environment vocabulary, use Verifiers. For multimodal search, use MMSearch-R1. For systems scalability, compare SkyRL-Agent and AgentFly. For integration into existing agents, compare Agent Lightning, ART, and rLLM.
-
-## What the verifier sees and misses
-
-In these frontier domains, the verifier sees more than a final answer but still less than the task.
-
-For long-context SWE agents, it sees the issue statement, tool trajectory, file edits, command outputs, timeout state, and test results. It may miss untested behavior, maintainability, security, user intent, and whether the model found the fix for the right reason.
-
-For multimodal search agents, it sees the image input, search calls, retrieved snippets, final answer, and action format. It may miss whether the visual evidence played a causal role, whether the retrieved page was trustworthy, and whether the model learned grounded perception or answer priors.
-
-For production coding agents, it sees a much richer stream: real user interactions, editor state, tool calls, latency, follow-up behavior, eval gates, and deployment outcomes. It may still miss long-run user satisfaction, rare side effects, organizational context, and reward loopholes introduced by instrumentation.
 
 The frontier lesson: RLVR becomes systems engineering. The reward depends on the harness that makes the task legible.
 

@@ -296,7 +296,7 @@ update over sampled token groups:  ↓  ↓  ↓  ↓  ↓
 
 ## Domain specific considerations
 
-The verifier structure in Equation @eq-ch2-pipeline is the same across the main RLVR domains. Let's discuss the domain-dependent difficulties:
+The verifier structure in @eq-ch2-pipeline is the same across the main RLVR domains. Let's discuss the domain-dependent difficulties:
 
 | Domain | Checked object | Typical verifier | Main bottleneck | What it misses |
 |---|---|---|---|---|
@@ -304,7 +304,7 @@ The verifier structure in Equation @eq-ch2-pipeline is the same across the main 
 | Code | Program, patch, or execution result | Sandboxed tests, hidden tests, timeouts, and optional static checks [@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] | Test coverage and flaky infrastructure | Untested behavior, security, and maintainability |
 | Formal proof | Proof term, tactic trace, or proof state | Proof-assistant kernel acceptance [@xin2024deepseekprover; @xin2024deepseekproverv15] | Search, decomposition, and formalization burden | Informal usefulness, theorem choice, and proof-strategy quality |
 
-The point is that the engineering bottlenecks depend on what the verifier can inspect. In math, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should receive the same reward when the task asks for the solution set. In code, limited suites can certify incorrect programs and richer suites can change model rankings substantially.[@liu2023evalplus] In formal proof, final acceptance is strong, but the difficulty shifts toward theorem selection, search, decomposition, and interaction with the formal environment.
+In math, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should receive the same reward when the task asks for the solution set. In code, limited suites can certify incorrect programs and richer suites can change model rankings substantially.[@liu2023evalplus] In formal proof, final acceptance is strong, but the difficulty shifts toward theorem selection, search, decomposition, and interaction with the formal environment.
 
 ## Brittleness
 

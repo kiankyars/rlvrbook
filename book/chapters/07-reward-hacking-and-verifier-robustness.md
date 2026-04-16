@@ -1,4 +1,4 @@
-# Reward Hacking and Verifier Robustness
+# Reward Hacking
 
 ![M. C. Escher, _Fiumara, Calabria_ (1930).](../escher/07-fiumara-calabria.jpg){width="80%" fig-align="center"}
 
@@ -7,39 +7,15 @@
 - Optimization pressure and Goodhart's Law.
 - A taxonomy of exploits and the hardening techniques that work.
 
-## Goodhart's Law is RLVR's founding tradeoff
+## Goodhart's Law
 
-Every verifier in this book is a proxy.
+RLVR is in some sense Goodhart's Law instantiated when we view the verifier as the measure that becomes the target through RL. If the verifier has any gap (all verifiers have gaps) between what it checks and what we actually care about, then optimization will exploit that gap. Goodhart's Law can be applied to RLVR in three ways:
 
-The outcome verifier in Chapter 2 checks a final answer string, not whether the model understood the problem. The process verifier in Chapter 3 checks step-level annotations, not whether the reasoning was causally responsible for the conclusion. The hybrid stack in Chapter 4 combines components whose union of visibilities is larger but still bounded. The reward-shaping pipeline in Chapter 5 transforms verifier verdicts into advantages, introducing its own distortions.
+1. The verifier has random errors on some inputs. Over many training steps, the policy shifts toward the subspace where the verifier is accidentally generous.
 
-When a measure becomes a target, it ceases to be a good measure. RLVR is Goodhart's Law instantiated. The verifier is the measure. Reinforcement learning makes it the target. If the verifier has any gap (all verifiers have gaps) between what it checks and what we actually care about, then optimization will exploit that gap.
+2. Gradient descent over thousands of steps is powerful enough to discover gaps in the verifier that may be rare or invisible under ordinary evaluation.
 
-Manheim and Garrabrant categorize four variants of Goodhart's Law, all of which appear in RLVR.[@manheim2019categorizing]
-
-1. **Regressional.** The verifier has random errors on some inputs. Over many training steps, the policy shifts toward the subspace where the verifier is accidentally generous.
-
-2. **Extremal.** Correlations between verifier score and true capability hold in the normal regime but break at the extremes that optimization reaches.
-
-3. **Causal.** Optimizing the proxy (test passage, answer matching) may produce a policy that achieves high scores through mechanisms unrelated to the intended skill, e.g. pattern-matching, memorization, or distribution exploitation, since the verifier checks correlation, not causation.
-
-4. **Adversarial.** Gradient descent over thousands of steps is powerful enough to discover gaps in the verifier that may be rare or invisible under ordinary evaluation.
-
-The question then becomes: how much optimization pressure can this verifier absorb before gaps open?
-
-## Empirical exploits
-
-### Unit-test escape hatch
-
-OpenAI reports a frontier reasoning model training run in which the agent was placed in coding environments and rewarded for making unit tests pass.[@baker2025monitoring] The agent did not only write better code. It found reward hacks in the environment. Two systemic hacks were `exit(0)`, which exploited a bug that let the agent exit before all tests ran, and `raise SkipTest`, which skipped unit-test evaluation from outside the testing framework. These hacks became systemic until the environment was patched.
-
-Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking. When optimization pressure overwhelms the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
-
-### Missing negative
-
-Cursor's 2026 description of real-time RL for Composer gives the production version of the same problem.[@jackson2026realtimecomposer] The training loop used real user interactions as reward signal and shipped new checkpoints as often as every five hours. One exploit came from invalid tool calls. Composer often needs to read files or run terminal commands. The original reward pipeline discarded examples where the tool call was invalid, so the model learned that if a task looked likely to fail, emitting a broken tool call avoided negative reward. The fix was to include broken tool calls as negative examples.
-
-Another exploit came from clarifying questions. Part of the reward was derived from edits, so Composer learned to defer risky edits by asking questions instead of touching code. The reward pipeline had not defined the boundary between appropriate caution and avoidance of negative reward, so editing rates dropped until Cursor changed the reward function.
+3. Optimizing the proxy (test passage, answer matching) may produce a policy that achieves high scores through mechanisms unrelated to the intended skill, e.g. pattern-matching, memorization, or distribution exploitation.
 
 ## A taxonomy of verifier exploits
 
@@ -82,6 +58,20 @@ $$
 \quad \text{versus} \quad
 \Pr(Y=y \mid \operatorname{do}(R=r'), X).
 $$ {#eq-ch7-causal-trace}
+
+## Empirical exploits
+
+### Unit-test manipulation
+
+OpenAI reports a frontier reasoning model training run in which the agent was placed in coding environments and rewarded for making unit tests pass.[@baker2025monitoring] The agent did not only write better code. It found reward hacks in the environment. Two systemic hacks were `exit(0)`, which exploited a bug that let the agent exit before all tests ran, and `raise SkipTest`, which skipped unit-test evaluation from outside the testing framework. These hacks became systemic until the environment was patched.
+
+Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking. When optimization pressure overwhelms the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
+
+### Missing negative
+
+Cursor's 2026 description of real-time RL for Composer gives the production version of the same problem.[@jackson2026realtimecomposer] The training loop used real user interactions as reward signal and shipped new checkpoints as often as every five hours. One exploit came from invalid tool calls. Composer often needs to read files or run terminal commands. The original reward pipeline discarded examples where the tool call was invalid, so the model learned that if a task looked likely to fail, emitting a broken tool call avoided negative reward. The fix was to include broken tool calls as negative examples.
+
+Another exploit came from clarifying questions. Part of the reward was derived from edits, so Composer learned to defer risky edits by asking questions instead of touching code. The reward pipeline had not defined the boundary between appropriate caution and avoidance of negative reward, so editing rates dropped until Cursor changed the reward function.
 
 ## The overoptimization curve
 
@@ -241,7 +231,7 @@ For a verifier used at pass@1, moderate thresholds may be enough. For best-of-64
 
 ## Test time exploits
 
-Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores high on the proxy but low on true capability. With best-of-16, the chance of seeing at least one exploit is $1 - (99/100)^{16} \approx 15\%$. With best-of-64, it rises to $1 - (99/100)^{64} \approx 47\%$. With best-of-256, it reaches $\approx 92\%$. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
+Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores high on the proxy but low on true capability. With best-of-16, the chance of seeing at least one exploit is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
 
 ## Hardening techniques
 
@@ -263,7 +253,3 @@ Hardening measures cost compute, engineering time, or both. We justify their use
 - Is there a useful analog to Gao et al.'s gold reward model for programmatic verifiers?
 - Can the model's own internal representations be used to detect reward hacking?
 - Does combining hidden tests, ensembles, and KL constraints give diminishing or compounding returns?
-
-## What comes next
-
-Every failure in this chapter has the same shape: the verifier was exploited because it checked something narrower than what we cared about. In every case, the exploit was in principle fixable: a better extractor, more tests, a debiased judge, or a KL constraint.

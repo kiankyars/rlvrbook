@@ -29,9 +29,9 @@ book:
     - part: "Optimization Pressure"
       chapters:
         - chapters/07-reward-hacking-and-verifier-robustness.md
-        - chapters/08-reasoning-model-recipes.md
     - part: "Domains and Frontiers"
       chapters:
+        - chapters/08-a-frontier-recipe.md
         - chapters/09-long-context-multimodal-and-agentic-rlvr.md
         - chapters/10-open-problems-and-the-research-agenda.md
   appendices:

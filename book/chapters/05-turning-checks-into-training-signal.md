@@ -213,9 +213,7 @@ trainer.train()
 Tokenizer and Model initialization with Hugging Face Transformers and Flash Attention. Trainer instantiation with the `GRPOTrainer` class with the reward functions, and finally run `trainer.train()`.
 :::
 
-## The design space
-
-That script embeds answers to five design questions that most practitioners encounter, let's discuss them.
+## Reward engineering
 
 ### Binary versus graded reward
 
@@ -382,9 +380,9 @@ The correctness component should dominate such that auxiliary rewards do not det
 
 The script calls `get_gsm8k_questions()` and trains on every problem in the split without filtering or a curriculum.
 
-This works for GSM8K because a 1.5B instruct model sits at roughly the right competence level: it solves some problems but not most, so reward variance across rollouts is high enough to produce informative gradients. But this is a coincidence of model size and dataset difficulty, not a general property. (cite the numbers)
+This works for GSM8K only when the model and dataset happen to land in the right competence range: the model solves some problems but not most, so reward variance across rollouts is high enough to produce informative gradients. That match between model size, prompt distribution, and rollout budget is not a general property.
 
-If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we're effectively training on formatting. Converslet, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
+If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we are effectively training on formatting. Conversely, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
 The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band.[^ch5-rejection-sampling][@shao2024deepseekmath; @deepseekai2025r1] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training.[@bengio2009curriculum]
 
@@ -404,18 +402,55 @@ If we consider the extremes, with $N = 2$, the group baseline is the mean of the
 
 If the model's solve rate on a prompt is 10%, then in a group of 16, on average 1.6 are correct. This implies that groups with no correct trajectories contribute no useful correctness gradient, and those with only one correct rollout concentrate the entire positive advantage on a single sample. Higher $N$ tolerates lower solve rates by increasing the chance that at least some rollouts in every group succeed, but good task filtering means a moderate $N$ like 16 is sufficient.
 
-## Case study: bits per sample
+## Case study
 
-Dwarkesh Patel's "bits per sample" framing is a useful way to see why this chapter matters so much.[@patel2025bitspersample] 
-The usual complaint about RL is that it is sample-inefficient because one must unroll a long trajectory to get a reward. But 
-in RLVR there is a second problem: even once the rollout is complete, the reward may still contain very little information. A 
-long reasoning trace that ends in a single binary outcome gives the optimizer only a thin summary of what happened. In that 
-sense, a verifier can be perfectly real and still be a poor teacher.
+Dwarkesh Patel frames training efficiency as bits per FLOP.[@patel2025bitspersample]
 
-This is why signal design is not a secondary implementation detail. RLVR works best when tasks sit in a competence band where 
-pass/fail outcomes are genuinely informative, and when the training setup raises information density through shaping, 
-filtering, curriculum, or other structure. The lesson is not that RLVR is useless; it is that a verifiable reward becomes 
-powerful only when the surrounding system turns it into a signal dense enough to learn from.
+$$
+\frac{\mathrm{bits}}{\mathrm{FLOP}}
+=
+\frac{\mathrm{samples}}{\mathrm{FLOP}}
+\cdot
+\frac{\mathrm{bits}}{\mathrm{sample}}.
+$$ {#eq-ch5-bits-per-flop}
+
+Consider one prompt, one correct one-token answer, and a policy that puts probability $p$ on that answer. In supervised learning, the trainer gives the correct label. The surprisal of that label is:
+
+$$
+I_{\mathrm{SL}}(p)
+=
+-\log_2 p.
+$$ {#eq-ch5-supervised-surprisal}
+
+If the model assigns probability $10^{-5}$ to the correct token, the label gives about $16.6$ bits of information, i.e. low probability makes the label more informative. Outcome RLVR gives the trainer a pass/fail bit for the sampled answer. You can upper-bound that outcome by the entropy of a Bernoulli variable, where information peaks at one bit when $p=0.5$ and collapses near both edges. Tiny $p$ gives mostly failures. $p$ near one gives mostly passes.
+
+$$
+H_2(p)
+=
+-p\log_2 p
+-
+(1-p)\log_2(1-p).
+$$ {#eq-ch5-binary-reward-entropy}
+
+
+| Pass rate $p$ | Supervised label information $-\log_2 p$ | Binary reward entropy $H_2(p)$ |
+|---:|---:|---:|
+| $10^{-5}$ | 16.61 bits | 0.00018 bits |
+| $0.01$ | 6.64 bits | 0.081 bits |
+| $0.10$ | 3.32 bits | 0.469 bits |
+| $0.50$ | 1.00 bit | 1.000 bit |
+| $0.90$ | 0.15 bits | 0.469 bits |
+
+: Comparing the information in a revealed supervised label with the entropy of a binary outcome. {#tbl-ch5-bits-per-sample}
+
+The trainer spends most of its work before the useful band if each order-of-magnitude pass-rate gain costs comparable training work. Moving from $10^{-5}$ to $10^{-4}$, then to $10^{-3}$, then to $10^{-2}$ can consume several comparable chunks of compute while the binary reward remains almost always zero. These numbers tellus why task filtering, rollout budget, and shaping are not important in achieving a high-information regime:
+
+- Filtering tries to choose prompts with mixed outcomes.
+- Larger rollout groups increase the chance that rare correct traces appear at all.
+- Curriculum keeps the prompt distribution near the current model's competence band.
+- Process rewards and intermediate checks add signal before the terminal reward.
+
+RLVR needs a capable starting policy in the sparse-reward regime. If the pretrained model cannot sample a useful trace with nontrivial probability, binary outcome RL has low bits per sample and high gradient variance. Pretraining, distillation, inference scaling, rejection sampling, and curriculum move the policy into the region where the verifier can teach.
 
 ## Open questions
 

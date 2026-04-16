@@ -10,10 +10,10 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 [x] 4. Learned, Programmatic, and Hybrid Verifiers
 [x] 5. Turning Checks into Training Signal
 [x] 6. Search and Test-Time Verification (still need to verify equations)
-[x] 7. Reward Hacking and Verifier Robustness (still need to verify equations)
-[] 8. Reasoning model recipes
+[x] 7. Reward Hacking (still need to verify equations)
+[] 8. A Frontier Recipe
 [] 9. Long-Context, Multimodal, and Agentic RLVR
-[] 10. Open Problems and the Research Agenda
+[] 10. Open Problems
 [x] a
 [x] b
 [x] c
@@ -27,7 +27,6 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 ## Commands
 
 - `quarto render book`
-- `scripts/build-book`
 - `scripts/check-citations`
 - `scripts/check-diagrams`
 

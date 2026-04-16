@@ -77,7 +77,15 @@ $$
 \sum_{t=1}^{T}\nabla_\theta \log \pi_\theta(y_t\mid x,y_{<t}).
 $$ {#eq-appa-token-logprob-gradient}
 
-A minimal policy-gradient update therefore has the form:
+Implementations can also weight the update itself. A rollout weight $w_i$ changes the strength of the whole sample; a token weight $\alpha_t$ changes which token log-probability terms receive more pressure:
+
+$$
+\nabla_\theta J(\theta) \approx \hat A_i \sum_t \alpha_t \nabla_\theta \log \pi_\theta(y_t \mid x, y_{<t})
+$$
+
+Outcome RLVR usually has $\alpha_t = 1$ for every generated token, because the verifier only returns one scalar for the completion. Nonuniform token weights require extra information: a process label, a verifier-localized error, a tool-call mask, or another credit-assignment signal.
+
+A minimal policy-gradient update has the form:
 
 $$
 \Delta\theta \propto

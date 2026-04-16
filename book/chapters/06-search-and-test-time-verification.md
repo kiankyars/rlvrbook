@@ -32,7 +32,7 @@ The remaining design choice is how to collapse step scores into a trajectory sco
 The basic arithmetic behind best-of-$N$ is powerfully simple. Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$. We can write the complement, which is at least one correct sample, as:
 $$
 1 - (1 - p)^N.
-$$
+$$ {#eq-ch6-pass-n-idealized}
 pass@$N$ sampling helps because repeated draws compound failure probability downward. Even a weak policy with $p = 0.1$ has
 $$
 1 - 0.9^{10} \approx 0.65
@@ -53,8 +53,6 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 
 ```{=html}
 <div class="sva-widget" id="sva-widget">
-  <p class="sva-hint">Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR. Drag the budget slider to compare search with training.</p>
-
   <div class="sva-controls">
     <div class="sva-slider-row">
       <span class="sva-label">Budget (candidates):</span>
@@ -175,12 +173,12 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 
 :::
 
-Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR from Table 1 of Khan et al.[@khan2026plasticity] The RLVR-trained model starts higher and still benefits from search, but the gap narrows as the candidate budget grows.
+Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR.[@khan2026plasticity]
 :::
 
 ### Selection under verifier noise
 
-The pass@$N$ expression assumes that the checker is the target property. In RLVR systems, that is almost never the full story. Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, verifier true-positive rate $\beta = \Pr(V=1 \mid C=1)$, and verifier false-positive rate $\alpha = \Pr(V=1 \mid C=0)$, then the probability of at least one accepted candidate among $N$ samples is
+@eq-ch6-pass-n-idealized assumes that the checker is the target property. In RLVR systems, that is almost never the full story. Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, verifier true-positive rate $\beta = \Pr(V=1 \mid C=1)$, and verifier false-positive rate $\alpha = \Pr(V=1 \mid C=0)$, then the probability of at least one accepted candidate among $N$ samples is
 
 $$
 \Pr(\exists i : V_i = 1)
@@ -257,7 +255,7 @@ $$
 
 where $U(s_T)$ is final utility, and the two costs represent generation and verification. This is why verifier latency matters. A verifier that is excellent but slow can be a good post-hoc ranker and a bad inner-loop controller. A cheap noisy verifier can be useful for pruning but dangerous if its errors compound across steps.
 
-## Why RL still matters: amortization
+## Amortization
 
 If best-of-$N$ plus a test suite is so powerful, why bother with RL at all?
 

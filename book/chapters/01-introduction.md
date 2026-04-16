@@ -11,7 +11,7 @@
 
 RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in unit tests. It can be partial, i.e. grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is the availability of a success notion. Once a task exposes useful correctness signals, reinforcement learning can optimize against them, search can exploit them at test time, and systems can improve far beyond what static supervised fine-tuning alone produces.
 
-> Terminology note. This book uses *verifier* as the default term for the mechanism that checks output and produces a signal, related terms include *checker*, *scorer*, and sometimes *judge*.
+> We use *verifier* as the default term for the mechanism that checks output and produces a signal, related terms include *checker*, *scorer*, and sometimes *judge*.
 
 ::: {#fig-verifier-stack}
 
@@ -42,7 +42,8 @@ Things heated up in September 2024, when OpenAI published "Learning to Reason wi
 
 The trend we can extract from this short history is that model improvement increasingly depended on checkable interfaces.
 
-## What Kinds of Tasks Admit Verifiable Rewards
+## Verifiable Tasks
+
 Tasks admit verifiable rewards when there is an interface to separate better behavior from worse behavior at acceptable cost. Math problems allow answer checking up to normalization. Code can be run against visible and hidden tests. Formal proof systems can accept or reject proof states under explicit rules. These domains became central not because they expose unusually clean signals.
 
 Other tasks are weaker but still useful. Long-context question answering may permit citation checks, evidence matching, or entailment-style grading. Tool-using agents have environment transitions, task completion criteria, or execution traces. These signals are often noisier, more expensive, and easier to exploit, but they can still support learning if the reward channel is informative enough.
@@ -219,22 +220,30 @@ The six domains, from strongest to weakest verification signal: **Proof** (verif
 What can be verified? A schematic domain map of RLVR by verification strength and verification granularity.
 :::
 
-## Why RLVR Became Central to Reasoning Models
+## RLVR and Reasoning
 
 RLVR and reasoning go hand in hand, but they are different. The former is a training paradigm, and the latter is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are exactly the ones with strong verifiers: math, code, proofs, some grounded QA. The result is that some of the most important progress in reasoning models has come from learning against verifiable rewards. It's therefore understandble that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance. 
 
-## Verifiable Does Not Mean Complete
+## Verifiable versus Complete
 
-Even strong reward signals remain proxies, if we reuse our three core domain examples:
+Even verifiers are susceiptble to becoming proxies, from our three core domain examples:
+
 1. A code evaluator may miss behaviors outside the test suite.
 2. A math reward may depend on brittle extraction. 
 3. A proof system may validate a derivation without telling us whether the model's decomposition was insightful or robust.
 
-These examples raise important questions to consider when applying RLVR: what is being checked, what is being missed, how expensive is the check, and how easily the signal can be gamed. We will dissect the gap between a usable reward signal and the outcome we want in the rest of the book. 
+These examples raise important questions to consider in applying RLVR:
+
+- what is being checked, 
+- what is being missed, h
+- ow expensive is the check, and 
+- how easily the signal can be gamed.
+ 
+We will dissect the gap between a usable reward signal and the outcome we want in the rest of the book. 
 
 ## What This Book Covers
 
-The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, programmatic, learned and hybrid verification pipelines. Chapter 5 demonstrates turning a verifier into a learning signal. Chapter 6 turns to search and test time verification, and Chapter 7 covers reward hacking and verifier robustness. Chapter 8 is about capabilites. Chapter 9 compares the paradigm across its strongest and most difficult domains. Chapter 10 closes with the open problems.
+The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, programmatic, learned and hybrid verification pipelines. Chapter 5 demonstrates turning a verifier into a learning signal. Chapter 6 turns to search and test time verification, and Chapter 7 covers reward hacking. Chapter 8 reconstructs a frontier RLVR recipe. Chapter 9 compares the paradigm across its strongest and most difficult domains. Chapter 10 closes with the open problems.
 
 [^ch1-step-by-step]: A useful compressed lineage runs from scratchpads in late 2021, to chain-of-thought prompting in January 2022, to the exact zero-shot prompt "Let's think step by step" in May 2022 [@nye2021show; @wei2022chain; @kojima2022zeroshot].
 [^ch1-code-priors]: CodeRL was submitted on July 5, 2022 and used unit tests and a critic model to guide program synthesis [@le2022coderl]. PPOCoder was submitted on January 31, 2023 and used execution-based feedback with PPO [@shojaee2023ppocoder]. RLTF was submitted on July 10, 2023 and used online unit-test feedback of multiple granularities for code LLMs [@liu2023rltf].
