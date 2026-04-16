@@ -11,12 +11,13 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 [x] 5. Turning Checks into Training Signal
 [x] 6. Search and Test-Time Verification (still need to verify equations)
 [x] 7. Reward Hacking (still need to verify equations)
-[] 8. A Frontier Recipe
+[x] 8. A Frontier Recipe
 [] 9. Long-Context, Multimodal, and Agentic RLVR
 [] 10. Open Problems
 [x] a
 [x] b
 [x] c
+[] Review subagents on every chapter
 
 ## Book Style
 
@@ -32,10 +33,5 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 
 ## Outreach
 
-- Hacker News
 - Discord
 - Unsloth
-- NL
-- Upweighting: Warren
-- QA
-- Subagents on every chapter

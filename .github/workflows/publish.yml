@@ -55,8 +55,8 @@ jobs:
           TEXMFCONFIG: ${{ github.workspace }}/.texmf-config
         run: |
           mkdir -p "$TEXMFHOME" "$TEXMFVAR" "$TEXMFCONFIG" "$XDG_CACHE_HOME"
-          quarto render book --to html --output-dir build/html
-          quarto render book --to pdf --output-dir build/pdf
+          quarto render book --to html --output-dir ../build/html
+          quarto render book --to pdf --output-dir ../build/pdf
           cp build/pdf/rlvrbook.pdf build/html/rlvrbook.pdf
           touch build/html/.nojekyll
 
