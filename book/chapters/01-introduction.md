@@ -58,7 +58,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
 <div class="dm">
   <p class="dm-hint">Hover over a domain to see what its verifier checks, where it can be gamed, and what it misses.</p>
 
-  <svg class="dm-svg" viewBox="0 0 700 420" aria-label="RLVR domain map: six domains plotted by verification strength and granularity.">
+  <svg class="dm-svg" viewBox="0 0 700 420" aria-label="RLVR domain map: seven domains plotted by verification strength and granularity.">
     <rect class="dm-bg" x="80" y="10" width="590" height="370" rx="6" />
 
     <g class="dm-grid">
@@ -112,6 +112,11 @@ A useful way to see the space is as a domain map. One axis is verification stren
       <circle class="dm-halo" cx="570" cy="330" r="28" />
       <circle class="dm-dot dm-c-math" cx="570" cy="330" r="14" />
       <text class="dm-name" x="570" y="365" text-anchor="middle">Math</text>
+    </g>
+    <g class="dm-point" data-domain="llm_judge" tabindex="0" role="button" aria-label="LLM-as-judge">
+      <circle class="dm-halo" cx="330" cy="335" r="28" />
+      <circle class="dm-dot dm-c-judge" cx="330" cy="335" r="14" />
+      <text class="dm-name" x="330" y="370" text-anchor="middle">LLM-as-judge</text>
     </g>
   </svg>
 
@@ -170,6 +175,13 @@ A useful way to see the space is as a domain map. One axis is verification stren
       verifiable: "Tool calls, state changes, completion scripts.",
       failure: "Reward hacking and simulator exploits.",
       misses: "Side effects, safety, real-world transfer."
+    },
+    llm_judge: {
+      title: "LLM-as-judge",
+      summary: "Flexible rubric, weak guarantee.",
+      verifiable: "A model-scored final response or comparison.",
+      failure: "Judge bias, style rewards, reward hacking.",
+      misses: "Objective correctness without external grounding."
     }
   };
 
@@ -214,7 +226,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
 :::
 
 ::: {.content-visible when-format="pdf"}
-The six domains, from strongest to weakest verification signal: **Proof** (verifiable: formally accepted proof state; common failure: theorem mis-specification; misses: informal usefulness). **Code** (verifiable: execution against tests; common failure: suite overfitting; misses: untested behavior). **Math** (verifiable: normalized final answer; common failure: parser brittleness; misses: reasoning faithfulness). **Long-context QA** (verifiable: answer plus evidence alignment; common failure: citation stuffing; misses: faithful synthesis). **Multimodal** (verifiable: answer with partial grounding; common failure: shortcut cues; misses: visual grounding). **Agentic** (verifiable: trajectory plus task completion; common failure: reward hacking; misses: real-world transfer).
+The domains shown: **Proof** (verifiable: formally accepted proof state; common failure: theorem mis-specification; misses: informal usefulness). **Code** (verifiable: execution against tests; common failure: suite overfitting; misses: untested behavior). **Math** (verifiable: normalized final answer; common failure: parser brittleness; misses: reasoning faithfulness). **Long-context QA** (verifiable: answer plus evidence alignment; common failure: citation stuffing; misses: faithful synthesis). **Multimodal** (verifiable: answer with partial grounding; common failure: shortcut cues; misses: visual grounding). **Agentic** (verifiable: trajectory plus task completion; common failure: reward hacking; misses: real-world transfer). **LLM-as-judge** (verifiable: model-scored final response or comparison; common failure: judge bias; misses: objective correctness without external grounding).
 :::
 
 What can be verified? A schematic domain map of RLVR by verification strength and verification granularity.

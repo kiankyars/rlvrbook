@@ -110,6 +110,7 @@ body {
 .dm-c-lcqa   { fill: #7c3aed; }
 .dm-c-multi  { fill: #dc2626; }
 .dm-c-agentic { fill: #ea580c; }
+.dm-c-judge  { fill: #0891b2; }
 
 .dm-point:hover .dm-halo,
 .dm-point:focus .dm-halo { fill: rgba(99,102,241,0.08); }
@@ -155,6 +156,7 @@ body.quarto-dark .dm-c-math   { fill: #34d399; }
 body.quarto-dark .dm-c-lcqa   { fill: #a78bfa; }
 body.quarto-dark .dm-c-multi  { fill: #f87171; }
 body.quarto-dark .dm-c-agentic { fill: #fb923c; }
+body.quarto-dark .dm-c-judge  { fill: #22d3ee; }
 
 body.quarto-dark .dm-point:hover .dm-halo,
 body.quarto-dark .dm-point:focus .dm-halo { fill: rgba(148,163,184,0.12); }
