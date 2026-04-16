@@ -64,5 +64,32 @@ format:
     css: styles/custom.css
   pdf:
     toc: true
+    toc-depth: 2
     number-sections: true
     colorlinks: true
+    top-level-division: section
+    documentclass: scrartcl
+    classoption:
+      - numbers=noendperiod
+    geometry:
+      - top=0.85in
+      - bottom=0.9in
+      - left=0.95in
+      - right=0.95in
+    include-in-header:
+      text: |
+        \let\cleardoublepage\clearpage
+        \makeatletter
+        \def\cleardoubleoddpage{\clearpage}
+        \def\cleardoubleevenpage{\clearpage}
+        \def\cleardoubleemptypage{\clearpage}
+        \renewcommand\part[1]{%
+          \clearpage
+          \refstepcounter{part}%
+          \phantomsection
+          \addcontentsline{toc}{part}{\thepart\quad #1}%
+          {\Large\bfseries Part \thepart\par}
+          {\LARGE\bfseries #1\par}
+          \vspace{1em}
+        }
+        \makeatother
