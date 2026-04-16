@@ -56,7 +56,7 @@ OLMo 3 Think is trained on four reward domains:
 
 Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts
 
-Second, in spite of the aforementioned filtering of zero-gradient groups, a consistent batch size is maintained by actively sampling and filtering rollouts until the desired batch size is reached, importantly all of those groups having non-homogenous reward, providing a better signal.
+Second, in spite of the aforementioned filtering of zero-gradient groups, a consistent batch size is maintained by actively sampling and filtering rollouts until the desired batch size is reached, importantly all of those groups having non-homogeneous reward, providing a better signal.
 
 The data mixture between the four domains is non trivial in determining downstream performance. Since every mixture could not be tested with a full run, a 500 to 1000 step probe tested which domains improved or regressed based on the mixture. The result was a mixed-domain batch with extra weight on math and instruction following.[@teamolmo2025olmo3]
 
