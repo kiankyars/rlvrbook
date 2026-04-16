@@ -12,7 +12,7 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 [x] 6. Search and Test-Time Verification (still need to verify equations)
 [x] 7. Reward Hacking (still need to verify equations)
 [x] 8. A Frontier Recipe
-[] 9. Long-Context, Multimodal, and Agentic RLVR
+[] 9. Long-Context, Multimodal, and Agentic RLVR (openenv)
 [] 10. Open Problems
 [x] a
 [x] b
@@ -30,8 +30,3 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 - `quarto render book`
 - `scripts/check-citations`
 - `scripts/check-diagrams`
-
-## Outreach
-
-- Discord
-- Unsloth

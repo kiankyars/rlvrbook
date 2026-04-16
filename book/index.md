@@ -37,7 +37,7 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 
 ## Changelog
 
-- 2026-04-15: Officially announced v0 of the book!
+- 2026-04-16: Officially announced v0 of the book!
 
 ## Acknowledgments
 
