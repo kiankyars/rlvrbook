@@ -224,7 +224,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
 :::
 
 ::: {.content-visible when-format="pdf"}
-![](../diagrams/01-domain-map-pdf.png){fig-alt="RLVR domain map across verification strength and verification granularity." width="85%"}
+![](../diagrams/01-domain-map-pdf.png){fig-alt="RLVR domain map across verification strength and verification granularity." width="94%"}
 :::
 
 A domain map of RLVR by verification strength versus verification granularity.
