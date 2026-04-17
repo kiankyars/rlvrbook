@@ -56,8 +56,6 @@ A useful way to see the space is as a domain map. One axis is verification stren
 ::: {.content-visible when-format="html"}
 ```{=html}
 <div class="dm">
-  <p class="dm-hint">Hover over a domain to see what its verifier checks, where it can be gamed, and what it misses.</p>
-
   <svg class="dm-svg" viewBox="0 0 700 420" aria-label="RLVR domain map: seven domains plotted by verification strength and granularity.">
     <rect class="dm-bg" x="80" y="10" width="590" height="370" rx="6" />
 
@@ -229,7 +227,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
 The domains shown: **Proof** (verifiable: formally accepted proof state; common failure: theorem mis-specification; misses: informal usefulness). **Code** (verifiable: execution against tests; common failure: suite overfitting; misses: untested behavior). **Math** (verifiable: normalized final answer; common failure: parser brittleness; misses: reasoning faithfulness). **Long-context QA** (verifiable: answer plus evidence alignment; common failure: citation stuffing; misses: faithful synthesis). **Multimodal** (verifiable: answer with partial grounding; common failure: shortcut cues; misses: visual grounding). **Agentic** (verifiable: trajectory plus task completion; common failure: reward hacking; misses: real-world transfer). **LLM-as-judge** (verifiable: model-scored final response or comparison; common failure: judge bias; misses: objective correctness without external grounding).
 :::
 
-What can be verified? A schematic domain map of RLVR by verification strength and verification granularity.
+A domain map of RLVR by verification strength versus verification granularity.
 :::
 
 ## RLVR and Reasoning

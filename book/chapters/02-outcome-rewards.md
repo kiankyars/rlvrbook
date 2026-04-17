@@ -306,23 +306,23 @@ update over sampled token groups:  ↓  ↓  ↓  ↓  ↓
 
 The verifier structure in @eq-ch2-pipeline is the same across the main RLVR domains. Let's discuss the domain-dependent difficulties:
 
-| Domain | Checked object | Typical verifier | Main bottleneck | What it misses |
-|---|---|---|---|---|
-| Math | Final answer or structured mathematical object | Answer extraction, canonicalization, symbolic equivalence, or reference comparison [@shao2024deepseekmath; @deepseekai2025r1] | Output contracts and normalization | Reasoning faithfulness and benchmark shortcuts |
-| Code | Program, patch, or execution result | Sandboxed tests, hidden tests, timeouts, and optional static checks [@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] | Test coverage and flaky infrastructure | Untested behavior, security, and maintainability |
-| Formal proof | Proof term, tactic trace, or proof state | Proof-assistant kernel acceptance [@xin2024deepseekprover; @xin2024deepseekproverv15] | Search, decomposition, and formalization burden | Informal usefulness, theorem choice, and proof-strategy quality |
+| Domain | Checked object | Typical verifier | Main bottleneck |
+|---|---|---|---|
+| Math | Final answer or structured mathematical object | Answer extraction, canonicalization, symbolic equivalence, or reference comparison [@shao2024deepseekmath; @deepseekai2025r1] | Output contracts and normalization |
+| Code | Program, patch, or execution result | Sandboxed tests, hidden tests, timeouts, and optional static checks [@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] | Test coverage and flaky infrastructure |
+| Formal proof | Proof term, tactic trace, or proof state | Proof-assistant kernel acceptance [@xin2024deepseekprover; @xin2024deepseekproverv15] | Search, decomposition, and formalization burden |
 
 In math, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should receive the same reward when the task asks for the solution set. In code, limited suites can certify incorrect programs and richer suites can change model rankings substantially.[@liu2023evalplus] In formal proof, final acceptance is strong, but the difficulty shifts toward theorem selection, search, decomposition, and interaction with the formal environment.
 
 ## Brittleness
 
-Each outcome reward stage has its own failure modes. An extractor can reward obedience to formatting conventions more than correctness. A canonicalizer can fail to merge equivalent answers or merge distinct answers into one canonical form. A verifier can evaluate the wrong capability because the benchmark itself admits shortcuts. In this lens, outcome verification can be thought of as interface design, since the checker only sees whatever survives the interface between the model and the environment. 
+Despite their simplicity, outcome rewards still have failure modes:
 
-A brittle interface can mean the model is trained against parser quirks. If the reward is graded, the model can optimize partial credit in ways that do not track the underlying task. In code, that can mean passing easy visible tests while failing edge cases. When applied to math, that's learning answer-shape regularities without robust symbolic competence. In any domain, a badly chosen partial-credit scheme can become an exploit rather than a better learning signal. The central lesson is that outcome reward design is easiest to reason about when the checked artifact is high-fidelity and hard to hack.
-
-## What the verifier misses
-
-But when the endpoint is lossy, sparse, or delayed, a correct final answer says little about whether the reasoning was robust or causally responsible for success. That is the transition to process rewards: asking whether some intermediate structure in the path can also be checked.
+- An extractor can reward obedience to formatting conventions more than correctness.
+- A canonicalizer can fail to merge equivalent answers or merge distinct answers into one canonical form.
+- A verifier can evaluate the wrong capability because the benchmark itself admits shortcuts.
+- If the reward is non-binary, the model can optimize partial credit in ways that do not track the underlying task.
+  - In code, that can mean passing easy visible tests while failing edge cases.
 
 ## Open questions
 
