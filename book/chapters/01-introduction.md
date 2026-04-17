@@ -224,7 +224,7 @@ A useful way to see the space is as a domain map. One axis is verification stren
 :::
 
 ::: {.content-visible when-format="pdf"}
-The domains shown: **Proof** (verifiable: formally accepted proof state; common failure: theorem mis-specification; misses: informal usefulness). **Code** (verifiable: execution against tests; common failure: suite overfitting; misses: untested behavior). **Math** (verifiable: normalized final answer; common failure: parser brittleness; misses: reasoning faithfulness). **Long-context QA** (verifiable: answer plus evidence alignment; common failure: citation stuffing; misses: faithful synthesis). **Multimodal** (verifiable: answer with partial grounding; common failure: shortcut cues; misses: visual grounding). **Agentic** (verifiable: trajectory plus task completion; common failure: reward hacking; misses: real-world transfer). **LLM-as-judge** (verifiable: model-scored final response or comparison; common failure: judge bias; misses: objective correctness without external grounding).
+![](../diagrams/01-domain-map-pdf.png){fig-alt="RLVR domain map across verification strength and verification granularity." width="85%"}
 :::
 
 A domain map of RLVR by verification strength versus verification granularity.
