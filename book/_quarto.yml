@@ -92,6 +92,13 @@ format:
           {\LARGE\bfseries #1\par}
           \vspace{1em}
         }
+        \let\rlvrbookoldsection\section
+        \RenewDocumentCommand{\section}{s o m}{%
+          \clearpage
+          \IfBooleanTF{#1}
+            {\rlvrbookoldsection*{#3}}
+            {\IfValueTF{#2}{\rlvrbookoldsection[#2]{#3}}{\rlvrbookoldsection{#3}}}%
+        }
         \AtBeginDocument{%
           \RenewDocumentCommand{\marginnote}{O{} +m O{}}{%
             \par\smallskip
