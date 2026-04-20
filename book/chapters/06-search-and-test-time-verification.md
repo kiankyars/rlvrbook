@@ -178,7 +178,7 @@ Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-bu
   
 ### Selection under verifier noise
 
-@eq-ch6-pass-n-idealized assumes that the checker is the target property; nevertheless, that may not always be the case, even in RLVR, e.g. a code patch that passes unit tests but silently removes input validation on an endpoint the tests never hit. We will model this dexrpancy in this section
+@eq-ch6-pass-n-idealized assumes that the checker is the target property; nevertheless, that may not always be the case, even in RLVR, e.g. a code patch that passes unit tests but silently removes input validation on an endpoint the tests never hit. We will model this discrepancy in this section.
 
 Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, then the following are true:
 
@@ -186,10 +186,14 @@ Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether t
 - Verifier false-positive rate $\alpha = \Pr(V=1 \mid C=0)$;
 - Then the probability of at least one accepted candidate among $N$ samples is:
 
+The verifier-acceptance equation @eq-ch6-verifier-acceptance answers a narrow question: after sampling $N$ times, what is the chance that the verifier accepts at least one candidate?
+
 $$
 \Pr(\exists i : V_i = 1)
 = 1 - \bigl(1 - \beta p - \alpha(1-p)\bigr)^N.
-$$
+$$ {#eq-ch6-verifier-acceptance}
+
+Acceptance and correctness come apart here. The accepted pool contains both true positives and false positives, so the next quantity asks what fraction of the accepted pool is genuinely correct.
 
 This is not the same as the probability that the returned answer is correct. The verifier tail has its own precision:
 
@@ -199,7 +203,9 @@ $$
 \frac{\beta p}{\beta p + \alpha(1-p)}.
 $$
 
-When $p$ is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. For a hard problem with $p=0.05$, $\beta=0.9$, and $\alpha=0.01$, the verifier-accepted tail is only
+The numerator is "correct and accepted." The denominator is "accepted for any reason," including mistakes that slipped through.
+
+When $p$ is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. This is a base-rate problem: if almost every rollout is wrong, a small leak in the checker can still pollute the accepted tail. For a hard problem with $p=0.05$, $\beta=0.9$, and $\alpha=0.01$, the verifier-accepted tail is only
 
 $$
 \frac{0.9 \cdot 0.05}{0.9 \cdot 0.05 + 0.01 \cdot 0.95}
@@ -213,7 +219,7 @@ $$
 \approx 0.49.
 $$
 
-Best-of-$N$ therefore depends on the verifier's precision in the selected tail, not merely on its average accuracy. This will bridge us to Chapter 7 where we discuss more search increaseing both the chance of finding a correct sample, and the surface area of finding a false positive that the verifier cannot reject.
+Best-of-$N$ therefore depends on the verifier's precision in the selected tail, not merely on its average accuracy. This bridges us to Chapter 7, where we discuss how more search increases both the chance of finding a correct sample and the surface area for finding a false positive that the verifier cannot reject.
 
 ### Compute-optimal selection
 
@@ -234,21 +240,23 @@ For this chapter, only deployable test time verification counts. Test suites, pr
 
 ### Search as controlled verification
 
-Selection can be written as
+Selection can be written as follows: generate complete candidates, score them after generation is over, and return the top one.
 
 $$
 y^\star = \arg\max_{y_i \sim \pi_\theta(\cdot \mid x)} v(x,y_i),
 \qquad i = 1,\ldots,N,
 $$
 
-where the verifier only acts after the model has produced complete candidates. Search is different because verifier outputs alter the future trajectory. A simple abstraction is a history-dependent controller:
+where the verifier only acts after the model has produced complete candidates. Nothing in this formulation changes the path mid-stream; it only ranks finished products. Search is different because verifier outputs alter the future trajectory. A simple abstraction is a history-dependent controller:
 
 $$
 h_t = (x, a_1, o_1, \ldots, a_{t-1}, o_{t-1}), \qquad
 a_t \sim \pi_{\mathrm{search}}(\cdot \mid h_t),
 $$
 
-where observations $o_t$ can include compiler errors, unit-test failures, proof-state feedback, retrieved documents, or learned verifier scores. The objective is no longer "sample $N$ and choose the best." It is closer to
+Here $h_t$ is just the running record of what the system has tried and what the environment or verifier has said back so far. Observations $o_t$ can include compiler errors, unit-test failures, proof-state feedback, retrieved documents, or learned verifier scores.
+
+Once the verifier sits inside the loop, the objective is no longer "sample $N$ and choose the best." It is closer to "steer a sequence of actions toward high final utility while paying separately for generation and checking":
 
 $$
 \max_{\pi_{\mathrm{search}}}
