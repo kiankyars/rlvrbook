@@ -237,7 +237,7 @@ Best-of-$N$ selection helps when the verifier is faithful, but can increase prob
 
 Hardening measures cost compute, engineering time, or both. We justify their use by whether they push the overoptimization peak far enough to the right.
 
-1. **Hidden tests.** The simplest hardening move: hold out a set of tests the model never trains against. If the training verifier uses 5 visible tests per coding problem, add 50 hidden tests drawn from a different generator. The model cannot overfit to tests it does not see.
+1. **Hidden tests.** Holding out a set of tests the model never trains against redcues direct overfitting to visible checks; the model cannot overfit to tests it does not see.
 
 2. **Test augmentation.** Generating tests automatically can expand coverage beyond what a human problem-setter provides. EvalPlus demonstrated that generated test suites reveal false positives that the original tests miss.[@liu2023evalplus]
 
