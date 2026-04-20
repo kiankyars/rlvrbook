@@ -121,10 +121,9 @@ A useful way to see the space is as a domain map. One axis is verification stren
   <div class="dm-detail is-empty" aria-live="polite">
     <h5 class="js-dm-title">Hover over a domain</h5>
     <dl class="dm-facts">
-      <dt>Summary</dt>         <dd class="dm-summary js-dm-summary">The detail panel updates as you move around the map.</dd>
-      <dt>Verifiable</dt>      <dd class="js-dm-verifiable"></dd>
-      <dt>Common failure</dt>  <dd class="js-dm-failure"></dd>
-      <dt>What it misses</dt>  <dd class="js-dm-misses"></dd>
+      <dt>Summary</dt>        <dd class="dm-summary js-dm-summary">The detail panel updates as you move around the map.</dd>
+      <dt>Verifiable</dt>     <dd class="js-dm-verifiable"></dd>
+      <dt>Failure modes</dt>  <dd class="js-dm-failure"></dd>
     </dl>
   </div>
 </div>
@@ -136,50 +135,43 @@ A useful way to see the space is as a domain map. One axis is verification stren
       title: "Math",
       summary: "Strong endpoint check, weak process check.",
       verifiable: "Normalized or equivalent final answer.",
-      failure: "Parser brittleness, format hacks, leakage.",
-      misses: "Reasoning faithfulness."
+      failure: "Parser brittleness, format hacks, leakage."
     },
     code: {
       title: "Code",
       summary: "Strong on covered behavior, weak off-suite.",
       verifiable: "Outputs, traces, and test results.",
-      failure: "Suite overfitting and hard-coded fixes.",
-      misses: "Untested behavior, security, efficiency."
+      failure: "Suite overfitting and hard-coded fixes."
     },
     proof: {
       title: "Proof",
       summary: "Kernel-checked steps, not soft proxies.",
       verifiable: "Proof states and final proof object.",
-      failure: "Bad theorem specs and automation shortcuts.",
-      misses: "Informal insight and transfer."
+      failure: "Bad theorem specs and automation shortcuts."
     },
     long_context_qa: {
       title: "Long-context QA",
       summary: "Evidence can be checked; synthesis usually cannot.",
       verifiable: "Citations, spans, answer-evidence alignment.",
-      failure: "Citation stuffing and irrelevant support.",
-      misses: "Faithful use of evidence."
+      failure: "Citation stuffing and irrelevant support."
     },
     multimodal: {
       title: "Multimodal",
       summary: "Answers are checkable; grounding stays noisy.",
       verifiable: "Answer plus partial grounding signals.",
-      failure: "Shortcut cues, OCR noise, label ambiguity.",
-      misses: "Whether vision drove the answer."
+      failure: "Shortcut cues, OCR noise, label ambiguity."
     },
     agentic: {
       title: "Agentic",
       summary: "Rich traces, brittle success checks.",
       verifiable: "Tool calls, state changes, completion scripts.",
-      failure: "Reward hacking and simulator exploits.",
-      misses: "Side effects, safety, real-world transfer."
+      failure: "Reward hacking and simulator exploits."
     },
     llm_judge: {
-      title: "LLM-as-judge",
+      title: "LLM-as-a-judge",
       summary: "Flexible rubric, weak guarantee.",
-      verifiable: "A model-scored final response or comparison.",
-      failure: "Judge bias, style rewards, reward hacking.",
-      misses: "Objective correctness without external grounding."
+      verifiable: "A surrogate to verifying model completitions.",
+      failure: "Judge bias, style rewards, reward hacking."
     }
   };
 
@@ -195,7 +187,6 @@ A useful way to see the space is as a domain map. One axis is verification stren
       el(".js-dm-summary").textContent = d.summary;
       el(".js-dm-verifiable").textContent = d.verifiable;
       el(".js-dm-failure").textContent = d.failure;
-      el(".js-dm-misses").textContent = d.misses;
     };
 
     const reset = () => {
@@ -204,7 +195,6 @@ A useful way to see the space is as a domain map. One axis is verification stren
       el(".js-dm-summary").textContent = "The detail panel updates as you move around the map.";
       el(".js-dm-verifiable").textContent = "";
       el(".js-dm-failure").textContent = "";
-      el(".js-dm-misses").textContent = "";
     };
 
     pts.forEach(p => {

@@ -60,7 +60,7 @@ Lightman et al. collected PRM800K: approximately 800,000 step-level human labels
 
 ### Monte Carlo rollout estimation
 
-Wang et al. introduced an automated alternative in Math-Shepherd.[@wang2024mathshepherd] The core idea is to estimate whether step $t$ is correct, complete the trajectory from step $n$ many times (using the model itself) and measure what fraction of completions reach the correct final answer. If most completions from step $t$ succeed, the step is probably correct. If most fail, the step probably introduced an error.
+Wang et al. introduced an automated alternative in Math-Shepherd.[@wang2024mathshepherd] The core idea is to estimate whether step $t$ is correct by complete the trajectory many times from step $t$ (using the model itself) and measure what fraction of completions reach the correct final answer. If most completions from step $t$ succeed, the step is probably correct. If most fail, the step probably introduced an error.
 
 $$
 \hat{P}(\text{step } t \text{ correct}) \approx \frac{1}{K} \sum_{k=1}^{K} \mathbb{I}\bigl[\text{rollout}_k(y_{1:t}) \text{ reaches correct answer}\bigr]

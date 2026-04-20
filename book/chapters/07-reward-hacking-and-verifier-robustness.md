@@ -80,7 +80,6 @@ The clearest quantitative evidence for Goodhart dynamics in optimization comes f
 Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not.[@pan2022effects] There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
 ::: {.content-visible when-format="html"}
-
 <div class="ghg-widget" id="ghg-widget">
 <p class="ghg-hint">Drag the slider to increase optimization pressure. Toggle verifier strength to see how the Goodhart gap changes.</p>
 <div class="ghg-tabs" role="tablist">
@@ -179,22 +178,13 @@ Pan et al. found that as the policy becomes stronger, it finds exploits that wea
   render();
 })();
 </script>
-
 :::
 
 ::: {.content-visible when-format="pdf"}
-
-**The overoptimization curve** shows proxy reward (what the verifier reports) rising monotonically while true performance (the capability we care about) peaks and then declines. The peak location depends on verifier strength.
-
-| Verifier type | Peak location | Peak true | True at KL=10 | Gap at KL=10 |
-|---------------|---------------|-----------|---------------|--------------|
-| Strong programmatic | KL $\approx$ 7 | 0.85 | 0.78 | 0.17 |
-| Hybrid stack | KL $\approx$ 4 | 0.72 | 0.30 | 0.65 |
-| Weak learned | KL $\approx$ 2 | 0.55 | 0.10 | 0.85 |
-
-Proxy reward at KL=10 is approximately 0.95 in all cases. Stronger verifiers delay the onset of overoptimization but do not prevent it.
-
+![](../diagrams/07-overoptimization-gao-rm-size.png){fig-alt="Reproduced figure from Gao et al. showing gold and proxy reward curves as KL distance increases across reward-model sizes." width="96%"}
 :::
+
+Reproduced from Gao et al. [@gao2023scaling].
 
 ## Tail precision
 

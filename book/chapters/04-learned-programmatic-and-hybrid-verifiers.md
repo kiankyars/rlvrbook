@@ -32,7 +32,7 @@ One shared property of this table is that programmatic verifiers never hallucina
 
 ### LLM-as-a-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. were the first to claim this concept, and called the paradigm LLM-as-a-Judge.[@zheng2023judging] An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in domains where programmatic checking is impossible. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories.[@hosseini2024genrm]
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. were the first to claim this concept, and called the paradigm LLM-as-a-Judge.[@zheng2023judging] An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories.[@hosseini2024genrm]
 
 Nevertheless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 
