@@ -19,7 +19,7 @@ Chapter 2 elucidated that the optimizer spreads a single scalar across every tok
 | 4 | Collect the full solution set: $\{2, 3\}$ | $\checkmark$ |
 | 5 | Report the final artifact as `<answer>x = 2</answer>` | $\times$ |
 
-: A trajectory whose internal reasoning is correct but whose final reported artifact is incomplete. A process reward can still preserve positive signal on the earlier correct steps. {#tbl-ch3-correct-rollout}
+: A trajectory whose internal reasoning is correct but whose final reported artifact is incomplete. {#tbl-ch3-correct-rollout}
 
 | Step | Reasoning | Label |
 |:-----|:----------|:-----:|
@@ -28,9 +28,9 @@ Chapter 2 elucidated that the optimizer spreads a single scalar across every tok
 | 3 | Restart and correctly factor as $(x-2)(x-3)$ | $\checkmark$ |
 | 4 | Solve to get $\{2, 3\}$ | $\checkmark$ |
 
-: A trajectory where step 1 is incorrect but the model explicitly detects the mismatch and recovers. A process reward labels the initial factoring move as wrong while preserving positive signal for the diagnostic and recovery steps. {#tbl-ch3-flawed-rollout}
+: A trajectory where step 1 is incorrect but the model explicitly detects the mismatch and recovers. {#tbl-ch3-flawed-rollout}
 
-Both scenarios compress distinct kinds of signal. The second is a false negative: correct reasoning is suppressed because the final reported answer is incomplete. The first contains exactly the kind of self-correction we may want the model to learn. However, outcome reward still reinforces the failed factoring attempt and the successful recovery together, even though they should not receive the same effective update. This is one of the main motivations for process supervision. Uesato et al. found that process-based feedback produced substantially cleaner reasoning traces than outcome-based feedback even when final-answer accuracy was similar, and Lightman et al. later showed that process reward models outperform outcome-only reward models on harder math reasoning tasks.[@uesato2022solving; @lightman2023letsverify]
+Both scenarios compress distinct kinds of signal. The former is a false negative: correct reasoning is suppressed because the final reported answer is incomplete. The latter contains exactly the kind of self-correction we may want the model to learn. However, outcome reward still reinforces the failed factoring attempt and the successful recovery together, even though they should not receive the same effective update. This is one of the main motivations for process supervision. Uesato et al. found that process-based feedback produced substantially cleaner reasoning traces than outcome-based feedback even when final-answer accuracy was similar, and Lightman et al. later showed that process reward models outperform outcome-only reward models on harder math reasoning tasks.[@uesato2022solving; @lightman2023letsverify]
 
 Instead of scoring only the final artifact, a process reward assigns a label or score to each intermediate step. The hope is that denser feedback gives the optimizer better information about which parts of a trajectory to reinforce and which to suppress. To this end the intermediate steps must be in a form the verifier can read, and the notion of a "correct step" must carry enough fidelity to be useful.
 
@@ -60,7 +60,7 @@ Lightman et al. collected PRM800K: approximately 800,000 step-level human labels
 
 ### Monte Carlo rollout estimation
 
-Wang et al. introduced an automated alternative in Math-Shepherd.[@wang2024mathshepherd] The idea: to estimate whether step $t$ is correct, complete the trajectory from step $t$ many times (using the model itself) and measure what fraction of completions reach the correct final answer. If most completions from step $t$ succeed, the step is probably correct. If most fail, the step probably introduced an error.
+Wang et al. introduced an automated alternative in Math-Shepherd.[@wang2024mathshepherd] The core idea is to estimate whether step $t$ is correct, complete the trajectory from step $n$ many times (using the model itself) and measure what fraction of completions reach the correct final answer. If most completions from step $t$ succeed, the step is probably correct. If most fail, the step probably introduced an error.
 
 $$
 \hat{P}(\text{step } t \text{ correct}) \approx \frac{1}{K} \sum_{k=1}^{K} \mathbb{I}\bigl[\text{rollout}_k(y_{1:t}) \text{ reaches correct answer}\bigr]

@@ -175,10 +175,16 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 
 Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR.[@khan2026plasticity]
 :::
-
+  
 ### Selection under verifier noise
 
-@eq-ch6-pass-n-idealized assumes that the checker is the target property. In RLVR systems, that is almost never the full story. Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, verifier true-positive rate $\beta = \Pr(V=1 \mid C=1)$, and verifier false-positive rate $\alpha = \Pr(V=1 \mid C=0)$, then the probability of at least one accepted candidate among $N$ samples is
+@eq-ch6-pass-n-idealized assumes that the checker is the target property; nevertheless, that may not always be the case, even in RLVR, e.g. a code patch that passes unit tests but silently removes input validation on an endpoint the tests never hit. We will model this dexrpancy in this section
+
+Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, then the following are true:
+
+- Verifier true-positive rate $\beta = \Pr(V=1 \mid C=1)$;
+- Verifier false-positive rate $\alpha = \Pr(V=1 \mid C=0)$;
+- Then the probability of at least one accepted candidate among $N$ samples is:
 
 $$
 \Pr(\exists i : V_i = 1)
@@ -193,7 +199,7 @@ $$
 \frac{\beta p}{\beta p + \alpha(1-p)}.
 $$
 
-That denominator is the dangerous term. When $p$ is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. For a hard problem with $p=0.05$, $\beta=0.9$, and $\alpha=0.01$, the verifier-accepted tail is only
+When $p$ is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. For a hard problem with $p=0.05$, $\beta=0.9$, and $\alpha=0.01$, the verifier-accepted tail is only
 
 $$
 \frac{0.9 \cdot 0.05}{0.9 \cdot 0.05 + 0.01 \cdot 0.95}
@@ -207,7 +213,7 @@ $$
 \approx 0.49.
 $$
 
-Best-of-$N$ therefore depends on the verifier's precision in the selected tail, not merely on its average accuracy. This is the bridge to Chapter 7: more search increases the chance of finding a correct sample, but it also increases the chance of finding a false positive that the verifier cannot reject.
+Best-of-$N$ therefore depends on the verifier's precision in the selected tail, not merely on its average accuracy. This will bridge us to Chapter 7 where we discuss more search increaseing both the chance of finding a correct sample, and the surface area of finding a false positive that the verifier cannot reject.
 
 ### Compute-optimal selection
 

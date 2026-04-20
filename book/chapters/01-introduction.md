@@ -9,7 +9,7 @@
 
 ## What RLVR Is
 
-RLVR is reinforcement learning on tasks where the reward does not need to be guessed from preference comparisons alone because some meaningful part of correctness can be checked directly. Sometimes that check is exact, as in symbolic math or formal proof. Sometimes it is executable, as in unit tests. It can be partial, i.e. grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is the availability of a success notion. Once a task exposes useful correctness signals, reinforcement learning can optimize against them, search can exploit them at test time, and systems can improve far beyond what static supervised fine-tuning alone produces.
+RLVR is reinforcement learning on tasks where some meaningful part of correctness can be checked directly. The check you implement can be exact, as in symbolic math or formal proof, or the result of an executable, as in unit tests. It can be partial, i.e. grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is the availability of a success notion. Once a task exposes useful correctness signals, reinforcement learning can optimize against them, search can exploit them at test time, and systems can improve far beyond what static supervised fine-tuning alone produces.
 
 > We use *verifier* as the default term for the mechanism that checks output and produces a signal, related terms include *checker*, *scorer*, and sometimes *judge*.
 
@@ -30,7 +30,7 @@ RLVR is defined by learning from verifiable reward signals; the optimizer can va
 
 ## Origins of RLVR
 
-In one sense RLVR is the oldest paradigm in reinforcement learning, since it learns from direct reward rather than preference comparison, just like the classic RL environemnts, e.g. cartpole; what is new is the application to LLMs through verifiers that can check answers, code, proofs, and traces.
+In some sense RLVR is akin to the oldest paradigm in reinforcement learning, since it learns from direct reward rather than preference comparison, just like the classic RL environemnts, e.g. cartpole; what is new is the application to LLMs through verifiers that can check answers, code, proofs, and traces.
 
 I personally reflect back on the advent of reasoning models and reinforcement learning through a strange amnesia of an idea so simple with hindsight, but which took two years after ChatGPT to discover. This assessment, however, is unfair in the sense that the idea to make models think step by step long predates the 2024 reasoning-model wave.[^ch1-step-by-step] The broader prompting paradigm emerged across late 2021 and early 2022: scratchpads for intermediate computation appeared first, chain-of-thought prompting then formalized the use of intermediate reasoning traces, and the exact prompt "Let's think step by step" was popularized a few months later.
 

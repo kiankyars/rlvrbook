@@ -5,6 +5,8 @@
 
 ![M. C. Escher, _Corsica Corte_ (1929).](escher/00-corsica-corte.jpg){width="80%" fig-align="center"}
 
+## Abstract
+
 Reinforcement learning from verifiable rewards (RLVR) studies how models can improve by learning from reward signals derived from checkable task outcomes, executable feedback, formal validation, or other reliable forms of verification. This book's purpose is to explain what kinds of rewards can be made verifiable, what those rewards actually train, where the paradigm has been most successful, and where it breaks.
 
 ## New to RLVR
@@ -38,6 +40,7 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 ## Changelog
 
 - 2026-04-16: Officially announced v0 of the book!
+- 2026-04-19: Used my [ML review textbook skill](https://github.com/kiankyars/dotfiles/tree/main/.agents/skills/review-ml-textbook) to refine each chapter and fix erratum.
 
 ## Acknowledgments
 

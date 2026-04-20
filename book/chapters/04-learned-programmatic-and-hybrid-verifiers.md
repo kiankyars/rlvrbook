@@ -9,7 +9,7 @@
 
 ## Programmatic versus Learned Verifiers
 
-Chapters 2 and 3 organized verifiers by where they apply across a rollout: either on the final artifact or on intermediate steps. This chapter changes axes, we will discuss how the verifier itself is implemented, and on this axis, we have two types:
+Chapters 2 and 3 classify verifiers by whether they apply on the final artifact or on intermediate steps in the rollout. This chapter changes axes, as we discuss how the verifier itself is implemented, and on this axis, we have two types:
 
 **Programmatic verifiers** are deterministic, auditable, and brittle. They are the native RLVR object: regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules.[@kydlicek2025mathverify; @le2022coderl]
 
@@ -32,8 +32,7 @@ One shared property of this table is that programmatic verifiers never hallucina
 
 ### LLM-as-a-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. formalized this as the LLM-as-a-Judge paradigm.[@zheng2023judging] An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in domains where programmatic checking is impossible. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories.[@hosseini2024genrm]
-
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. were the first to claim this concept, and called the paradigm LLM-as-a-Judge.[@zheng2023judging] An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in domains where programmatic checking is impossible. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories.[@hosseini2024genrm]
 
 Nevertheless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 

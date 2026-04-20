@@ -443,7 +443,7 @@ $$ {#eq-ch5-binary-reward-entropy}
 
 : Comparing the information in a revealed supervised label with the entropy of a binary outcome. {#tbl-ch5-bits-per-sample}
 
-The trainer spends most of its work before the useful band if each order-of-magnitude pass-rate gain costs comparable training work. Moving from $10^{-5}$ to $10^{-4}$, then to $10^{-3}$, then to $10^{-2}$ can consume several comparable chunks of compute while the binary reward remains almost always zero. These numbers tell us why task filtering, rollout budget, and shaping are not important in achieving a high-information regime:
+The trainer spends most of its work before the useful band if each order-of-magnitude pass-rate gain costs comparable training work. Moving from $10^{-5}$ to $10^{-4}$, then to $10^{-3}$, then to $10^{-2}$ can consume several comparable chunks of compute while the binary reward remains near zero. These numbers tell us why task filtering, rollout budget, and shaping are important in achieving a high-information regime:
 
 - Filtering tries to choose prompts with mixed outcomes.
 - Larger rollout groups increase the chance that rare correct traces appear at all.
