@@ -39,9 +39,25 @@ def fetch_display_name(login: str, token: str | None) -> str | None:
 
 def render_entry(login: str, display_name: str | None) -> str:
     url = f"https://github.com/{login}"
-    if display_name and display_name.casefold() != login.casefold():
-        return f"- [{display_name}]({url}) (@{login})"
+    if display_name:
+        return f"- [{display_name}]({url})"
     return f"- [{login}]({url})"
+
+
+def parse_entry(line: str) -> tuple[str, str | None]:
+    match = re.search(r"\[([^\]]+)\]\(https://github\.com/([A-Za-z0-9-]+)\)", line)
+    if match:
+        display_name = match.group(1).strip() or None
+        login = match.group(2).strip()
+        if display_name and display_name.casefold() == login.casefold():
+            display_name = None
+        return login, display_name
+
+    match = re.search(r"\(@([^)]+)\)", line)
+    if match:
+        return match.group(1).strip(), None
+
+    return line.strip(), None
 
 
 def extract_block_lines(text: str) -> tuple[int, int, list[str]]:
@@ -80,14 +96,19 @@ def main() -> int:
     index_path = Path(os.environ.get("INDEX_PATH", "book/index.md"))
     text = index_path.read_text()
     block_start, block_end, lines = extract_block_lines(text)
+    canonical_lines: list[str] = []
+    for line in lines:
+        existing_login, existing_display_name = parse_entry(line)
+        canonical_lines.append(render_entry(existing_login, existing_display_name))
+    lines = canonical_lines
 
     existing_logins = {login_from_entry(line) for line in lines}
     if login.casefold() in existing_logins:
         print(f"Contributor @{login} already listed")
-        return 0
+    else:
+        lines.append(render_entry(login, display_name))
 
-    lines.append(render_entry(login, display_name))
-    lines.sort(key=login_from_entry)
+    lines = sorted(set(lines), key=login_from_entry)
 
     new_block = "\n" + "\n".join(lines) + "\n"
     updated = text[:block_start] + new_block + text[block_end:]

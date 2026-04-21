@@ -7,3 +7,4 @@ book/_book/
 book/.gitignore
 .cursor
 book/index.tex
+**/__pycache__

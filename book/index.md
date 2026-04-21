@@ -50,8 +50,6 @@ I also acknowledge the wonderful developers of Exclaidraw, which I used for this
 
 ## [Github Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 
-- Get your name here by reviewing/improving the book!
-
 <!-- contributors:start -->
 - [Yaroslav Petrashko](https://github.com/YaroslavPetrashko) (@YaroslavPetrashko)
 <!-- contributors:end -->
