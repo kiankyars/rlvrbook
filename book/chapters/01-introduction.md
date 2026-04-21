@@ -235,8 +235,8 @@ Even verifiers are susceptible to becoming proxies, from our three core domain e
 These examples raise important questions to consider in applying RLVR:
 
 - what is being checked, 
-- what is being missed, h
-- ow expensive is the check, and 
+- what is being missed,
+- how expensive is the check, and 
 - how easily the signal can be gamed.
  
 We will dissect the gap between a usable reward signal and the outcome we want in the rest of the book. 
