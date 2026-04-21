@@ -52,6 +52,9 @@ I also acknowledge the wonderful developers of Exclaidraw, which I used for this
 
 - Get your name here by reviewing/improving the book!
 
+<!-- contributors:start -->
+<!-- contributors:end -->
+
 ## Citation
 
 You can cite this book directly with this BibTeX.
