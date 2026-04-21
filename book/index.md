@@ -53,6 +53,7 @@ I also acknowledge the wonderful developers of Exclaidraw, which I used for this
 - Get your name here by reviewing/improving the book!
 
 <!-- contributors:start -->
+- [Yaroslav Petrashko](https://github.com/YaroslavPetrashko) (@YaroslavPetrashko)
 <!-- contributors:end -->
 
 ## Citation
