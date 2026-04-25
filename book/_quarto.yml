@@ -1,13 +1,28 @@
 project:
   type: book
+  resources:
+    - robots.txt
   preview:
     navigate: false
 
 book:
   title: "Reinforcement Learning from Verifiable Rewards"
   author: "Kian Kyars"
+  description: "A reference book on RLVR, or reinforcement learning from verifiable rewards: training models with checkable reward signals from math, code, proofs, tools, and agent environments."
+  site-url: "https://rlvrbook.com"
+  repo-url: "https://github.com/kiankyars/rlvrbook"
   output-file: rlvrbook
   favicon: escher/escher.jpg
+  image: escher/00-corsica-corte.jpg
+  open-graph:
+    site-name: "RLVR Book"
+    locale: en_US
+    image: escher/00-corsica-corte.jpg
+    image-alt: "M. C. Escher, Corsica Corte (1929)."
+  twitter-card:
+    card-style: summary_large_image
+    image: escher/00-corsica-corte.jpg
+    image-alt: "M. C. Escher, Corsica Corte (1929)."
   sidebar:
     title: "rlvrbook"
   downloads:
@@ -61,7 +76,9 @@ format:
     toc: true
     toc-depth: 3
     number-sections: true
+    canonical-url: true
     css: styles/custom.css
+    include-in-header: includes/seo.html
   pdf:
     toc: true
     toc-depth: 2

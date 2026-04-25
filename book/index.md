@@ -1,3 +1,8 @@
+---
+pagetitle: "What is RLVR? Reinforcement Learning from Verifiable Rewards"
+description-meta: "RLVR means reinforcement learning from verifiable rewards: training models with reward signals from checkable task outcomes, executable feedback, formal validation, and other verifier-backed signals."
+---
+
 # Start Here {.unnumbered}
 
 [<i class="bi bi-file-earmark-pdf"></i> Open PDF](rlvrbook.pdf)  
@@ -51,7 +56,7 @@ I also acknowledge the wonderful developers of Exclaidraw, which I used for this
 ## [Github Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 
 <!-- contributors:start -->
-- [Yaroslav Petrashko](https://github.com/YaroslavPetrashko) (@YaroslavPetrashko)
+- [Yaroslav Petrashko](https://github.com/YaroslavPetrashko)
 <!-- contributors:end -->
 
 ## Citation

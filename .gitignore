@@ -8,3 +8,4 @@ book/.gitignore
 .cursor
 book/index.tex
 **/__pycache__
+distribution
