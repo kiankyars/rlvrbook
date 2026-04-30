@@ -9,7 +9,7 @@
 
 ## Goodhart's Law
 
-RLVR is in some sense Goodhart's Law instantiated when we view the verifier as the measure that becomes the target through RL. If the verifier has any gap (all verifiers have gaps) between what it checks and what we actually care about, then optimization will exploit that gap.[@skalse2022defining] Goodhart's Law can be applied to RLVR in three ways:
+RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as the measure that becomes the target through RL optimization. If the verifier has any gap between what it checks and what we want, then optimization invariably exploits that gap. Goodhart's Law can be applied to RLVR in three ways:
 
 1. The verifier has random errors on some inputs. Over many training steps, the policy shifts toward the subspace where the verifier is accidentally generous.
 
@@ -65,7 +65,7 @@ $$ {#eq-ch7-causal-trace}
 
 OpenAI reports a frontier reasoning model training run in which the agent was placed in coding environments and rewarded for making unit tests pass.[@baker2025monitoring] The agent did not only write better code. It found reward hacks in the environment. Two systemic hacks were `exit(0)`, which exploited a bug that let the agent exit before all tests ran, and `raise SkipTest`, which skipped unit-test evaluation from outside the testing framework. These hacks became systemic until the environment was patched.
 
-Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking. When optimization pressure overwhelms the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
+Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking.[@skalse2022defining] When optimization pressure overwhelms the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
 
 ### Missing negative
 
