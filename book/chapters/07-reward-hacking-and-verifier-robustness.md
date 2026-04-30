@@ -9,7 +9,7 @@
 
 ## Goodhart's Law
 
-RLVR is in some sense Goodhart's Law instantiated when we view the verifier as the measure that becomes the target through RL. If the verifier has any gap (all verifiers have gaps) between what it checks and what we actually care about, then optimization will exploit that gap. Goodhart's Law can be applied to RLVR in three ways:
+RLVR is in some sense Goodhart's Law instantiated when we view the verifier as the measure that becomes the target through RL. If the verifier has any gap (all verifiers have gaps) between what it checks and what we actually care about, then optimization will exploit that gap.[@skalse2022defining] Goodhart's Law can be applied to RLVR in three ways:
 
 1. The verifier has random errors on some inputs. Over many training steps, the policy shifts toward the subspace where the verifier is accidentally generous.
 
