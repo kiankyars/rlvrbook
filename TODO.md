@@ -18,3 +18,5 @@
 - [10-open-problems-and-the-research-agenda.md:9](/Users/kian/Developer/rlvrbook/book/chapters/10-open-problems-and-the-research-agenda.md#L9): rebuild this as an actual agenda chapter with 4-6 named open problems, one section per problem.
 - [10-open-problems-and-the-research-agenda.md:9](/Users/kian/Developer/rlvrbook/book/chapters/10-open-problems-and-the-research-agenda.md#L9): turn "verifier fidelity beyond math and code" into actual research questions rather than a domain list. The invariant problem is semantic faithfulness under weak endpoint proxies.
 - [10-open-problems-and-the-research-agenda.md:15](/Users/kian/Developer/rlvrbook/book/chapters/10-open-problems-and-the-research-agenda.md#L15): if `adaptive RLVR` stays, define what is adapting, verifier, data distribution, harness, or curriculum, on what signal, and to solve which failure mode. Otherwise cut the generic state-evolution equation.
+
+- Add gpt-5.5 diagrams to textbook
