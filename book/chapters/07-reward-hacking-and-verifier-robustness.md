@@ -19,16 +19,13 @@ RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as
 
 [^gh-possibilities]: Following Skalse et al., reward hacking with imperfect proxies has multiple outcomes:
 
-1. Different rewards can rank low-level behaviors differently while still sharing optimal policies; in this case, optimization can still reach a good target-optimal policy.
+  1. Different rewards can rank low-level behaviors differently while still sharing optimal policies; in this case, optimization can still reach a good target-optimal policy.
 
-2. There can also be policies with $J_{R_2}(\pi_2) > J_{R_2}(\pi_1)$ and $J_{R_1}(\pi_2) < J_{R_1}(\pi_1)$, so improving proxy reward worsens target reward.
+  2. There can also be policies with $J_{R_2}(\pi_2) > J_{R_2}(\pi_1)$ and $J_{R_1}(\pi_2) < J_{R_1}(\pi_1)$, so improving proxy reward worsens target reward.
 
-3. For imperfect, non-trivial proxies, such misalignment directions exist somewhere in policy space, so over-optimization can still lead to degraded target performance, but this is not mathematically guaranteed for every trajectory.
+  3. For imperfect, non-trivial proxies, such misalignment directions exist somewhere in policy space, so over-optimization can still lead to degraded target performance, but this is not mathematically guaranteed for every trajectory.
 
-As a simple single-step example, let
-$R_1(a_1)=2,\;R_1(a_2)=1,\;R_1(a_3)=0$ and
-$R_2(a_1)=2,\;R_2(a_2)=0,\;R_2(a_3)=0$.
-Action $a_1$ is optimal for both rewards, yet $\pi_1=(0.5,0.5,0)$ and $\pi_2=(0.51,0,0.49)$ satisfy $J_{R_2}(\pi_2)>J_{R_2}(\pi_1)$ but $J_{R_1}(\pi_2)<J_{R_1}(\pi_1)$.
+Example intuition: imagine three choices. The true evaluator says A is best, B is second-best, C is worst. The proxy treats A as best but says B and C are equally bad. Moving a little mass from B to C (or toward a specific mix with more A, depending on setup) can improve proxy while hurting true performance.
 
 ## A taxonomy of verifier exploits
 
