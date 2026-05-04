@@ -9,13 +9,23 @@
 
 ## Goodhart's Law
 
-RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as the measure that becomes the target through RL optimization. If the verifier has any gap between what it checks and what we want, then optimization invariably exploits that gap, and this phenomenon is proven to be mathematically inevitable for almost all non-trivial proxies.[@skalse2022defining] Goodhart's Law can be applied to RLVR in three ways:
+RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as the measure that becomes the target through RL optimization. If the verifier has any gap between what it checks and what we want, then optimization can exploit that gap for almost all non-trivial proxies.[^gh-possibilities][@skalse2022defining] Goodhart's Law can be applied to RLVR in three ways:
 
 1. The verifier has random errors on some inputs. Over many training steps, the policy shifts toward the subspace where the verifier is accidentally generous.
 
 2. Gradient descent over thousands of steps is powerful enough to discover gaps in the verifier that may be rare or invisible under ordinary evaluation.
 
 3. Optimizing the proxy (test passage, answer matching) may produce a policy that achieves high scores through mechanisms unrelated to the intended skill, e.g. pattern-matching, memorization, or distribution exploitation.
+
+[^gh-possibilities]: Following Skalse et al., reward hacking with imperfect proxies has multiple outcomes:
+1. Different rewards can rank low-level behaviors differently while still sharing optimal policies; in this case, optimization can still reach a good target-optimal policy.
+2. There can also be policies with $J_{R_2}(\pi_2) > J_{R_2}(\pi_1)$ and $J_{R_1}(\pi_2) < J_{R_1}(\pi_1)$, so improving proxy reward worsens target reward.
+3. For imperfect, non-trivial proxies, such misalignment directions exist somewhere in policy space, so over-optimization can still lead to degraded target performance, but this is not mathematically guaranteed for every trajectory.
+
+As a simple single-step example, let
+$R_1(a_1)=2,\;R_1(a_2)=1,\;R_1(a_3)=0$ and
+$R_2(a_1)=2,\;R_2(a_2)=0,\;R_2(a_3)=0$.
+Action $a_1$ is optimal for both rewards, yet $\pi_1=(0.5,0.5,0)$ and $\pi_2=(0.51,0,0.49)$ satisfy $J_{R_2}(\pi_2)>J_{R_2}(\pi_1)$ but $J_{R_1}(\pi_2)<J_{R_1}(\pi_1)$.
 
 ## A taxonomy of verifier exploits
 
@@ -73,9 +83,9 @@ Cursor's 2026 description of real-time RL for Composer gives the production vers
 
 Another exploit came from clarifying questions. Part of the reward was derived from edits, so Composer learned to defer risky edits by asking questions instead of touching code. The reward pipeline had not defined the boundary between appropriate caution and avoidance of negative reward, so editing rates dropped until Cursor changed the reward function.
 
-## The overoptimization curve
+## The over-optimization curve
 
-The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance.[@gao2023scaling] The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect. In the context of this book, the proxy is the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occurs later with gaps that opens more slowly.
+The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance.[@gao2023scaling] The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect. In the context of this book, the proxy is the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
 
 Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not.[@pan2022effects] There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
@@ -225,15 +235,15 @@ Best-of-$N$ selection helps when the verifier is faithful, but can increase prob
 
 ## Hardening techniques
 
-Hardening measures cost compute, engineering time, or both. We justify their use by whether they push the overoptimization peak far enough to the right.
+Hardening measures cost compute, engineering time, or both. We justify their use by whether they push the over-optimization peak far enough to the right.
 
-1. **Hidden tests.** Holding out a set of tests the model never trains against redcues direct overfitting to visible checks; the model cannot overfit to tests it does not see.
+1. **Hidden tests.** Holding out a set of tests the model never trains against reduces direct overfitting to visible checks; the model cannot overfit to tests it does not see.
 
 2. **Test augmentation.** Generating tests automatically can expand coverage beyond what a human problem-setter provides. EvalPlus demonstrated that generated test suites reveal false positives that the original tests miss.[@liu2023evalplus]
 
 3. **Red-teaming before training.** Probing the verifier adversarially is a proactive way to de-risk training runs.
 
-4. **KL constraints and early stopping.** PPO's KL penalty, GRPO's gradient clipping, or simply stopping training before the overoptimization peak keeps the policy close enough to its initial state that the verifier's calibration still holds.
+4. **KL constraints and early stopping.** PPO's KL penalty, GRPO's gradient clipping, or simply stopping training before the over-optimization peak keeps the policy close enough to its initial state that the verifier's calibration still holds.
 
 5. **Progressive curriculum.** Increase task difficulty as the model improves, following the competence-band principle from Chapter 5. Progressive difficulty keeps the optimization pressure focused on genuinely informative tasks.
 
