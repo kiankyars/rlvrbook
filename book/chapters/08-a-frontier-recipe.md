@@ -5,6 +5,7 @@
 ## Chapter Map
 
 - Describe OLMo 3 Think's RLVR recipe.
+- Scope: a case study in hybrid frontier post-training, where RLVR is the final stage of an SFT, DPO, RLVR pipeline rather than a standalone recipe.
 
 ## Setup
 
@@ -54,7 +55,7 @@ OLMo 3 Think is trained on four reward domains:
 
 ## Filtering and data mixing
 
-Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts
+Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts.
 
 Second, in spite of the aforementioned filtering of zero-gradient groups, a consistent batch size is maintained by actively sampling and filtering rollouts until the desired batch size is reached, importantly all of those groups having non-homogeneous reward, providing a better signal.
 
@@ -62,7 +63,7 @@ The data mixture between the four domains is non trivial in determining downstre
 
 ## The rollout system
 
-These final reasoner rollouts with maximum length 32K tokens and average generations more than 10K tokens.[@teamolmo2025olmo3] Because of the long sequences, static batching results in actors having to wait for the slowest link, which can be up to 32K-tokens, wasting compute. Continuous batching backfills finished rollouts, and the report estimates that static batching wastes up to 54% of compute at a 32K generation length.
+These final reasoner rollouts have a maximum length of 32K tokens and average generations of more than 10K tokens.[@teamolmo2025olmo3] Because of the long sequences, static batching results in actors having to wait for the slowest link, which can be up to 32K-tokens, wasting compute. Continuous batching backfills finished rollouts, and the report estimates that static batching wastes up to 54% of compute at a 32K generation length.
 
 Training uses a fully asynchronous setup, where we prompt actors served on vLLM to generate responses. The current policy trains from the samples the actors return, with inferencing using much more compute than training: for the 32B reasoner, there were 20 nodes for inference and 8 H100 nodes for training, while the 7B reasoner had 7 inference nodes and 2 learner nodes.
 
@@ -81,7 +82,7 @@ The weird part is the KV cache. The technical report states despite the prefix c
 
 ## Takeaways
 
-The technical report compares RL from SFT versus RL from DPO, and the result was that the latter gives a better resujlt than the former. The second lesson is that mixed-domain RL prevents over-optimization as ooposed to single-domain RL. Interestlym reward curves are not causual on performance, the report states that even though the train reward was lower for the mixed run than the single-domain one, downstream performance is still superior for a mixed dataset, i.e. a higher training reward can mean over-optimization to a narrower distribution.
+The technical report compares RL from SFT versus RL from DPO, and the result was that the latter gives a better result than the former. The second lesson is that mixed-domain RL prevents over-optimization as opposed to single-domain RL. Interestingly, reward curves are not causal on performance, the report states that even though the train reward was lower for the mixed run than the single-domain one, downstream performance is still superior for a mixed dataset, i.e. a higher training reward can mean over-optimization to a narrower distribution.
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
 
