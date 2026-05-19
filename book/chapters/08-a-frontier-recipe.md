@@ -74,11 +74,11 @@ RLVR must both generate rollouts and train a policy, and similar to the computat
 Concretely:
 
 1. Run an optimizer step on the current policy and get new weights.
-4. The current policy broadcasts the new parameter tensors.
-5. The actors copies those tensors into the existing GPU weight buffers.
-6. The actors resume the same generation queue.
+2. The learner broadcasts the new parameter tensors.
+3. The actors copy those tensors into the existing GPU weight buffers.
+4. The actors resume the same generation queue.
 
-The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked and gave a large throughput gain.[^ch8-inflight-update-boundary] Truncated importance sampling provides a great marriage to PipelineRL's by preventing biased updates because the actors that generated a rollout may differ from the current policy that trains on it. In fact, the initial 7B Think RLVR run without PipelineRL or truncated importance sampling took 15 days, and the addition of the two methods reached the same performance in 6 days.[@teamolmo2025olmo3]
+The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked and gave a large throughput gain.[^ch8-inflight-update-boundary] The pairing with truncated importance sampling matters because the actors that generated a rollout may differ from the current policy that trains on it. In fact, the initial 7B Think RLVR run without PipelineRL or truncated importance sampling took 15 days, and the addition of the two methods reached the same performance in 6 days.[@teamolmo2025olmo3]
 
 ## Takeaways
 
