@@ -5,6 +5,7 @@
 ## Chapter Map
 
 - Describe OLMo 3 Think's RLVR recipe.
+- Scope: a case study in hybrid frontier post-training, where RLVR is the final stage of an SFT, DPO, RLVR pipeline rather than a standalone recipe.
 
 ## Setup
 
@@ -54,7 +55,7 @@ OLMo 3 Think is trained on four reward domains:
 
 ## Filtering and data mixing
 
-Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts
+Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts.
 
 Second, in spite of the aforementioned filtering of zero-gradient groups, a consistent batch size is maintained by actively sampling and filtering rollouts until the desired batch size is reached, importantly all of those groups having non-homogeneous reward, providing a better signal.
 
@@ -62,7 +63,7 @@ The data mixture between the four domains is non trivial in determining downstre
 
 ## The rollout system
 
-These final reasoner rollouts with maximum length 32K tokens and average generations more than 10K tokens.[@teamolmo2025olmo3] Because of the long sequences, static batching results in actors having to wait for the slowest link, which can be up to 32K-tokens, wasting compute. Continuous batching backfills finished rollouts, and the report estimates that static batching wastes up to 54% of compute at a 32K generation length.
+These final reasoner rollouts have a maximum length of 32K tokens and average generations of more than 10K tokens.[@teamolmo2025olmo3] Because of the long sequences, static batching results in actors having to wait for the slowest link, which can be up to 32K-tokens, wasting compute. Continuous batching backfills finished rollouts, and the report estimates that static batching wastes up to 54% of compute at a 32K generation length.
 
 Training uses a fully asynchronous setup, where we prompt actors served on vLLM to generate responses. The current policy trains from the samples the actors return, with inferencing using much more compute than training: for the 32B reasoner, there were 20 nodes for inference and 8 H100 nodes for training, while the 7B reasoner had 7 inference nodes and 2 learner nodes.
 
@@ -73,15 +74,29 @@ RLVR must both generate rollouts and train a policy, and similar to the computat
 Concretely:
 
 1. Run an optimizer step on the current policy and get new weights.
-4. The current policy broadcasts the new parameter tensors.
-5. The actors copies those tensors into the existing GPU weight buffers.
-6. The actors resume the same generation queue.
+2. The learner broadcasts the new parameter tensors.
+3. The actors copy those tensors into the existing GPU weight buffers.
+4. The actors resume the same generation queue.
 
-The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked and gave a large throughput gain.[^ch8-inflight-update-boundary] Truncated importance sampling provides a great marriage to PipelineRL's by preventing biased updates because the actors that generated a rollout may differ from the current policy that trains on it. In fact, the initial 7B Think RLVR run without PipelineRL or truncated importance sampling took 15 days, and the addition of the two methods reached the same performance in 6 days.[@teamolmo2025olmo3]
+The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked and gave a large throughput gain.[^ch8-inflight-update-boundary] The pairing with truncated importance sampling matters because the actors that generated a rollout may differ from the current policy that trains on it. In fact, the initial 7B Think RLVR run without PipelineRL or truncated importance sampling took 15 days, and the addition of the two methods reached the same performance in 6 days.[@teamolmo2025olmo3]
+
+## One prompt through the pipeline
+
+The pieces above are easiest to hold together by following a single prompt through one training step. Take a competition-math prompt from the math slice of Dolci-Think-RL (the dataset holds roughly 105K prompts: about 30K math, 30K instruction following, 23K code, and 21K chat), and use the 7B Think configuration.[@teamolmo2025olmo3]
+
+1. **Dataset.** The prompt is in the pool at all because it survived offline filtering: eight rollouts from the DPO checkpoint at temperature 1.0 solved it 3 times out of 8, a 37.5% pass rate, below the 62.5% removal threshold.
+2. **Actor rollout group.** An actor, one vLLM instance on one GPU of the 56-GPU actor pool, picks up the prompt and samples a group of $G = 8$ reasoning rollouts at temperature 1.0, each capped at 32K tokens.
+3. **Reward vector.** The math verifier extracts each rollout's final answer, normalizes it, and checks symbolic equality against the reference with SymPy. Say it returns $r = (1, 0, 0, 1, 0, 0, 0, 1)$: three of eight correct.
+4. **Filtering.** The rewards are not all identical, so the group carries gradient signal and is kept. Had all eight matched, the group would be dropped, and active sampling would pull replacement groups off the actors until the batch held its full 64 unique prompts, 512 rollouts in total.
+5. **Advantage.** The group mean is $\bar r = 0.375$. Each correct rollout gets advantage $A_i = 1 - 0.375 = +0.625$; each incorrect one gets $-0.375$. That one scalar is broadcast to every token of its rollout.
+6. **Learner update.** The token-level loss sums over all tokens of all 512 rollouts in the batch and normalizes by the total token count, so our prompt's 20K-token rollout does not drown out a 6K-token one, and the asymmetric clip range $[0.8, 1.272]$ lets positive-advantage tokens move further than negative ones.
+7. **Refreshed actors.** The learner broadcasts the new weights to all actors in-flight. The actor that generated our group swaps them in between decode steps, keeps its KV cache, and continues the generations it had in progress, now under a slightly newer policy.
+
+The loop then repeats from step 2 with the updated weights, roughly 1,400 times for the 7B reasoner.
 
 ## Takeaways
 
-The technical report compares RL from SFT versus RL from DPO, and the result was that the latter gives a better resujlt than the former. The second lesson is that mixed-domain RL prevents over-optimization as ooposed to single-domain RL. Interestlym reward curves are not causual on performance, the report states that even though the train reward was lower for the mixed run than the single-domain one, downstream performance is still superior for a mixed dataset, i.e. a higher training reward can mean over-optimization to a narrower distribution.
+The technical report compares RL from SFT versus RL from DPO, and the result was that the latter gives a better result than the former. The second lesson is that mixed-domain RL prevents over-optimization as opposed to single-domain RL. Interestingly, reward curves are not causal on performance, the report states that even though the train reward was lower for the mixed run than the single-domain one, downstream performance is still superior for a mixed dataset, i.e. a higher training reward can mean over-optimization to a narrower distribution.
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
 

@@ -46,6 +46,7 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 
 - 2026-04-16: Officially announced v0 of the book!
 - 2026-04-19: Used my [ML review textbook skill](https://github.com/kiankyars/dotfiles/tree/main/.agents/skills/review-ml-textbook) to refine each chapter and fix erratum.
+- 2026-05-29: Expanded Chapter 8 with an end-to-end OLMo 3 Think training walkthrough.
 
 ## Acknowledgments
 
