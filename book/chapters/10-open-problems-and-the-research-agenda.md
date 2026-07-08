@@ -4,20 +4,14 @@
 
 ## Chapter Map
 
-- Discuss open problems in RLVR.
+- Open problems in RLVR.
 
-## Verifier fidelity beyond math and code
+## Elicitation or creation
 
-In long-context QA, answer-evidence checks can miss unsupported synthesis. In multimodal search, final-answer and tool-format rewards can miss visual grounding. In agentic software tasks, tests can miss maintainability, security, minimality, and user intent. In instruction following, many constraints require semantic judgment rather than exact checking.[@peng2025verif; @brown2025verifiers; @tan2025rllm] RLVR has even been used in medicine, where a verifier may check a final label, citation, or structured field while missing whether the model used the right evidence, respected uncertainty, or made a decision a clinician would trust.[@zhang2025medrlvr]
+**Research question.** Does RLVR with outcome rewards create reasoning capability that was absent from the base model, or does it only reallocate probability mass toward solutions the base model could already sample?
 
-## Adaptive RLVR
+## Reward-hacking
 
-We can think of adaptive RLVR in the sense of prompt re-weighting, just to say verifying the difficulty of problems before using them in training in order to maintain a specific competence band over the problems the model tackles.Furthermore, the verifier itself may be updated throughout training to prevent the policy from finding gaps in optimization. A completely adaptive RLVR loop can be written as:
+**Is there an over-optimization law for learned graders?** Chapter 7's quantitative anchor, the over-optimization curve of Gao et al., was measured for preference reward models.[@gao2023scaling] No equivalent law exists for rubric aggregates or generative verifiers,[@zhang2025genrm] so practitioners optimizing against them have no principled stopping criterion.
 
-$$
-(\pi_t, V_t, \mathcal D_t, \mathcal H_t)
-\longrightarrow
-(\pi_{t+1}, V_{t+1}, \mathcal D_{t+1}, \mathcal H_{t+1}),
-$$ {#eq-ch10-adaptive-system}
-
-where $\pi_t$ is the policy, $V_t$ the verifier stack, $\mathcal D_t$ the task distribution, and $\mathcal H_t$ the harness.
+**Can semantic faithfulness be measured directly?** We currently score only what the verifier checks. Without an independent way to measure everything it misses, we cannot tell whether a high-scoring model truly learned the intended behavior or merely learned to satisfy the checks.
