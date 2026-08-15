@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review ML Textbook"
+  short_description: "Rigorous online ML textbook reviews"
+  default_prompt: "Use $review-ml-textbook to review this online machine learning textbook rigorously."
