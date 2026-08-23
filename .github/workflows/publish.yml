@@ -39,6 +39,7 @@ jobs:
 
       - name: Install LaTeX package dependency
         run: |
+          tlmgr update --self
           tlmgr install koma-script
 
       - name: Install SVG conversion dependency
