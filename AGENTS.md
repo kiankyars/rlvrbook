@@ -25,6 +25,7 @@ This is a reference work about RLVR, not a general RL/RLHF textbook, an optimize
 ## Citations and Figures
 
 - Cite sources with Pandoc/Quarto citekeys such as `[@deepseekai2025r1]`; references come from `book/bibliography.bib`.
+- Put parenthetical citations before sentence punctuation, with a space before the citation: `claim [@key].`, not `claim.[@key]`.
 - Use interactive HTML figures only when they materially improve comprehension. Follow the existing `content-visible` HTML/PDF pattern and provide a static PDF fallback.
 - For dual-mode images, preserve web light/dark switching and use only the light-mode variant in PDF output.
 

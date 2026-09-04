@@ -25,9 +25,9 @@ $$
 \text{Score}(x, y) = \operatorname{Agg}\bigl(\text{PRM}(s_1 \mid x), \ldots, \text{PRM}(s_K \mid x, s_{<K})\bigr).
 $$
 
-Lightman et al. showed why this reduction matters at test time: on the MATH benchmark, PRM-based reranking in a best-of-$N$ setting outperformed ORM-based reranking, with the gap widening as the number of candidates increased.[@lightman2023letsverify]
+Lightman et al. showed why this reduction matters at test time: on the MATH benchmark, PRM-based reranking in a best-of-$N$ setting outperformed ORM-based reranking, with the gap widening as the number of candidates increased [@lightman2023letsverify].
 
-The remaining design choice is how to collapse step scores into a trajectory score. Math-Shepherd uses the minimum step score when reranking full solutions, reflecting the intuition that one invalid step can sink an otherwise plausible derivation.[@wang2024mathshepherd]
+The remaining design choice is how to collapse step scores into a trajectory score. Math-Shepherd uses the minimum step score when reranking full solutions, reflecting the intuition that one invalid step can sink an otherwise plausible derivation [@wang2024mathshepherd].
 
 The basic arithmetic behind best-of-$N$ is powerfully simple. Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$. We can write the complement, which is at least one correct sample, as:
 $$
@@ -45,7 +45,7 @@ among $N = 20$. Real model samples are not truly independent, so the formula is 
 
 ### pass@$k$
 
-Chen et al. defined pass@$k$: the probability that at least one of $k$ samples passes all tests.[@chen2021codex] This metric quantifies how much the reported result depends on the evaluation protocol rather than the model. For example, the original Codex paper reported 28.8% pass@1 on HumanEval but 70.2% pass@100 from sampling alone.[@chen2021codex]
+Chen et al. defined pass@$k$: the probability that at least one of $k$ samples passes all tests [@chen2021codex]. This metric quantifies how much the reported result depends on the evaluation protocol rather than the model. For example, the original Codex paper reported 28.8% pass@1 on HumanEval but 70.2% pass@100 from sampling alone [@chen2021codex].
 
 ::: {#fig-ch6-pass-at-k}
 
@@ -169,11 +169,11 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 | 8 | 53.6% | 68.0% | +14.4 |
 | 16 | 62.5% | 70.0% | +7.5 |
 
-: Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR. Both models improve with more candidates, but the RLVR-trained model starts higher at pass@1 and needs less help from additional search.[@khan2026plasticity]
+: Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR. Both models improve with more candidates, but the RLVR-trained model starts higher at pass@1 and needs less help from additional search [@khan2026plasticity].
 
 :::
 
-Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR.[@khan2026plasticity]
+Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR [@khan2026plasticity].
 :::
   
 ### Selection under verifier noise
@@ -221,7 +221,7 @@ Best-of-$N$ therefore depends on the verifier's precision in the selected tail, 
 
 ### Compute-optimal selection
 
-One question which naturally arises from verification is the exploration/exploitation argument, with exploration corresponding to more generations and exploitation corresponding to more time spent on verification. Snell et al. asked: given a fixed compute budget, how should you split it between generating more candidates and spending more on verification?[@snell2024scaling] Their conclusion is that the optimal allocation depends on problem difficulty. For hard problems where per-sample success is rare, PRM-guided selection can be 4x more efficient than naive best-of-$N$, and a smaller model with more search can match or exceed the performance of a 14x larger model at matched compute.
+One question which naturally arises from verification is the exploration/exploitation argument, with exploration corresponding to more generations and exploitation corresponding to more time spent on verification. Snell et al. asked: given a fixed compute budget, how should you split it between generating more candidates and spending more on verification [@snell2024scaling]? Their conclusion is that the optimal allocation depends on problem difficulty. For hard problems where per-sample success is rare, PRM-guided selection can be 4x more efficient than naive best-of-$N$, and a smaller model with more search can match or exceed the performance of a 14x larger model at matched compute.
 
 ## Search: verifier as controller
 
@@ -234,7 +234,7 @@ One question which naturally arises from verification is the exploration/exploit
 
 The difference here from selection is that search changes the output distribution, while selection only filters. A model that uses a verifier to prune branches, backtrack, and redirect can explore parts of the solution space that no single forward pass would reach. Search is more powerful, but also more expensive and more sensitive to verifier latency and accuracy.
 
-For this chapter, only deployable test time verification counts. Test suites, proof kernels, live environments, and some learned judges can actually be run by the system at serving time.[@chen2021codex; @liu2023evalplus; @xin2024deepseekprover; @xin2024deepseekproverv15; @trinh2025alphaproof] Benchmark-only answer-key grading in math is useful for measuring proposal quality, but it is not a deployable verifier and should not be confused with real test time capability.[@kydlicek2025mathverify; @shao2024deepseekmath; @deepseekai2025r1]
+For this chapter, only deployable test time verification counts. Test suites, proof kernels, live environments, and some learned judges can actually be run by the system at serving time [@chen2021codex; @liu2023evalplus; @xin2024deepseekprover; @xin2024deepseekproverv15; @trinh2025alphaproof]. Benchmark-only answer-key grading in math is useful for measuring proposal quality, but it is not a deployable verifier and should not be confused with real test time capability [@kydlicek2025mathverify; @shao2024deepseekmath; @deepseekai2025r1].
 
 ### Search as controlled verification
 

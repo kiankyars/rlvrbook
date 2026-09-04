@@ -59,7 +59,7 @@ $$
 \hat A_i = r_i - b_i.
 $$ {#eq-appa-advantage}
 
-This is how we bootstrap RL to improve through its own trajectory, by updating the policy to perform better than its mean result, which is the baseline. Optimizers mainly differ in how they choose this baseline and how they limit the size of the update. PPO uses a learned value function as the baseline and constrains policy movement with a clipped update.[@schulman2017proximal] In LLM post-training, implementations often also add KL regularization to a reference policy. GRPO, introduced in DeepSeekMath, removes the learned value model and estimates the baseline from the rewards in the sampled rollout group.[@shao2024deepseekmath] In the group-relative form used in Chapter 5, this becomes:
+This is how we bootstrap RL to improve through its own trajectory, by updating the policy to perform better than its mean result, which is the baseline. Optimizers mainly differ in how they choose this baseline and how they limit the size of the update. PPO uses a learned value function as the baseline and constrains policy movement with a clipped update [@schulman2017proximal]. In LLM post-training, implementations often also add KL regularization to a reference policy. GRPO, introduced in DeepSeekMath, removes the learned value model and estimates the baseline from the rewards in the sampled rollout group [@shao2024deepseekmath]. In the group-relative form used in Chapter 5, this becomes:
 
 $$
 \hat A_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}.

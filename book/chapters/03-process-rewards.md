@@ -30,7 +30,7 @@ Chapter 2 elucidated that the optimizer spreads a single scalar across every tok
 
 : A trajectory where step 1 is incorrect but the model explicitly detects the mismatch and recovers. {#tbl-ch3-flawed-rollout}
 
-Both scenarios compress distinct kinds of signal. The former is a false negative: correct reasoning is suppressed because the final reported answer is incomplete. The latter contains exactly the kind of self-correction we may want the model to learn. However, outcome reward still reinforces the failed factoring attempt and the successful recovery together, even though they should not receive the same effective update. This is one of the main motivations for process supervision. Uesato et al. found that process-based feedback produced substantially cleaner reasoning traces than outcome-based feedback even when final-answer accuracy was similar, and Lightman et al. later showed that process reward models outperform outcome-only reward models on harder math reasoning tasks.[@uesato2022solving; @lightman2023letsverify]
+Both scenarios compress distinct kinds of signal. The former is a false negative: correct reasoning is suppressed because the final reported answer is incomplete. The latter contains exactly the kind of self-correction we may want the model to learn. However, outcome reward still reinforces the failed factoring attempt and the successful recovery together, even though they should not receive the same effective update. This is one of the main motivations for process supervision. Uesato et al. found that process-based feedback produced substantially cleaner reasoning traces than outcome-based feedback even when final-answer accuracy was similar, and Lightman et al. later showed that process reward models outperform outcome-only reward models on harder math reasoning tasks [@uesato2022solving; @lightman2023letsverify].
 
 Instead of scoring only the final artifact, a process reward assigns a label or score to each intermediate step. The hope is that denser feedback gives the optimizer better information about which parts of a trajectory to reinforce and which to suppress. To this end the intermediate steps must be in a form the verifier can read, and the notion of a "correct step" must carry enough fidelity to be useful.
 
@@ -48,7 +48,7 @@ $$
 \text{PRM}(s_t \mid x, s_{<t})
 $$ {#eq-ch3-prm}
 
-The steps can be as granular as tokens; this chapter focuses on the step-level formulation, since the main PRM setups discussed here supervise explicit intermediate steps rather than every token. Lightman et al. formalize PRM training as step-level classification with labels such as positive, negative, and neutral.[@lightman2023letsverify] When used to train a policy, these scores tell the system where the reasoning went right and wrong. The optimizer no longer has to guess which parts of a rewarded trajectory were actually responsible for the reward.
+The steps can be as granular as tokens; this chapter focuses on the step-level formulation, since the main PRM setups discussed here supervise explicit intermediate steps rather than every token. Lightman et al. formalize PRM training as step-level classification with labels such as positive, negative, and neutral [@lightman2023letsverify]. When used to train a policy, these scores tell the system where the reasoning went right and wrong. The optimizer no longer has to guess which parts of a rewarded trajectory were actually responsible for the reward.
 
 ## How step labels are obtained
 
@@ -56,11 +56,11 @@ The next question is where these step-level signals come from, and there are fou
 
 ### Human annotation
 
-Lightman et al. collected PRM800K: approximately 800,000 step-level human labels on model-generated math solutions.[@lightman2023letsverify] Annotators judged each step as positive (mathematically valid), negative (contains an error), or neutral (ambiguous or uncheckable). PRM800K was feasible for competition-math-level problems where each solution has 5–15 steps. For longer trajectories (agentic tasks with hundreds of steps) or faster-moving domains (code with evolving APIs), human annotation does not scale.
+Lightman et al. collected PRM800K: approximately 800,000 step-level human labels on model-generated math solutions [@lightman2023letsverify]. Annotators judged each step as positive (mathematically valid), negative (contains an error), or neutral (ambiguous or uncheckable). PRM800K was feasible for competition-math-level problems where each solution has 5–15 steps. For longer trajectories (agentic tasks with hundreds of steps) or faster-moving domains (code with evolving APIs), human annotation does not scale.
 
 ### Monte Carlo rollout estimation
 
-Wang et al. introduced an automated alternative in Math-Shepherd.[@wang2024mathshepherd] The core idea is to estimate whether step $t$ is correct by complete the trajectory many times from step $t$ (using the model itself) and measure what fraction of completions reach the correct final answer. If most completions from step $t$ succeed, the step is probably correct. If most fail, the step probably introduced an error.
+Wang et al. introduced an automated alternative in Math-Shepherd [@wang2024mathshepherd]. The core idea is to estimate whether step $t$ is correct by complete the trajectory many times from step $t$ (using the model itself) and measure what fraction of completions reach the correct final answer. If most completions from step $t$ succeed, the step is probably correct. If most fail, the step probably introduced an error.
 
 $$
 \hat{P}(\text{step } t \text{ correct}) \approx \frac{1}{K} \sum_{k=1}^{K} \mathbb{I}\bigl[\text{rollout}_k(y_{1:t}) \text{ reaches correct answer}\bigr]
@@ -82,11 +82,11 @@ rollout-estimated process supervision sits between outcome and process reward. T
 
 ### Outcome-propagated pseudo-labels
 
-Sun et al. study this regime directly in FreePRM: start from trajectory-level outcome labels, propagate them to the steps inside the trajectory, and then debias the resulting pseudo-labels under a weak-supervision framework.[@sun2025freeprm]
+Sun et al. study this regime directly in FreePRM: start from trajectory-level outcome labels, propagate them to the steps inside the trajectory, and then debias the resulting pseudo-labels under a weak-supervision framework [@sun2025freeprm].
 
 ### Formal step checking
 
-In proof assistants such as Lean and Coq, each step is checked by the kernel. This is purest process verification possible, and it costs nothing beyond the kernel call.[@xin2024deepseekproverv15] Of course, formal step checking only works when the reasoning is expressed in a formal language with a validity criterion per step.
+In proof assistants such as Lean and Coq, each step is checked by the kernel. This is purest process verification possible, and it costs nothing beyond the kernel call [@xin2024deepseekproverv15]. Of course, formal step checking only works when the reasoning is expressed in a formal language with a validity criterion per step.
 
 | Method | Label quality | Cost per step | Domain scope |
 |:-------|:-------------|:-------------|:------------|
@@ -116,7 +116,7 @@ When comparing these paradigms, we should be asking whether the granular informa
 The question is whether extra granularity improves learning enough to justify its cost.
 :::
 
-Uesato et al. published the first systematic comparison in November 2022.[@uesato2022solving] Their finding was surprising: outcome-based and process-based feedback achieved similar final-answer accuracy on GSM8K. But process supervision reduced trace-level errors from 14.0% to 3.4%, i.e. both methods got the right answer at similar rates, but the process-supervised model was far more likely to get the right answer for the right reasons. Although capabilities are the same, this distinction matters for robustness, interpretability, and downstream trust.
+Uesato et al. published the first systematic comparison in November 2022 [@uesato2022solving]. Their finding was surprising: outcome-based and process-based feedback achieved similar final-answer accuracy on GSM8K. But process supervision reduced trace-level errors from 14.0% to 3.4%, i.e. both methods got the right answer at similar rates, but the process-supervised model was far more likely to get the right answer for the right reasons. Although capabilities are the same, this distinction matters for robustness, interpretability, and downstream trust.
 
 ## Limitations
 
@@ -126,7 +126,7 @@ Process verification addresses the sparse credit assignment through steps which,
 
 **Annotation noise compounds.** MC rollout estimates are noisy: a step can look "correct" because the model is good at recovering later, or "incorrect" because the remaining steps are hard even from a valid state. Human annotators also disagree, especially on steps that are mathematically sound but poorly justified. A model trained on noisy step labels can learn to exploit that noise rather than improve the underlying reasoning.
 
-**PRM ambiguitity.** Yuan et al. show that an ORM trained with a log-likelihood-ratio parameterization contains an implicit PRM that can be extracted without step-level labels, and that this implicit PRM outperforms Math-Shepherd with far less data.[@yuan2024free] Sullivan and Koller go further, proving that GRPO with an ORM is mathematically equivalent to a PRM-aware RL objective with an implicit Monte Carlo PRM.[@sullivan2025grpo]
+**PRM ambiguitity.** Yuan et al. show that an ORM trained with a log-likelihood-ratio parameterization contains an implicit PRM that can be extracted without step-level labels, and that this implicit PRM outperforms Math-Shepherd with far less data [@yuan2024free]. Sullivan and Koller go further, proving that GRPO with an ORM is mathematically equivalent to a PRM-aware RL objective with an implicit Monte Carlo PRM [@sullivan2025grpo].
 
 The boundary between outcome and process verification is blurrier than the early literature suggested. Outcome rewards already contain some implicit step-level signal; process rewards add new proxies and new annotation problems. When neither regime is sufficient on its own, the next move is to combine them, learn the verifier itself, or build layered verification stacks. That is the subject of Chapter 4.
 

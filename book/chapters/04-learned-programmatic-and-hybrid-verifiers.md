@@ -11,7 +11,7 @@
 
 Chapters 2 and 3 classify verifiers by whether they apply on the final artifact or on intermediate steps in the rollout. This chapter changes axes, as we discuss how the verifier itself is implemented, and on this axis, we have two types:
 
-**Programmatic verifiers** are deterministic, auditable, and brittle. They are the native RLVR object: regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules.[@kydlicek2025mathverify; @le2022coderl]
+**Programmatic verifiers** are deterministic, auditable, and brittle. They are the native RLVR object: regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules [@kydlicek2025mathverify; @le2022coderl].
 
 **Learned verifiers** are flexible, soft-scored, and opaque. They are not verifiable rewards in the narrow sense. Instead, they are learned surrogate signals: a model is trained or prompted to judge another model's output when no direct checker can carry the whole burden. This covers ambiguity, open-endedness and edge cases, but inherits the biases and blind spots of the judge model.
 
@@ -26,13 +26,13 @@ Chapters 2 and 3 classify verifiers by whether they apply on the final artifact 
 
 : Programmatic verifiers by domain. {#tbl-ch4-programmatic}
 
-One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to miss edge cases, security vulnerabilities, and correctness properties that no test covers.[@liu2023evalplus]
+One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to miss edge cases, security vulnerabilities, and correctness properties that no test covers [@liu2023evalplus].
 
 ## Learned verifiers
 
 ### LLM-as-a-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. were the first to claim this concept, and called the paradigm LLM-as-a-Judge.[@zheng2023judging] An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories.[@zhang2025genrm]
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. were the first to claim this concept, and called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories [@zhang2025genrm].
 
 Nevertheless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 
@@ -43,11 +43,11 @@ Nevertheless, agreement rates hide systematic biases, of which Zheng et al. iden
 
 ### Reward model ensembles
 
-Ensembles are the simplest hybrid stacks, combining multiple judgments homogeneously without layering different verification modalities. Coste et al. studied ensembles of reward models for RLHF and found that they mitigate but do not eliminate reward hacking.[@coste2023rewardensemble] Ensembles that differ in pretraining seeds generalize better than those that differ only in fine-tuning seeds, because the former have more diverse internal representations, and less-overlapping blind spots.
+Ensembles are the simplest hybrid stacks, combining multiple judgments homogeneously without layering different verification modalities. Coste et al. studied ensembles of reward models for RLHF and found that they mitigate but do not eliminate reward hacking [@coste2023rewardensemble]. Ensembles that differ in pretraining seeds generalize better than those that differ only in fine-tuning seeds, because the former have more diverse internal representations, and less-overlapping blind spots.
 
 ### The calibration problem
 
-Learned surrogate verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles.[@lambert2024rewardbench]
+Learned surrogate verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles [@lambert2024rewardbench].
 
 For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" (effectively certainty) and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. Treating both as commensurable scalars and averaging them is a mistake.
 
@@ -55,7 +55,7 @@ For verifier-stack design, the calibration gap means that raw scores from a lear
 
 Production RLVR systems layer verifier components together to robustify reward signal. Unit tests can check functional correctness, but can't judge code security or readability. By the same token, a proof kernel checks validity, but it does not judge whether the theorem was worth proving. Therefore, we combine multiple verifiers together. A useful mental image is to think of each verifier as producing a useful signal over a subset of inputs in some high-dimensional vector space, with the signal being silent in that subset's complement. Stacking verifiers can reduce this complement, and the design problem in a hybrid stack is to determine how to compose rewards comenseratuly, and how failure modes interact when composed.
 
-OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrader composition, where string checks, score-model graders, and Python execution can be nested into a single grader; Anthropic similarly frames agent evaluation verifiers as ranging from exact string comparison to enlisting Claude to judge a response.[@openai2026graders; @anthropic2025writingtools]
+OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrader composition, where string checks, score-model graders, and Python execution can be nested into a single grader; Anthropic similarly frames agent evaluation verifiers as ranging from exact string comparison to enlisting Claude to judge a response [@openai2026graders; @anthropic2025writingtools].
 
 ::: {#fig-ch4-outcome-hybrid}
 

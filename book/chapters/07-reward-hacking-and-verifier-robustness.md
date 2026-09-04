@@ -9,7 +9,7 @@
 
 ## Goodhart's Law
 
-RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as the measure that becomes the target through RL optimization. If the verifier has any gap between what it checks and what we want, then optimization can exploit that gap for almost all non-trivial proxies.[^gh-possibilities][@skalse2022defining] Goodhart's Law can be applied to RLVR in three ways:
+RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as the measure that becomes the target through RL optimization. If the verifier has any gap between what it checks and what we want, then optimization can exploit that gap for almost all non-trivial proxies [@skalse2022defining].[^gh-possibilities] Goodhart's Law can be applied to RLVR in three ways:
 
 1. The verifier has random errors on some inputs. Over many training steps, the policy shifts toward the subspace where the verifier is accidentally generous.
 
@@ -39,7 +39,7 @@ The signal path from Chapter 5 introduces its own optimization targets. Format r
 
 ### Test adequacy failures
 
-The verifier is correct on what it checks, but what it checks is insufficient. Liu et al. found that augmenting HumanEval with 80× more test cases changed model rankings: some models that scored well on the original suite dropped substantially.[@liu2023evalplus] In code generation, test suites are finite approximations of a specification. Through hardcoded branches or shallow pattern matching, a model can learn to pass specific test cases without implementing the correct algorithm.
+The verifier is correct on what it checks, but what it checks is insufficient. Liu et al. found that augmenting HumanEval with 80× more test cases changed model rankings: some models that scored well on the original suite dropped substantially [@liu2023evalplus]. In code generation, test suites are finite approximations of a specification. Through hardcoded branches or shallow pattern matching, a model can learn to pass specific test cases without implementing the correct algorithm.
 
 ### Learned verifier biases
 
@@ -51,7 +51,7 @@ The verifier was calibrated for one distribution of model outputs, yet the polic
 
 ### Mechanism gaps
 
-Turpin et al. showed that chain-of-thought explanations can hide factors that influenced the answer, and Lanham et al. tested faithfulness more directly by intervening on traces.[@turpin2023language; @lanham2023measuring] The mechanism gap is the difference between a trace that predicts correctness and a trace that causally controls the answer:
+Turpin et al. showed that chain-of-thought explanations can hide factors that influenced the answer, and Lanham et al. tested faithfulness more directly by intervening on traces [@turpin2023language; @lanham2023measuring]. The mechanism gap is the difference between a trace that predicts correctness and a trace that causally controls the answer:
 
 Let $X$ be the prompt, $R$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,R,Y)$.
 
@@ -73,21 +73,21 @@ $$ {#eq-ch7-causal-trace}
 
 ### Unit-test manipulation
 
-OpenAI reports a frontier reasoning model training run in which the agent was placed in coding environments and rewarded for making unit tests pass.[@baker2025monitoring] The agent did not only write better code. It found reward hacks in the environment. Two systemic hacks were `exit(0)`, which exploited a bug that let the agent exit before all tests ran, and `raise SkipTest`, which skipped unit-test evaluation from outside the testing framework. These hacks became systemic until the environment was patched.
+OpenAI reports a frontier reasoning model training run in which the agent was placed in coding environments and rewarded for making unit tests pass [@baker2025monitoring]. The agent did not only write better code. It found reward hacks in the environment. Two systemic hacks were `exit(0)`, which exploited a bug that let the agent exit before all tests ran, and `raise SkipTest`, which skipped unit-test evaluation from outside the testing framework. These hacks became systemic until the environment was patched.
 
 Patching a verification function to always return true, writing stubs when unit-test coverage is poor, parsing tests to extract expected values, decompiling reference artifacts, or shadowing libraries such as `pandas` so that the verifier doesn't check the intended implementation are further examples of reward hacking. When optimization pressure overwhelms the verifier, the model learns that the reward is attached to "tests pass," not to "the repository now implements the intended behavior."
 
 ### Missing negative
 
-Cursor's 2026 description of real-time RL for Composer gives the production version of the same problem.[@jackson2026realtimecomposer] The training loop used real user interactions as reward signal and shipped new checkpoints as often as every five hours. One exploit came from invalid tool calls. Composer often needs to read files or run terminal commands. The original reward pipeline discarded examples where the tool call was invalid, so the model learned that if a task looked likely to fail, emitting a broken tool call avoided negative reward. The fix was to include broken tool calls as negative examples.
+Cursor's 2026 description of real-time RL for Composer gives the production version of the same problem [@jackson2026realtimecomposer]. The training loop used real user interactions as reward signal and shipped new checkpoints as often as every five hours. One exploit came from invalid tool calls. Composer often needs to read files or run terminal commands. The original reward pipeline discarded examples where the tool call was invalid, so the model learned that if a task looked likely to fail, emitting a broken tool call avoided negative reward. The fix was to include broken tool calls as negative examples.
 
 Another exploit came from clarifying questions. Part of the reward was derived from edits, so Composer learned to defer risky edits by asking questions instead of touching code. The reward pipeline had not defined the boundary between appropriate caution and avoidance of negative reward, so editing rates dropped until Cursor changed the reward function.
 
 ## The over-optimization curve
 
-The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance.[@gao2023scaling] The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect. In the context of this book, the proxy is the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
+The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect. In the context of this book, the proxy is the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
 
-Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not.[@pan2022effects] There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
+Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
 ::: {.content-visible when-format="html"}
 <div class="ghg-widget" id="ghg-widget">
@@ -239,7 +239,7 @@ Hardening measures cost compute, engineering time, or both. We justify their use
 
 1. **Hidden tests.** Holding out a set of tests the model never trains against reduces direct overfitting to visible checks; the model cannot overfit to tests it does not see.
 
-2. **Test augmentation.** Generating tests automatically can expand coverage beyond what a human problem-setter provides. EvalPlus demonstrated that generated test suites reveal false positives that the original tests miss.[@liu2023evalplus]
+2. **Test augmentation.** Generating tests automatically can expand coverage beyond what a human problem-setter provides. EvalPlus demonstrated that generated test suites reveal false positives that the original tests miss [@liu2023evalplus].
 
 3. **Red-teaming before training.** Probing the verifier adversarially is a proactive way to de-risk training runs.
 

@@ -217,7 +217,7 @@ Tokenizer and Model initialization with Hugging Face Transformers and Flash Atte
 
 ### Binary versus graded reward
 
-`correctness_reward_func` is a binary outcome reward of 2.0 for exact match and 0.0 otherwise, in opposition to a partial reward for partial solution. DeepSeek-R1 used binary correctness reward throughout training and achieved state-of-the-art results, demonstrating that binary reward plus sufficient rollout diversity can substitute for graded scoring.[@deepseekai2025r1]
+`correctness_reward_func` is a binary outcome reward of 2.0 for exact match and 0.0 otherwise, in opposition to a partial reward for partial solution. DeepSeek-R1 used binary correctness reward throughout training and achieved state-of-the-art results, demonstrating that binary reward plus sufficient rollout diversity can substitute for graded scoring [@deepseekai2025r1].
 
 ### Reward decomposition and weighting
 
@@ -384,15 +384,15 @@ This works for GSM8K only when the model and dataset happen to land in the right
 
 If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we are effectively training on formatting. Conversely, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
-The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band.[^ch5-rejection-sampling][@shao2024deepseekmath; @deepseekai2025r1] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training.[@bengio2009curriculum]
+The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band [@shao2024deepseekmath; @deepseekai2025r1].[^ch5-rejection-sampling] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training [@bengio2009curriculum].
 
 ### Group normalization versus KL penalty
 
-The script uses `GRPOConfig`, which implements group relative policy optimization from DeepSeekMath.[@shao2024deepseekmath] Instead of training a value function $V(s)$ to estimate expected reward (as in PPO), GRPO estimates the baseline from the current batch. The advantage of rollout $i$ in a group is:
+The script uses `GRPOConfig`, which implements group relative policy optimization from DeepSeekMath [@shao2024deepseekmath]. Instead of training a value function $V(s)$ to estimate expected reward (as in PPO), GRPO estimates the baseline from the current batch. The advantage of rollout $i$ in a group is:
 
 $$\hat{A}_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}$$
 
-This eliminates the value model, and in fact, Ahmadian et al. showed that REINFORCE-style methods (no learned value function) match PPO when reward design and hyperparameters are tuned carefully.[@ahmadian2024back] The drawback here is that the group-relative advantage estimator is not itself an explicit constraint on policy drift. Drift control is a separate design choice, typically handled with a clipped objective or an explicit KL penalty to a reference policy.
+This eliminates the value model, and in fact, Ahmadian et al. showed that REINFORCE-style methods (no learned value function) match PPO when reward design and hyperparameters are tuned carefully [@ahmadian2024back]. The drawback here is that the group-relative advantage estimator is not itself an explicit constraint on policy drift. Drift control is a separate design choice, typically handled with a clipped objective or an explicit KL penalty to a reference policy.
 
 ### Rollout budget and variance
 
@@ -404,7 +404,7 @@ If the model's solve rate on a prompt is 10%, then in a group of 16, on average 
 
 ## Case study
 
-Dwarkesh Patel frames training efficiency as bits per FLOP.[@patel2025bitspersample]
+Dwarkesh Patel frames training efficiency as bits per FLOP [@patel2025bitspersample].
 
 $$
 \frac{\mathrm{bits}}{\mathrm{FLOP}}
@@ -463,5 +463,5 @@ RLVR needs a capable starting policy in the sparse-reward regime. If the pretrai
 
 This chapter is concerned with the training loop, but the same verifier that scores training rollouts can also improve outputs at test time without parameter updates, which is the subject of Chapter 6.
 
-[^ch5-brown-grpo-150line]: Brown's compact GRPO implementation is a practical reference for outcome-RLVR training with explicit parsing and reward components.[@brown2025grpo]
+[^ch5-brown-grpo-150line]: Brown's compact GRPO implementation is a practical reference for outcome-RLVR training with explicit parsing and reward components [@brown2025grpo].
 [^ch5-rejection-sampling]: Rejection sampling means sampling candidate problems or candidate rollouts, scoring them with the verifier, and keeping only the ones that meet a target criterion, e.g. example prompts whose rollouts are sometimes but not always correct.

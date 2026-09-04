@@ -9,7 +9,7 @@
 
 ## Setup
 
-We pick OLMo 3, because it explains the complete pipeline of training frontier models. The starting point is from OLMo 3 Base. Ai2 trains that base model through pretraining on broad language, code, math, and knowledge domains. Midtraining adds a 100B-token capability-focused mix. There is then a long-context extension phase that lets the model handle contexts up to roughly 65K tokens, before Post-training.[@teamolmo2025olmo3; @ai22025olmo3blog]
+We pick OLMo 3, because it explains the complete pipeline of training frontier models. The starting point is from OLMo 3 Base. Ai2 trains that base model through pretraining on broad language, code, math, and knowledge domains. Midtraining adds a 100B-token capability-focused mix. There is then a long-context extension phase that lets the model handle contexts up to roughly 65K tokens, before Post-training [@teamolmo2025olmo3; @ai22025olmo3blog].
 
 ## Post-training
 
@@ -59,17 +59,17 @@ Prompt filtering is the first step, where eight rollouts are sampled per prompt 
 
 Second, in spite of the aforementioned filtering of zero-gradient groups, a consistent batch size is maintained by actively sampling and filtering rollouts until the desired batch size is reached, importantly all of those groups having non-homogeneous reward, providing a better signal.
 
-The data mixture between the four domains is non trivial in determining downstream performance. Since every mixture could not be tested with a full run, a 500 to 1000 step probe tested which domains improved or regressed based on the mixture. The result was a mixed-domain batch with extra weight on math and instruction following.[@teamolmo2025olmo3]
+The data mixture between the four domains is non trivial in determining downstream performance. Since every mixture could not be tested with a full run, a 500 to 1000 step probe tested which domains improved or regressed based on the mixture. The result was a mixed-domain batch with extra weight on math and instruction following [@teamolmo2025olmo3].
 
 ## The rollout system
 
-These final reasoner rollouts have a maximum length of 32K tokens and average generations of more than 10K tokens.[@teamolmo2025olmo3] Because of the long sequences, static batching results in actors having to wait for the slowest link, which can be up to 32K-tokens, wasting compute. Continuous batching backfills finished rollouts, and the report estimates that static batching wastes up to 54% of compute at a 32K generation length.
+These final reasoner rollouts have a maximum length of 32K tokens and average generations of more than 10K tokens [@teamolmo2025olmo3]. Because of the long sequences, static batching results in actors having to wait for the slowest link, which can be up to 32K-tokens, wasting compute. Continuous batching backfills finished rollouts, and the report estimates that static batching wastes up to 54% of compute at a 32K generation length.
 
 Training uses a fully asynchronous setup, where we prompt actors served on vLLM to generate responses. The current policy trains from the samples the actors return, with inferencing using much more compute than training: for the 32B reasoner, there were 20 nodes for inference and 8 H100 nodes for training, while the 7B reasoner had 7 inference nodes and 2 learner nodes.
 
 ## PipelineRL
 
-RLVR must both generate rollouts and train a policy, and similar to the computation vs communication tradeoff, we want to overlap the two operations to the greatest extent possible in order to saturate compute to the greatest extent. PipelineRL runs generation and training concurrently, then sends in-flight weight updates to the generation engines so actors keep generating with fresher weights.[@piche2025pipelinerl]
+RLVR must both generate rollouts and train a policy, and similar to the computation vs communication tradeoff, we want to overlap the two operations to the greatest extent possible in order to saturate compute to the greatest extent. PipelineRL runs generation and training concurrently, then sends in-flight weight updates to the generation engines so actors keep generating with fresher weights [@piche2025pipelinerl].
 
 Concretely:
 
@@ -78,11 +78,11 @@ Concretely:
 3. The actors copy those tensors into the existing GPU weight buffers.
 4. The actors resume the same generation queue.
 
-The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked and gave a large throughput gain.[^ch8-inflight-update-boundary] The pairing with truncated importance sampling matters because the actors that generated a rollout may differ from the current policy that trains on it. In fact, the initial 7B Think RLVR run without PipelineRL or truncated importance sampling took 15 days, and the addition of the two methods reached the same performance in 6 days.[@teamolmo2025olmo3]
+The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked and gave a large throughput gain.[^ch8-inflight-update-boundary] The pairing with truncated importance sampling matters because the actors that generated a rollout may differ from the current policy that trains on it. In fact, the initial 7B Think RLVR run without PipelineRL or truncated importance sampling took 15 days, and the addition of the two methods reached the same performance in 6 days [@teamolmo2025olmo3].
 
 ## One prompt through the pipeline
 
-The pieces above are easiest to hold together by following a single prompt through one training step. Take a competition-math prompt from the math slice of Dolci-Think-RL (the dataset holds roughly 105K prompts: about 30K math, 30K instruction following, 23K code, and 21K chat), and use the 7B Think configuration.[@teamolmo2025olmo3]
+The pieces above are easiest to hold together by following a single prompt through one training step. Take a competition-math prompt from the math slice of Dolci-Think-RL (the dataset holds roughly 105K prompts: about 30K math, 30K instruction following, 23K code, and 21K chat), and use the 7B Think configuration [@teamolmo2025olmo3].
 
 1. **Dataset.** The prompt is in the pool at all because it survived offline filtering: eight rollouts from the DPO checkpoint at temperature 1.0 solved it 3 times out of 8, a 37.5% pass rate, below the 62.5% removal threshold.
 2. **Actor rollout group.** An actor, one vLLM instance on one GPU of the 56-GPU actor pool, picks up the prompt and samples a group of $G = 8$ reasoning rollouts at temperature 1.0, each capped at 32K tokens.
