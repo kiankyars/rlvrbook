@@ -7,6 +7,28 @@
 - Explain how strong outcome verifiers are built.
 - Show why answer extraction, canonicalization, and hidden brittleness matter.
 
+## How outcome verifiers are implemented
+
+A useful abstraction of outcome-verification pipelines is in three steps:
+
+1. **Extract.** Parse the model's raw text to isolate the checked artifact. This depends on the output contract: the `<answer>` tags in our scaffold, `\boxed{}` in many math benchmarks, the final code block in a generation task, or the proof term in a formal system.
+
+2. **Canonicalize.** Map the extracted artifact to a representation that is stable under harmless surface variation. In math this can mean parsing `(2,3)`, `{3,2}`, and `x=2, x=3` into the same set object.
+
+3. **Reward.** Assign a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric are possible too.
+
+Current RLVR libraries do not have an agreed-upon `extract -> canonicalize -> reward` interface. In practice, one usually writes or selects a task-specific reward function: in Transformer Reinforcement Learning (TRL), a `reward_func`; in veRL (Volcano Engine Reinforcement Learning for LLMs), a scoring function or reward manager.[@vonwerra2020trl; @sheng2024hybridflow] For math-style tasks, those reward functions often delegate most of the work to answer-verification libraries such as Math-Verify, whose documented grading architecture is explicit: answer extraction, conversion to a common representation, and gold comparison.[@kydlicek2025mathverify]
+
+A useful abstraction of what these implementations do is:
+
+$$
+\begin{aligned}
+a(y) &= \operatorname{extract}(y),\\
+\tilde{a}(y) &= \operatorname{canon}\!\bigl(a(y)\bigr),\\
+r(x,y) &= \operatorname{reward}\!\bigl(\tilde{a}(y), g(x)\bigr),
+\end{aligned}
+$$ {#eq-ch2-pipeline}
+
 ## A Rollout
 
 A rollout is a sample from the current policy on a prompt: the model receives an input, generates a completion or trajectory, and that sampled output is what the verifier scores.
@@ -23,7 +45,7 @@ We can factor the quadratic: x^2 - 5x + 6 = (x-2)(x-3).
 Set each factor to zero:
 x - 2 = 0 -> x = 2
 x - 3 = 0 -> x = 3
-The final answer is the ordered tuple (2,3).
+The solutions are 2 and 3.
 </think>
 
 <answer>
@@ -33,7 +55,7 @@ The final answer is the ordered tuple (2,3).
 
 **Outcome reward check (for RLVR).**
 
-The verifier reads the checked artifact from `<answer>...</answer>`, normalizes to standard form (canonicalizes) the task's answer representation, and checks it against the ground-truth set.[^ch2-deepseek-r1-template]
+The verifier reads from `<answer>...</answer>`, normalizes/canonicalizes the answer, and checks it against the ground-truth set.[^ch2-deepseek-r1-template]
 
 $$
 r(x,y)=
@@ -44,28 +66,6 @@ r(x,y)=
 $$ {#eq-ch2-binary-check}
 
 If the model fails the output contract (for example, omits `<answer>...</answer>`, changes surface form in a way the canonicalizer does not handle, or adds extraneous text that breaks parsing), the verifier can assign an incorrect reward even when the underlying solution is algebraically correct.
-
-## How outcome verifiers are implemented
-
-A useful abstraction of outcome-verification pipelines is in three steps:
-
-1. **Extract.** Parse the model's raw text to isolate the checked artifact. This depends on the output contract: the `<answer>` tags in our scaffold, `\boxed{}` in many math benchmarks, the final code block in a generation task, or the proof term in a formal system.
-
-2. **Canonicalize.** Map the extracted artifact to a representation that is stable under harmless surface variation. In math this can mean parsing `(2,3)`, `{3,2}`, and `x=2, x=3` into the same set object.
-
-3. **Reward.** Assign a reward value. The simplest version is binary: 1 if correct, 0 otherwise. Partial credit for passing some but not all tests, or a continuous score from a symbolic similarity metric are possible too.
-
-Current RLVR libraries do not have an agreed upon `extract -> canonicalize -> reward` interface. In practice, one usually writes or selects a task-specific reward function: in Transformer Reinforcement Learning (TRL), a `reward_func`; in veRL (Volcano Engine Reinforcement Learning for LLMs), a scoring function or reward manager.[@vonwerra2020trl; @sheng2024hybridflow] For math-style tasks, those reward functions often delegate most of the work to answer-verification libraries such as Math-Verify, whose documented grading architecture is explicit: answer extraction, conversion to a common representation, and gold comparison.[@kydlicek2025mathverify]
-
-A useful abstraction of what these implementations do is:
-
-$$
-\begin{aligned}
-a(y) &= \operatorname{extract}(y),\\
-\tilde{a}(y) &= \operatorname{canon}\!\bigl(a(y)\bigr),\\
-r(x,y) &= \operatorname{reward}\!\bigl(\tilde{a}(y), g(x)\bigr),
-\end{aligned}
-$$ {#eq-ch2-pipeline}
 
 ## A minimal outcome verifier
 
@@ -81,22 +81,23 @@ def extract_answer(completion: str) -> str | None:
     return None if match is None else match.group(1).strip()
 
 def canonicalize_answer(answer: str) -> tuple[str, ...]:
-    text = answer.strip()
-    for ch in "{}()":
-        text = text.replace(ch, "")
-    pieces = []
-    for raw in text.split(","):
-        piece = raw.strip().replace("x =", "").replace("x=", "")
-        if piece:
-            pieces.append(piece)
-    return tuple(sorted(pieces))
+    text = answer.strip().lower()
+    text = re.sub(r"\\?[{}()]", "", text)
+    text = re.sub(r"^roots?\s+are\s+", "", text)
+    text = re.sub(r"\bx\s*(?:=|\\in)\s*", "", text)
+    text = re.sub(r"\b(?:or|and)\b", ",", text)
+    pieces = [piece.strip() for piece in text.split(",")]
+    if not pieces or any(not re.fullmatch(r"-?\d+(?:\.\d+)?", piece) for piece in pieces):
+        return ()
+    return tuple(sorted(set(pieces), key=float))
 
 def outcome_reward(completion: str, gold: tuple[str, ...] = ("2", "3")) -> float:
     answer = extract_answer(completion)
     if answer is None:
         return 0.0
     candidate = canonicalize_answer(answer)
-    return float(candidate == gold)
+    expected = tuple(sorted(set(gold), key=float))
+    return float(candidate == expected)
 ```
 
 ::: {#fig-answer-normalization}
@@ -118,13 +119,13 @@ Where the engineering difficulty concentrates is strongly domain-dependent. In m
 
 ## Outcome check, full-trajectory update
 
-Although verifiers only consider the outcome, the optimizer updates the entire trajectory. In REINFORCE-style algorithms (including GRPO), the scalar reward (or an advantage dervied from it) from the outcome check is used to upweight or downweight the log-probability of every token in the completion. If the answer is correct, the whole chain of reasoning that produced it becomes more likely. The converse is also true.
+Although verifiers only consider the outcome, the optimizer updates the entire trajectory. In REINFORCE-style algorithms (including GRPO), the scalar reward (or an advantage derived from it) from the outcome check is used to upweight or downweight the log-probability of every token in the completion. If the advantage relative to the sampled group is positive, the whole chain of reasoning that produced it becomes more likely. The converse is also true.
 
 To quote Andrej Karpathy on his October 17, 2025 appearance on the Dwarkesh podcast [@patel2025karpathyagi]:
 
 > Every single one of those incorrect things you did, as long as you got to the correct solution, will be up-weighted as do more of this. It's terrible. It's noise. You've done all this work only to find a single, at the end, you get a single number of like, oh, you did correct. And based on that, you weigh that entire trajectory as like up-weight or down-weight. And so the way I like to put it is you're sucking supervision through a straw because you've done all this work that could be a minute to roll out. And you're like sucking the bits of supervision of the final reward signal through a straw. And you're like putting it, you're like basically like, yeah, you're broadcasting that across the entire trajectory and using that to up or down with that trajectory. It's crazy. A human would never do this. Number one, a human would never do hundreds of roll outs. Right. Number two, when a person sort of finds a solution, they will have a pretty complicated process of review of like, okay, I think these parts that I did well, these parts I did not do that well. I should probably do this or that. And they think through things. There's nothing in current LLMs that does this. There's no equivalent of it. But I do see papers popping out that are trying to do this because it's obvious to everyone in the field.
 
-This is the blunt instrument at the heart of outcome-based RLVR. The verifier has no opinion on individual tokens in the reasoning trace, it assigns one scalar per completion. The optimizer then spreads that number across all token-level decisions. This works surprisingly well in practice, because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed. But it also means that outcome rewards cannot isolate a specific reasoning step as good or bad. That distinction is exactly what process rewards (Chapter 3) provide.
+One cannot deny the success of outcome-based RLVR, but in this regard, it is a blunt instrument that assigns one scalar per completion. This works well in practice because over many rollouts and many problems, tokens that consistently appear in correct trajectories get reinforced and tokens that appear in incorrect trajectories get suppressed, but it also means that outcome rewards cannot isolate one step as good or bad. That distinction is what process rewards (Chapter 3) provide.
 
 ::: {#fig-ch2-outcome-full-trajectory-update fig-cap="Outcome verification checks only the extracted endpoint, but the update is applied across the entire sampled trajectory."}
 
@@ -133,7 +134,7 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
 ```{=html}
 <div class="ds-widget" id="ds-widget">
   <div class="ds-head">
-    <p class="ds-hint">Each slot is one sampled token group. The verifier checks only the final slot, but the policy update moves the sampled option in every slot.</p>
+    <p class="ds-hint">Each slot is one sampled token position. For a GRPO group containing both passing and failing completions, reward 1 maps to A &gt; 0 and reward 0 maps to A &lt; 0; that advantage is applied across every sampled token in the completion.</p>
 
     <div class="ds-controls">
       <div class="ds-tabs" role="tablist" aria-label="Outcome update examples">
@@ -158,10 +159,10 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
 (() => {
   const states = {
     success: {
-      rewardText: "Reward = 1",
+      rewardText: "Reward = 1; A > 0",
       rewardClass: "ds-reward-success",
       direction: "up",
-      summary: "The sampled option in every token group is pushed up together.",
+      summary: "The positive advantage pushes the sampled option in every token position up together.",
       slots: [
         { title: "1. factor", sampled: "(x-2)(x-3)", sampledIndex: 3, probs: [0.12, 0.10, 0.15, 0.63] },
         { title: "2. first root", sampled: "x = 2", sampledIndex: 0, probs: [0.61, 0.12, 0.14, 0.13] },
@@ -171,10 +172,10 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
       ]
     },
     failure: {
-      rewardText: "Reward = 0",
+      rewardText: "Reward = 0; A < 0",
       rewardClass: "ds-reward-failure",
       direction: "down",
-      summary: "The sampled option in every token group is pushed down together, including earlier groups that may have been locally good.",
+      summary: "The negative advantage pushes the sampled option in every token position down together, including earlier positions that may have been locally good.",
       slots: [
         { title: "1. factor", sampled: "(x-2)(x-3)", sampledIndex: 3, probs: [0.18, 0.17, 0.21, 0.44] },
         { title: "2. first root", sampled: "x = 2", sampledIndex: 0, probs: [0.41, 0.19, 0.21, 0.19] },
@@ -284,14 +285,17 @@ This is the blunt instrument at the heart of outcome-based RLVR. The verifier ha
 ::: {.content-visible when-format="pdf"}
 
 ```text
+Assume the sampled GRPO group contains both passing and failing completions.
+
 Successful trajectory
 factor as (x-2)(x-3)
   -> set x = 2
   -> set x = 3
   -> collect {2,3}
   -> <answer>{2,3}</answer>
-checked artifact: PASS
-update over sampled token groups:  ↑  ↑  ↑  ↑  ↑
+checked artifact: PASS (reward = 1)
+group-relative advantage: A > 0
+update over sampled tokens:  ↑  ↑  ↑  ↑  ↑
 
 Unsuccessful trajectory
 factor as (x-2)(x-3)
@@ -299,14 +303,15 @@ factor as (x-2)(x-3)
   -> set x = 3
   -> collect {2,3}
   -> <answer>x = 2</answer>
-checked artifact: FAIL
-update over sampled token groups:  ↓  ↓  ↓  ↓  ↓
+checked artifact: FAIL (reward = 0)
+group-relative advantage: A < 0
+update over sampled tokens:  ↓  ↓  ↓  ↓  ↓
 ```
 :::
 
 :::
 
-## Domain specific considerations
+## Domain-specific considerations
 
 The verifier structure in @eq-ch2-pipeline is the same across the main RLVR domains. Let's discuss the domain-dependent difficulties:
 
@@ -316,7 +321,7 @@ The verifier structure in @eq-ch2-pipeline is the same across the main RLVR doma
 | Code | Program, patch, or execution result | Sandboxed tests, hidden tests, timeouts, and optional static checks [@le2022coderl; @shojaee2023ppocoder; @liu2023rltf] | Test coverage and flaky infrastructure |
 | Formal proof | Proof term, tactic trace, or proof state | Proof-assistant kernel acceptance [@xin2024deepseekprover; @xin2024deepseekproverv15] | Search, decomposition, and formalization burden |
 
-In math, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should receive the same reward when the task asks for the solution set. In code, limited suites can certify incorrect programs and richer suites can change model rankings substantially.[@liu2023evalplus] In formal proof, final acceptance is strong, but the difficulty shifts toward theorem selection, search, decomposition, and interaction with the formal environment.
+In math, `(2,3)`, `{3,2}`, and `x \in \{2,3\}` should receive the same reward when the task asks for the solution set. In code, limited suites can certify incorrect programs and richer suites can change model rankings substantially [@liu2023evalplus]. In formal proof, final acceptance is strong, but the difficulty shifts toward theorem selection, search, decomposition, and interaction with the formal environment.
 
 ## Brittleness
 
@@ -326,7 +331,7 @@ Despite their simplicity, outcome rewards still have failure modes:
 - A canonicalizer can fail to merge equivalent answers or merge distinct answers into one canonical form.
 - A verifier can evaluate the wrong capability because the benchmark itself admits shortcuts.
 - If the reward is non-binary, the model can optimize partial credit in ways that do not track the underlying task.
-  - In code, that can mean passing easy visible tests while failing edge cases.
+- In code, that can mean passing easy visible tests while failing edge cases.
 
 ## Open questions
 
@@ -335,5 +340,5 @@ Despite their simplicity, outcome rewards still have failure modes:
 - Which output contracts and normalization schemes remain stable across model families, prompting styles, and generations of post-trained models?
 - When should equivalence be defined syntactically for reproducibility, and when is semantic comparison worth the added complexity?
 
-[^ch2-deepseek-r1-template]: DeepSeek-R1 uses `<think>`/`<answer>` separators and applies task-specific response-shape constraints for reward parsing, including boxed final outputs when useful for deterministic math verification.[@deepseekai2025r1]
+[^ch2-deepseek-r1-template]: DeepSeek-R1-Zero uses `<think>`/`<answer>` separators and applies task-specific response-shape constraints for reward parsing, including boxed final outputs when useful for deterministic math verification.[@deepseekai2025r1]
 [^ch2-domain-bottlenecks]: This point is best supported domain by domain rather than as a single universal statistic. DeepSeek-R1 uses task-specific output-shape constraints for deterministic reward parsing in math-style reasoning tasks [@deepseekai2025r1]. EvalPlus shows that limited test suites can miss substantial amounts of incorrect code and even mis-rank models, making test quality and coverage central to code verification [@liu2023evalplus]. For formal theorem proving, DeepSeek-Prover describes proof assistants such as Lean as providing high-accuracy, reliable proof verification, which shifts the engineering difficulty away from the final acceptance check itself [@xin2024deepseekprover].
