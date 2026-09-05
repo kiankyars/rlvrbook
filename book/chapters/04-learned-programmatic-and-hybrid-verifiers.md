@@ -26,13 +26,15 @@ Chapters 2 and 3 classify verifiers by whether they apply on the final artifact 
 
 : Programmatic verifiers by domain. {#tbl-ch4-programmatic}
 
-One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to edge cases, security vulnerabilities, and correctness properties that no test can cover [@liu2023evalplus].
+One shared property of this table is that programmatic verifiers have enumerable failure modes since there is no model in the loop, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to edge cases, security vulnerabilities, and correctness properties that no test can cover [@liu2023evalplus].
 
 ## Learned verifiers
 
 ### LLM-as-a-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion, and the work claims that strong judges agree with human preferences ~80% of the time. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following; a simple extension to this approach is sampling multiple judges to get a majority vote over trajectories [@zhang2025genrm], And there has been interesting work by the Paradigms of Intelligence team at Google on the fact that having an odd number of judges vastly increases accuracy, just like in real life..
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion, and the work claims that strong judges agree with human preferences ~80% of the time. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following; a simple extension to this approach is sampling multiple judges to get a majority vote over trajectories [@zhang2025genrm]. James Evans also described an empirical accuracy benefit from using an odd number of judges in work by Google's Paradigms of Intelligence team [@kim2026societies].[^ch4-pi]
+
+[^ch4-pi]: The observation about the number of judges was shared in direct conversation between the book's author and James Evans, a coauthor of the cited paper.
 
 Nevertheless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 
@@ -107,7 +109,7 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
         { s: "\u2014", c: "oph-na", src: "\u2014" },
         { s: "r = 0", c: "oph-fail", src: "Symbolic" }
       ],
-      summary: "<strong>Outcome only.</strong> The verifier checks the final answer against the ground truth. It returns r\u00A0=\u00A00 because the extracted answer is incomplete. Five correct reasoning steps receive no credit."
+      summary: "<strong>Outcome only.</strong> The verifier checks the final answer against the ground truth. It returns r\u00A0=\u00A00 because the extracted answer is incomplete. Four correct reasoning steps receive no credit."
     },
     hybrid: {
       scores: [
