@@ -9,11 +9,11 @@
 
 ## Programmatic versus Learned Verifiers
 
-Chapters 2 and 3 classify verifiers by whether they apply on the final artifact or on intermediate steps in the rollout. This chapter changes axes, as we discuss how the verifier itself is implemented, and on this axis, we have two types:
+Chapters 2 and 3 classify verifiers by whether they apply on the final artifact or on intermediate steps in the rollout. This chapter changes axes, as we discuss how the verifier itself is implemented:
 
-**Programmatic verifiers** are deterministic, auditable, and brittle. They are the native RLVR object: regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules [@kydlicek2025mathverify; @le2022coderl].
+**Programmatic verifiers** are deterministic, auditable, and brittle. Examples include: regex-based answer extraction, symbolic equivalence checking (as in Math-Verify), unit-test execution in a sandbox, static analysis and linting, proof-kernel acceptance, and format-validation rules [@kydlicek2025mathverify; @le2022coderl].
 
-**Learned verifiers** are flexible, soft-scored, and opaque. They are not verifiable rewards in the narrow sense. Instead, they are learned surrogate signals: a model is trained or prompted to judge another model's output when no direct checker can carry the whole burden. This covers ambiguity, open-endedness and edge cases, but inherits the biases and blind spots of the judge model.
+**Learned verifiers** are flexible, soft-scored, and opaque. They are not verifiable rewards in the narrow sense; instead, a model is trained or prompted to judge another model's output. This covers ambiguity, open-endedness and edge cases, but inherits the biases and blind spots of the judge model.
 
 ## Programmatic verifiers
 
@@ -26,13 +26,13 @@ Chapters 2 and 3 classify verifiers by whether they apply on the final artifact 
 
 : Programmatic verifiers by domain. {#tbl-ch4-programmatic}
 
-One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to miss edge cases, security vulnerabilities, and correctness properties that no test covers [@liu2023evalplus].
+One shared property of this table is that programmatic verifiers never hallucinate. Their failure modes are enumerable, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to edge cases, security vulnerabilities, and correctness properties that no test can cover [@liu2023evalplus].
 
 ## Learned verifiers
 
 ### LLM-as-a-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. were the first to claim this concept, and called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion. The work claims that strong judges agree with human preferences ~80% of the time, matching the rate at which human annotators agree with each other. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following. A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories [@zhang2025genrm].
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion, and the work claims that strong judges agree with human preferences ~80% of the time. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following; a simple extension to this approach is sampling multiple judges to get a majority vote over trajectories [@zhang2025genrm], And there has been interesting work by the Paradigms of Intelligence team at Google on the fact that having an odd number of judges vastly increases accuracy, just like in real life..
 
 Nevertheless, agreement rates hide systematic biases, of which Zheng et al. identified four:
 
@@ -40,6 +40,8 @@ Nevertheless, agreement rates hide systematic biases, of which Zheng et al. iden
 2. verbosity bias (longer responses are rated higher regardless of quality)
 3. self-enhancement bias (a model rates its own outputs higher than a different model's outputs of equal quality)
 4. limited mathematical reasoning (the judge makes errors when evaluating mathematical correctness that a symbolic checker would catch trivially)
+
+Of note that models of today's capability likely do not suffer such biases.
 
 ### Reward model ensembles
 

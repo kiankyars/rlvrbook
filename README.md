@@ -17,4 +17,4 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 ## Optional linting
 
 - `npx prettier . --write '!book/**/*.md'`
-      - We cannot use Prettier over the book source because Quarto uses Pandoc markdown syntax as opposed to CommonMark
+    - We cannot use Prettier over the book source because Quarto uses Pandoc markdown syntax as opposed to CommonMark

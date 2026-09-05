@@ -122,7 +122,7 @@ Process verification addresses the sparse credit assignment through steps which,
 
 **Annotation noise compounds.** MC rollout estimates are noisy: a step can look "correct" because the model is good at recovering later, or "incorrect" because the remaining steps are hard even from a valid state. Human annotators also disagree, especially on steps that are mathematically sound but poorly justified. A model trained on noisy step labels can learn to exploit that noise rather than improve the underlying reasoning.
 
-**PRM ambiguity.** Yuan et al. show that an ORM trained with a log-likelihood-ratio parameterization contains an implicit PRM that can be extracted without step-level labels, and that this implicit PRM outperforms Math-Shepherd with far less data [@yuan2024free]. Sullivan and Koller go further, proving that GRPO with an ORM is mathematically equivalent to a PRM-aware RL objective with an implicit Monte Carlo PRM [@sullivan2025grpo].
+**PRM ambiguity.** Yuan et al. show that an ORM trained with a log-likelihood-ratio parameterization contains an implicit PRM that can be extracted without step-level labels, and that this implicit PRM outperforms their Math-Shepherd baseline in best-of-N answer selection on MATH-500 with lower data-collection and training overhead [@yuan2024free]. Sullivan and Koller show that, with token-level normalization and one update per batch, GRPO with outcome rewards is mathematically equivalent to a PRM-aware RL objective whose implicit Monte Carlo rewards are derived from shared prefixes among sampled completions [@sullivan2025grpo].
 
 The boundary between outcome and process verification is blurrier than the early literature suggested. Outcome rewards already contain some implicit step-level signal; process rewards add new proxies and new annotation problems. When neither regime is sufficient on its own, the next move is to combine them, learn the verifier itself, or build layered verification stacks. That is the subject of Chapter 4.
 
@@ -131,4 +131,4 @@ The boundary between outcome and process verification is blurrier than the early
 - Which tasks admit step-level labels with the least annotation overhead?
 - How do process rewards interact with hidden reasoning or compressed internal computation?
 - When is explicit process supervision worth the marginal cost over well-designed outcome supervision?
-- Can process rewards be designed to reward strategic value rather than only logical validity, and what would the labeling scheme look like?
+- When do progress-based process rewards remain useful as the policy improves or the task distribution changes?
