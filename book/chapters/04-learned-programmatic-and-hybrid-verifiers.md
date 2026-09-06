@@ -5,9 +5,11 @@
 ## Chapter Map
 
 - Distinguish the programmatic verifier core of RLVR from learned verifiers.
-- Explain why production systems use hybrid stacks, and the failure modes introduced.
+- Explain how hybrid stacks combine checks, and the failure modes introduced.
 
 ## Programmatic versus Learned Verifiers
+
+Recall the quadratic example from Chapters 2 and 3: a model correctly finds both roots of $x^2-5x+6=0$, then reports only $x=2$. A programmatic checker can reject the incomplete final answer. A learned process verifier can separately assess the four correct intermediate steps. Combining them raises a different question from where to place the reward: which component checks which property, and how should their verdicts be combined?
 
 Chapters 2 and 3 classify verifiers by whether they apply on the final artifact or on intermediate steps in the rollout. This chapter changes axes, as we discuss how the verifier itself is implemented:
 
@@ -21,18 +23,20 @@ Chapters 2 and 3 classify verifiers by whether they apply on the final artifact 
 |:-------|:-------------------|:--------------|
 | Math | Answer extraction, canonicalization, symbolic equivalence | Closed-form answers with known ground truth |
 | Code | Sandbox execution, test suites, linters, static analysis | Functional behavior covered by tests |
-| Proof | Kernel acceptance (Lean, Coq, Isabelle) | Formal validity of each tactic or proof term |
+| Proof | Kernel acceptance (Lean, Coq, Isabelle) | Validity of the submitted proof under the formal system's assumptions |
 | Format | Regex, XML schema, JSON schema, tag-structure validation | Output-contract compliance |
 
 : Programmatic verifiers by domain. {#tbl-ch4-programmatic}
 
-One shared property of this table is that programmatic verifiers have enumerable failure modes since there is no model in the loop, e.g. a symbolic equivalence checker either recognizes two expressions as equal or it does not, a unit test either passes or fails. While the above property is a positive, one limitation of these approaches is their susecpibtiltiy to edge cases, security vulnerabilities, and correctness properties that no test can cover [@liu2023evalplus].
+Programmatic verifiers have explicit, auditable acceptance rules, although their implementations and test coverage can still have blind spots. For example, a symbolic equivalence checker either recognizes two expressions as equal or it does not, and a unit test either passes or fails. A passing test establishes the behavior covered by that test, not every correctness property of the program [@liu2023evalplus]. In Lean, tactics construct proof terms for the kernel to check; kernel acceptance is not a separate judgment that every tactic was appropriate or that the formal statement captures the intended task.
 
 ## Learned verifiers
 
 ### LLM-as-a-Judge
 
-The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion, and the work claims that strong judges agree with human preferences ~80% of the time. This makes LLM-as-a-Judge viable in rubric-constrained domains such as formatting or instruction following; a simple extension to this approach is sampling multiple judges to get a majority vote over trajectories [@zhang2025genrm]. James Evans also described an empirical accuracy benefit from using an odd number of judges in work by Google's Paradigms of Intelligence team [@kim2026societies].[^ch4-pi]
+The simplest form of learned verification is prompting a strong LLM to evaluate a weaker model's output. Zheng et al. called the paradigm LLM-as-a-Judge [@zheng2023judging]. An LLM takes the output and produces a judgment: e.g. a scalar score, a classification, etc. We use the output as reward signal or selection criterion, Zheng et al. found that GPT-4 agreed with human preferences in over 80% of comparisons on MT-Bench and Chatbot Arena when ties were excluded, but this only measures preference agreement, not correctness on arbitrary tasks.
+
+A simple extension to this approach is sampling multiple judges to get a majority vote over trajectories; GenRM-CoT samples multiple verification rationales from one verifier and averages their "Yes" token probabilities, rather than polling independently trained judges [@zhang2025genrm]. Compellingly, James Evans described an empirical accuracy benefit from using an odd number of judges in work by Google's Paradigms of Intelligence team [@kim2026societies].[^ch4-pi]
 
 [^ch4-pi]: The observation about the number of judges was shared in direct conversation between the book's author and James Evans, a coauthor of the cited paper.
 
@@ -51,15 +55,17 @@ Ensembles are the simplest hybrid stacks, combining multiple judgments homogeneo
 
 ### The calibration problem
 
-Learned surrogate verifiers produce scores, but those scores are not calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles [@lambert2024rewardbench].
+Learned surrogate verifiers produce scores, but those scores need not be calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles [@lambert2024rewardbench].
 
-For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" (effectively certainty) and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. Treating both as commensurable scalars and averaging them is a mistake.
+For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" (effectively certainty) and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. In other words, treating both as commensurable scalars and averaging them is a mistake.
 
 ## Hybrid stacks
 
-Production RLVR systems layer verifier components together to robustify reward signal. Unit tests can check functional correctness, but can't judge code security or readability. By the same token, a proof kernel checks validity, but it does not judge whether the theorem was worth proving. Therefore, we combine multiple verifiers together. A useful mental image is to think of each verifier as producing a useful signal over a subset of inputs in some high-dimensional vector space, with the signal being silent in that subset's complement. Stacking verifiers can reduce this complement, and the design problem in a hybrid stack is to determine how to compose rewards comenseratuly, and how failure modes interact when composed.
+Hybrid stacks layer verifier components together to robustify reward signal. Unit tests can check functional correctness and specific security properties, but cannot establish general security or judge readability. By the same token, a proof kernel checks validity, but it does not judge whether the theorem was worth proving. Therefore, we combine multiple verifiers together.
 
-OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrader composition, where string checks, score-model graders, and Python execution can be nested into a single grader; Anthropic similarly frames agent evaluation verifiers as ranging from exact string comparison to enlisting Claude to judge a response [@openai2026graders; @anthropic2025writingtools].
+One mental model is to think of each verifier as producing a useful signal over a subset of inputs in some high-dimensional vector space. Outside that subset, it may return confident errors rather than remain silent. Stacking verifiers can extend this coverage, and the design problem in a hybrid stack is to determine how to compose rewards commensurately, and how failure modes interact when composed.
+
+OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrader composition, where string checks, score-model graders, and Python execution can be combined into a single grader [@openai2026graders]. In agent evaluation, Anthropic similarly describes verifiers ranging from exact string comparison to enlisting Claude to judge a response [@anthropic2025writingtools].
 
 ::: {#fig-ch4-outcome-hybrid}
 
@@ -109,7 +115,7 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
         { s: "\u2014", c: "oph-na", src: "\u2014" },
         { s: "r = 0", c: "oph-fail", src: "Symbolic" }
       ],
-      summary: "<strong>Outcome only.</strong> The verifier checks the final answer against the ground truth. It returns r\u00A0=\u00A00 because the extracted answer is incomplete. Four correct reasoning steps receive no credit."
+      summary: "<strong>Outcome only.</strong> The verifier checks the final answer against the ground truth. It returns r\u00A0=\u00A00 because the extracted answer is incomplete. The four correct reasoning steps are not assessed separately."
     },
     hybrid: {
       scores: [
@@ -119,7 +125,7 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
         { s: "\u2713", c: "oph-pass", src: "PRM" },
         { s: "r = 0", c: "oph-fail", src: "Symbolic" }
       ],
-      summary: "<strong>Hybrid stack.</strong> The programmatic checker catches the incomplete answer (r\u00A0=\u00A00). The PRM preserves credit on steps 1\u20134."
+      summary: "<strong>Hybrid stack.</strong> The programmatic checker catches the incomplete answer (r\u00A0=\u00A00). The PRM marks steps 1\u20134 as correct."
     }
   };
 
@@ -165,11 +171,11 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
 | 4 | Solution set: $\{2,3\}$ | --- | $\checkmark$ (PRM) |
 | 5 | Report: `<answer>x = 2</answer>` | $r=0$ | $r=0$ (Symbolic) |
 
-: Outcome verification scores only the endpoint and suppresses the entire trajectory. The hybrid stack uses a programmatic checker for the endpoint and a PRM for intermediate steps.
+: Outcome verification scores only the endpoint. The hybrid stack uses a programmatic checker for the endpoint and a PRM for intermediate steps.
 
 :::
 
-The same trajectory scored by two verification regimes.
+The same trajectory scored by two verification regimes. The PRM assessments are illustrative; how they become training credit depends on the reward construction and optimizer discussed in Chapter 5.
 :::
 
 ## Formalization
@@ -180,18 +186,20 @@ $$
 r_{\text{stack}}(x, y) = \operatorname{Arb}\bigl(v_1(x, y),\, v_2(x, y),\, \ldots,\, v_K(x, y)\bigr)
 $$ {#eq-ch4-stack}
 
-where each $v_i$ is a verifier component that may return a score, a categorical verdict, or a null (indicating it has no opinion), and $\operatorname{Arb}$ is the arbitration function.
+where each $v_i$ is a verifier component that may return a score, a categorical verdict, a vector of step assessments, or a null (indicating abstention), and $\operatorname{Arb}$ maps these outputs to the final reward, including when components abstain.
 
 Common arbitration patterns include:
 
 - **Priority cascade**: check $v_1$ first; if it returns a verdict, use it; otherwise check $v_2$, and so on.
-- **Weighted aggregation**: compute $r = \sum_i w_i \, v_i(x, y)$ for learned weights $w_i$.
+- **Weighted aggregation**: map outputs to numeric scores $s_i(x, y)$ on a common reward scale, then compute $r = \sum_{i \in A} w_i \, s_i(x, y)$ over the non-abstaining components $A$. Define a fallback if all components abstain. This constructs a reward, not a calibrated probability of correctness.
 - **Gated routing**: a classifier decides which component to invoke based on input features.
 - **Unanimous agreement**: require all components to agree before assigning a positive reward.
 
 The choice of arbitration pattern determines the stack's effective false-positive and false-negative rates. Priority cascade is biased toward the first component's failure modes. Weighted aggregation can dilute strong signals with weak ones. Gated routing's errors depend on the routing model. Unanimous agreement can suppress correct outputs; there is no universally correct choice.
 
 ### Hybrid verifier in code
+
+This code snippet reuses Chapter 2's answer-extraction and canonicalization helpers; `gold` is the reference answer in canonicalized form. A parsed mismatch returns zero, and a learned fallback receives both the problem and the complete reference answer.
 
 ```python
 def symbolic_reward(completion: str, gold: tuple[str, ...]) -> float | None:
@@ -201,24 +209,37 @@ def symbolic_reward(completion: str, gold: tuple[str, ...]) -> float | None:
     candidate = canonicalize_answer(answer)
     return float(candidate == gold)
 
-def hybrid_reward(completion: str, gold: tuple[str, ...], judge) -> float:
+def hybrid_reward(
+    problem: str,
+    completion: str,
+    gold: tuple[str, ...],
+    judge,
+    *,
+    threshold: float,
+) -> float:
+    if not 0.0 < threshold <= 1.0:
+        raise ValueError("threshold must be in (0, 1]")
+
     exact = symbolic_reward(completion, gold)
     if exact is not None:
         return exact
 
     judge_score = judge(
+        problem=problem,
         completion=completion,
-        rubric="Is the final answer complete and consistent with the reasoning?"
+        reference_answer=gold,
+        rubric=(
+            "Score final-answer correctness from 0 to 1 against the complete "
+            "reference answer for this problem. Reject missing or incomplete "
+            "answers; do not infer omitted answers from intermediate reasoning."
+        ),
     )
-    if judge_score >= 0.8:
-        return 1.0
-    if judge_score <= 0.2:
-        return 0.0
-    return 0.0
+    if not 0.0 <= judge_score <= 1.0:
+        raise ValueError("judge score must be finite and in [0, 1]")
+    return float(judge_score >= threshold)
 ```
-::: {.column-margin}
-`symbolic_reward` returns `None` when the symbolic checker fails.
-:::
+
+`threshold` can be thought of as a value tuned by a task expert or arrived at by balancing false accepts against false rejects.
 
 ## Limitations
 
@@ -226,7 +247,7 @@ Adding components to a verifier stack can amplify errors rather than cancel them
 
 **Silent disagreement.** Two stack components can return conflicting verdicts on the same input.
 
-**Correlated failures.** Components often fail on the same hard residual inputs, so stack error can remain close to the weakest component rather than shrinking like an independent product.
+**Correlated failures.** Components can fail on the same hard input, so do not assume that error probabilities multiply as if the components were independent.
 
 **Excessive complexity.** Adding a component can improve average performance while increasing stack complexity and interpretability costs.
 
