@@ -65,8 +65,8 @@ def extract_hash_answer(text: str) -> str | None:
 ::: {.column-margin}
 These two functions:
 
-1. Extract XML from the CoT format used by `extract_xml_answer`
-2. Extract the text succeeding `####`
+1. `extract_xml_answer` returns the text between the last `<answer>` tag in the completion and the `</answer>` that follows it, with surrounding whitespace stripped. A completion with no answer tags returns in full.
+2. `extract_hash_answer` returns the gold answer following `####` in the GSM8K solution, with commas and dollar signs removed.
 :::
 
 
@@ -100,7 +100,7 @@ def int_reward_func(completions, **kwargs) -> list[float]:
     return [0.5 if r.isdigit() else 0.0 for r in extracted_responses]
 ```
 ::: {.column-margin}
-`correctness_reward_func` checks whether the language model gets the correct answer, using the Extract XML answer function. Notice the function checks for exact matching, whereas `int_reward_func` checks only for digit presence. Both of these are binary outcome rewards, and rewarding `2.0` versus `0.5` is a design choice.
+`correctness_reward_func` checks whether the language model gets the correct answer, using the Extract XML answer function. Notice the function checks for exact string matching. The gold answer was normalized by `extract_hash_answer`, but the model's answer is not, so `$42`, `42.0`, and `1,000` all score `0.0` against the gold answers `42` and `1000`. `int_reward_func` checks only that the extracted answer is made of digits, so it also rejects a negative number or a decimal. Both of these are binary outcome rewards, and rewarding `2.0` versus `0.5` is a design choice.
 :::
 
 ```py
@@ -179,7 +179,7 @@ peft_config = LoraConfig(
 )
 ```
 ::: {.column-margin}
-LLM selection and configurtion of the GRPO optimizer with the applicable learning rate, weight decay, data formats, etc., as well as our Lora config, which is the adapter trained on top of the language model. For this chapter, the most important choices are `num_generations=16`, which sets the rollout budget and therefore the variance-compute tradeoff. `max_grad_norm=0.1`, helps control policy drift.
+LLM selection and configuration of the GRPO optimizer with the applicable learning rate, weight decay, data formats, etc., as well as our LoRA config, which is the adapter trained on top of the language model. For this chapter, the most important choices are `num_generations=16`, which sets the rollout budget and therefore the variance-compute tradeoff. `max_grad_norm=0.1`, helps control policy drift.
 :::
 
 ```py
@@ -221,7 +221,7 @@ Tokenizer and Model initialization with Hugging Face Transformers and Flash Atte
 
 ### Reward decomposition and weighting
 
-The script passes five reward functions to `GRPOTrainer`, which sums their outputs. The correctness function returns up to 2.0, and each of the four format functions returns up to 0.5, meaning correctness and formatting have equal weight at the ceiling. Since GRPO normalizes rewards within the group of 16 trajectories, an incorrect response with good formatting can land close to the group mean and receive near-zero gradient, which is counterproductive.
+The script passes five reward functions to `GRPOTrainer`, which sums their outputs (the `reward_weights` option changes the weights; the default is 1.0 for each). The correctness function returns up to 2.0, and the other four (three format checks and the integer check) return up to 0.5 each, meaning correctness and everything else have equal weight at the ceiling. Since GRPO normalizes rewards within the group of 16 trajectories, an incorrect response with good formatting can land close to the group mean and receive near-zero gradient, or even a positive advantage, which is counterproductive.
 
 @tbl-ch5-reward-comparison demonstrates this edge case with eight rollouts scored under two regimes for a single prompt having three correct and five incorrect outcomes.
 
@@ -332,7 +332,9 @@ Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.
 Comparison of eight rollouts under correctness versus correctness & format design.
 :::
 
-The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The script we covered sits at the boundary (2.0 vs 2.0). @fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of the same GRPO script, where the format reward does in fact dominate.
+The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The script we covered sits at the boundary (2.0 vs 2.0). Weighting only helps in mixed groups, though. Consider a group of two rollouts that are both wrong: one in the requested format, which earns 2.0 from the four auxiliary functions, and one bare number, which earns 0.5 from `int_reward_func` alone. The group mean is 1.25, so the formatted wrong answer gets advantage $+0.75$ and the bare wrong answer gets $-0.75$. No correctness weight changes this, because every correctness score in the group is zero. The update then raises the probability of every token in the formatted rollout, its wrong final answer included. That is what a format reward is meant to do early in training, before the model has learned the tags, but it means that in an all-wrong group the only thing being taught is format. Keeping groups mixed is the job of task filtering, covered next.
+
+@fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of a close variant of the same script, the notebook at `code/chapter05_grpo_reward_tracking_colab.ipynb` in the book's repository. The variant loads the base weights in 4-bit, caps completions at 512 tokens, trains on a 1024-prompt subset, and sums the four auxiliary functions into one logged format reward. Mean format reward overtakes mean correctness reward around step 75 and approaches its 2.0 ceiling after step 125. Read the share plot carefully, because it compares means, not gradients. Once every rollout in a group earns the full format reward, the format component has no within-group variance and contributes nothing to the advantage, so late in this run the updates are driven by correctness even though format is the larger share of the observed reward.
 
 :::: {#fig-ch5-grpo-reward-components fig-cap="Mean reward of correctness vs format over time."}
 
@@ -384,7 +386,7 @@ This works for GSM8K only when the model and dataset happen to land in the right
 
 If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we are effectively training on formatting. Conversely, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
-The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band [@shao2024deepseekmath; @deepseekai2025r1].[^ch5-rejection-sampling] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training [@bengio2009curriculum].
+The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. The systems that make this explicit filter prompts by measured pass rate, which is a form of rejection sampling over prompts.[^ch5-rejection-sampling] DAPO's dynamic sampling drops any group whose rollouts are all correct or all wrong and keeps sampling until the batch is full of mixed groups [@yu2025dapo]. Kimi k1.5 removes prompts the model solves on every attempt before training and samples low-success prompts more often during it [@team2025kimi]. Chapter 8 traces the offline pass-rate filter in the OLMo 3 recipe. Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training [@bengio2009curriculum].
 
 ### Group normalization versus KL penalty
 
@@ -392,13 +394,15 @@ The script uses `GRPOConfig`, which implements group relative policy optimizatio
 
 $$\hat{A}_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}$$
 
+TRL's implementation uses the sample standard deviation and adds a small constant to the denominator, so a group whose rewards are all equal gets zero advantage everywhere rather than a division by zero. @tbl-ch5-reward-comparison uses the population standard deviation, which changes the magnitudes slightly but not the signs or the ordering.
+
 This eliminates the value model, and in fact, Ahmadian et al. showed that REINFORCE-style methods (no learned value function) match PPO when reward design and hyperparameters are tuned carefully [@ahmadian2024back]. The drawback here is that the group-relative advantage estimator is not itself an explicit constraint on policy drift. Drift control is a separate design choice, typically handled with a clipped objective or an explicit KL penalty to a reference policy.
 
 ### Rollout budget and variance
 
 The script sets `num_generations=16`: sixteen rollouts per prompt. GRPO computes the group-relative advantage from the mean and standard deviation of rewards within this group. The rollout budget controls the quality of that estimate.
 
-If we consider the extremes, with $N = 2$, the group baseline is the mean of the two rollout rewards: $\mu = (r_1 + r_2)/2$. This gives extreme variance since the unnormalized advantages are $A_1 = r_1 - \mu$ and $A_2 = r_2 - \mu$, each determined almost entirely by its difference from the other rollout rather than by a stable estimate of expected reward for the given prompt. As $N \to \infty$, the group baseline approaches a more stable estimate, but with diminishing returns in estimate quality at linear scaling in compute cost.
+If we consider the extremes, with $N = 2$, the group baseline is the mean of the two rollout rewards: $\mu = (r_1 + r_2)/2$. This gives extreme variance since the unnormalized advantages are $A_1 = r_1 - \mu$ and $A_2 = r_2 - \mu$, each determined almost entirely by its difference from the other rollout rather than by a stable estimate of expected reward for the given prompt. After normalization the two advantages are equal and opposite whatever the rewards were, so the update learns which rollout won but nothing about by how much. As $N \to \infty$, the group baseline approaches a more stable estimate, but with diminishing returns in estimate quality at linear scaling in compute cost.
 
 If the model's solve rate on a prompt is 10%, then in a group of 16, on average 1.6 are correct. This implies that groups with no correct trajectories contribute no useful correctness gradient, and those with only one correct rollout concentrate the entire positive advantage on a single sample. Higher $N$ tolerates lower solve rates by increasing the chance that at least some rollouts in every group succeed, but good task filtering means a moderate $N$ like 16 is sufficient.
 
