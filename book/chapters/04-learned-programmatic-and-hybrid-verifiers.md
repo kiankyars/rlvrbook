@@ -47,7 +47,7 @@ Nevertheless, agreement rates hide systematic biases, of which Zheng et al. iden
 3. self-enhancement bias (a model rates its own outputs higher than a different model's outputs of equal quality)
 4. limited mathematical reasoning (the judge makes errors when evaluating mathematical correctness that a symbolic checker would catch trivially)
 
-Of note that models of today's capability likely do not suffer such biases.
+Of note that models of today's capability likely do not suffer such biases to the same extent as in 2023.
 
 ### Reward model ensembles
 
@@ -55,9 +55,9 @@ Ensembles are the simplest hybrid stacks, combining multiple judgments homogeneo
 
 ### The calibration problem
 
-Learned surrogate verifiers produce scores, but those scores need not be calibrated probabilities of correctness. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles [@lambert2024rewardbench].
+Learned surrogate verifiers produce scores, but those scores need not be calibrated from one verifier to the next. A judge that outputs 0.8 does not mean the solution has an 80% chance of being correct; it means 0.8 is the number the judge's training objective learned to assign to solutions with that surface profile. Lambert et al. documented this systematically in RewardBench, showing that reward models exhibit large accuracy gaps across domains, and that different training methods (classifier-based, DPO-based, generative) have different calibration profiles [@lambert2024rewardbench].
 
-For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" (effectively certainty) and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. In other words, treating both as commensurable scalars and averaging them is a mistake.
+For verifier-stack design, the calibration gap means that raw scores from a learned component cannot be compared directly to outputs from a programmatic component. If a symbolic checker returns "match" and a learned judge returns 0.7, the arbitration logic must account for the fact that 0.7 from the judge does not carry the same epistemic weight as a deterministic pass from the checker. In other words, treating both as commensurable scalars and averaging them is a mistake.
 
 ## Hybrid stacks
 
