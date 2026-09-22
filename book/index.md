@@ -49,6 +49,10 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 - 2026-05-29: Expanded Chapter 8 with an end-to-end OLMo 3 Think training walkthrough.
 - 2026-06-10: Reframed Chapter 9 around agentic harnesses and corrected the DeepSWE case study.
 - 2026-07-18: Rebuilt Chapter 10 as an explicit RLVR research agenda.
+- 2026-09-04: Began a second full review, starting with Chapter 1 (framing and domain map) and Chapter 2 (outcome reward mechanics and the early history of RL for mathematical reasoning). Normalized citation placement across the book, now enforced by the citation check.
+- 2026-09-05: Reviewed Chapter 3: refined the process reward explanations and qualified its claims.
+- 2026-09-22: Reviewed Chapter 4: clarified the verifier explanations and fallback example, corrected the Math-Shepherd history, cited current LLM judge bias evidence, and clarified verifier score calibration.
+- 2026-09-22: Reviewed Chapter 5: documented the parser's acceptance rules, added a worked all-wrong group showing that no correctness weight can fix the advantage sign, reread the reward-share plots in terms of within-group variance, corrected the difficulty-filtering citations, and pinned the notebook's dependencies.
 
 ## Acknowledgments
 
