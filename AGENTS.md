@@ -18,7 +18,7 @@ This is a reference work about RLVR, not a general RL/RLHF textbook, an optimize
 
 - Do not replace human-written prose with LLM-generated text unless explicitly instructed.
 - Lead with intuitive, concrete examples before abstraction and carry useful examples across chapters.
-- Preserve the main-chapter house style: an Escher image, a short two-bullet chapter map, then flexible chapter-specific structure. Put reusable terminology in an appendix rather than repeating it in every chapter.
+- Preserve the main-chapter house style: an Escher image, a short chapter map, then flexible chapter-specific structure. Put reusable terminology in an appendix rather than repeating it in every chapter.
 - Write plain Markdown with short paragraphs and explicit headings. Use sentence case for prose headings, kebab-case for filenames, and ASCII unless a source requires otherwise.
 - Avoid positional references such as "above" or "the figure below". Use explicit cross-references such as `@fig-...` and `@tbl-...`, or stable wording.
 

@@ -6,7 +6,7 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 
 - One Markdown file per chapter and appendix, compiled with Quarto to HTML and PDF.
 - Every main chapter opens with an M. C. Escher image.
-- Every main chapter begins with a short two-bullet chapter map.
+- Every main chapter begins with a short chapter map.
 
 ## Commands
 
@@ -18,3 +18,7 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 
 - `npx prettier . --write '!book/**/*.md'`
     - We cannot use Prettier over the book source because Quarto uses Pandoc markdown syntax as opposed to CommonMark
+
+## Remaining action items
+
+- Add image-gen diagrams to textbook
