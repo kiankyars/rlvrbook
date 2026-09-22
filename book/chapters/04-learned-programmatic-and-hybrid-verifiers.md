@@ -47,7 +47,7 @@ Nevertheless, agreement rates hide systematic biases, of which Zheng et al. iden
 3. self-enhancement bias (a model rates its own outputs higher than a different model's outputs of equal quality)
 4. limited mathematical reasoning (the judge makes errors when evaluating mathematical correctness that a symbolic checker would catch trivially)
 
-Of note that models of today's capability likely do not suffer such biases to the same extent as in 2023.
+Of note that models of today's capability likely do not suffer such biases to the same extent as in 2023. Notwithstanding, studies as recently as June 2026 demonstrate that there is still systematic self-preferential bias within today's models [@yang2026selfpreference].
 
 ### Reward model ensembles
 
