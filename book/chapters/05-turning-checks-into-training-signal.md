@@ -418,7 +418,27 @@ The script sets `num_generations=16`: sixteen rollouts per prompt. GRPO computes
 
 If we consider the extremes, with $N = 2$, the group baseline is the mean of the two rollout rewards: $\mu = (r_1 + r_2)/2$. This gives substantial variance since the unnormalized advantages are $A_1 = r_1 - \mu$ and $A_2 = r_2 - \mu$, each determined almost entirely by its difference from the other rollout rather than by a stable estimate of expected reward for the given prompt. As $N \to \infty$, the group baseline approaches a more stable estimate, but with diminishing returns in estimate quality at linear scaling in compute cost.
 
-After normalization the two advantages are equal and opposite whatever the rewards were, so the update learns which rollout won but nothing about by how much. If $r_1 = 2.0$ and $r_2 = 0.0$, then $\mu = 1.0$, $\sigma = 1.0$, and $\hat{A}_1 = +1$, $\hat{A}_2 = -1$. If instead $r_1 = 3.8$ and $r_2 = 3.5$, then $\mu = 3.65$, $\sigma = 0.15$, and again $\hat{A}_1 = 0.15/0.15 = +1$, $\hat{A}_2 = -0.15/0.15 = -1$.
+In the $N = 2$ rollout setting, after normalization the two advantages are equal and opposite whatever the rewards were, so the update learns which rollout won but nothing about by how much. Take a group with a large reward gap:
+
+$$
+\begin{aligned}
+r_1 &= 2.0, \quad r_2 = 0.0 \\
+\mu &= 1.0, \quad \sigma = 1.0 \\
+\hat{A}_1 &= \frac{2.0 - 1.0}{1.0} = +1, \quad \hat{A}_2 = \frac{0.0 - 1.0}{1.0} = -1
+\end{aligned}
+$$ {#eq-ch5-n2-large-gap}
+
+Now take a group with a small reward gap:
+
+$$
+\begin{aligned}
+r_1 &= 3.8, \quad r_2 = 3.5 \\
+\mu &= 3.65, \quad \sigma = 0.15 \\
+\hat{A}_1 &= \frac{3.8 - 3.65}{0.15} = +1, \quad \hat{A}_2 = \frac{3.5 - 3.65}{0.15} = -1
+\end{aligned}
+$$ {#eq-ch5-n2-small-gap}
+
+A gap of 2.0 in @eq-ch5-n2-large-gap and a gap of 0.3 in @eq-ch5-n2-small-gap produce the same advantages.
 
 If the model's solve rate on a prompt is 10%, then in a group of 16, on average 1.6 are correct. This implies that groups with no correct trajectories contribute no useful correctness gradient, and those with only one correct rollout concentrate the entire positive advantage on a single sample. Higher $N$ tolerates lower solve rates by increasing the chance that at least some rollouts in every group succeed, but good task filtering means a moderate $N$ like 16 is sufficient.
 
