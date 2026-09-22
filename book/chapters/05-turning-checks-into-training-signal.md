@@ -332,7 +332,7 @@ Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.
 Comparison of eight rollouts under correctness versus correctness & format design.
 :::
 
-The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The script we covered sits at the boundary (2.0 vs 2.0). @fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of the same GRPO script, where the format reward does in fact dominate.
+The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The script we covered sits at the boundary (2.0 vs 2.0). In a group where every rollout is wrong, weighting cannot help: a formatted wrong answer scores 2.0 and a bare wrong answer 0.5, so the formatted one gets advantage +0.75. @fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of a close variant of the same GRPO script (the Chapter 5 notebook), where the format reward does in fact dominate.
 
 :::: {#fig-ch5-grpo-reward-components fig-cap="Mean reward of correctness vs format over time."}
 
@@ -384,7 +384,23 @@ This works for GSM8K only when the model and dataset happen to land in the right
 
 If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we are effectively training on formatting. Conversely, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
-The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. DeepSeek-R1 and DeepSeekMath both filter tasks through rejection sampling to maintain this band [@shao2024deepseekmath; @deepseekai2025r1].[^ch5-rejection-sampling] Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training [@bengio2009curriculum].
+The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. The band follows from the entropy of a binary reward (@eq-ch5-binary-reward-entropy): @fig-ch5-binary-reward-entropy shows that it peaks at one bit at a 50% solve rate, is still 0.72 bits at 20% and 80%, and falls off quickly toward either edge [@patel2025bitspersample].
+
+:::: {#fig-ch5-binary-reward-entropy fig-cap="Entropy of a binary reward as a function of the per-prompt solve rate, with the 20–80% band shaded."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/05-binary-reward-entropy-light.svg){.light-content}
+
+![](../diagrams/05-binary-reward-entropy-dark.svg){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/05-binary-reward-entropy-light.svg)
+:::
+
+::::
+
+Systems filter tasks through rejection sampling to maintain this band.[^ch5-rejection-sampling] DAPO discards groups whose rollouts are all correct or all wrong and resamples until the batch is full [@yu2025dapo]. Kimi k1.5 drops prompts the model always solves [@team2025kimi]. Adaptive filtering keeps reward variance high, but because curriculum learning deliberately reweights the training distribution over time, gains should be checked on the original difficulty range rather than only on the moving band used for training [@bengio2009curriculum].
 
 ### Group normalization versus KL penalty
 
@@ -392,7 +408,7 @@ The script uses `GRPOConfig`, which implements group relative policy optimizatio
 
 $$\hat{A}_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}$$
 
-TRL's implementation uses the sample standard deviation and adds a small constant to the denominator, so a group whose rewards are all equal gets zero advantage everywhere rather than a division by zero. @tbl-ch5-reward-comparison uses the population standard deviation, which changes the magnitudes slightly but not the signs or the ordering.
+TRL divides by the sample standard deviation ($N-1$ in the variance) and adds a small constant so an all-equal group gets zero advantage. @tbl-ch5-reward-comparison divides by the population standard deviation ($N$ in the variance), which shrinks every magnitude by the same factor and leaves signs and ordering unchanged.
 
 This eliminates the value model, and in fact, Ahmadian et al. showed that REINFORCE-style methods (no learned value function) match PPO when reward design and hyperparameters are tuned carefully [@ahmadian2024back]. The drawback here is that the group-relative advantage estimator is not itself an explicit constraint on policy drift. Drift control is a separate design choice, typically handled with a clipped objective or an explicit KL penalty to a reference policy.
 
