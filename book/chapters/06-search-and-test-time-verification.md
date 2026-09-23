@@ -15,9 +15,9 @@ Chapters 2 through 5 treated the verifier as a source of training signal. Test t
 
 | Technique | Decision rule | Verifier use | Best when | Main limitation |
 | --- | --- | --- | --- | --- |
-| Best-of-$N$ with an ORM [@cobbe2021training] | Score each completed candidate and return the top one | Post-hoc scoring over full outputs | Cheap parallel reranking is enough | Can only filter samples the policy already produced |
-| Best-of-$N$ with a PRM [@lightman2023letsverify] | Rank candidates by process quality rather than just final outcome | Step-level or intermediate scoring folded into a final rank | Harder problems where reasoning quality matters | Higher scoring cost per candidate |
-| Self-consistency [@wang2022selfconsistency] | Sample multiple paths and vote or cluster by agreement | No external verifier; agreement acts as the signal | Answers can be canonicalized and consensus is informative | Correlated errors can still dominate |
+| Best-of-$N$ with an ORM [@cobbe2021training] | Score each candidate and return the top one | Post-hoc scoring over full outputs | Cheap parallel reranking is enough | No Exploration |
+| Best-of-$N$ with a PRM [@lightman2023letsverify] | Rank candidates by process rather than outcome | Step-level or intermediate scoring folded into a final rank | Harder problems where reasoning quality matters | Higher scoring cost |
+| Self-consistency [@wang2022selfconsistency] | Sample multiple paths and vote or cluster by agreement | No external verifier; agreement acts as the signal | Available verifiers suck | Correlated errors |
 
 When a PRM is used to rank complete solutions, the stepwise outputs must be reduced to one solution-level score:
 
@@ -27,9 +27,9 @@ $$
 
 Lightman et al. showed why this reduction matters at test time: on the MATH benchmark, PRM-based reranking in a best-of-$N$ setting outperformed ORM-based reranking, with the gap widening as the number of candidates increased [@lightman2023letsverify].
 
-The remaining design choice is how to collapse step scores into a trajectory score. Math-Shepherd uses the minimum step score when reranking full solutions, reflecting the intuition that one invalid step can sink an otherwise plausible derivation [@wang2024mathshepherd].
+The remaining design choice is how to collapse step scores into a trajectory score. Math-Shepherd uses the minimum step score when reranking full solutions, based on the intuition that one invalid step can ruin a plausible derivation (only strong as the weakest link) [@wang2024mathshepherd].
 
-The basic arithmetic behind best-of-$N$ with a perfect verifier is powerfully simple. Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$. We can write the complement, which is at least one correct sample, as:
+Let's go through the basic arithmetic behind best-of-$N$ (WLOG we assume a perfect verifier so that the calculations are clean): Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$; we can write the complement, which is at least one correct sample, as:
 $$
 1 - (1 - p)^N.
 $$ {#eq-ch6-pass-n-idealized}
@@ -178,7 +178,7 @@ Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-bu
   
 ### Selection under verifier noise
 
-@eq-ch6-pass-n-idealized assumes that the checker is the target property; nevertheless, that may not always be the case, even in RLVR, e.g. a code patch that passes unit tests but silently removes input validation on an endpoint the tests never hit. We will model this discrepancy in this section. This is a binary-verifier simplification; the more general setting is score-based selection, where the main failure mode is misranking over verifier scores rather than acceptance precision alone.
+@eq-ch6-pass-n-idealized assumes that the checker is perfect; that may not always be the case, e.g. a code patch that passes unit tests but removes input validation. We will model this discrepancy in this section. This is a binary-verifier simplification; the more general setting is score-based selection, where the main failure mode is misranking over verifier scores rather than acceptance precision alone.
 
 Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, then the following are true:
 
