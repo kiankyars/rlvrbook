@@ -12,6 +12,8 @@
 - **Learned verifier**: A model-based judge that predicts correctness, quality, or consistency.
 - **Verifier stack**: A layered pipeline that combines multiple checks before producing a reward or decision.
 - **Signal quality**: How informative, stable, and hard to game the reward is for the capability of interest.
+- **Perfect verifier**: A verifier that accepts a sample exactly when it is correct, with no false positives and no false negatives.
+- **Accepted pool**: The samples a verifier accepts, either a yes/no verifier's accepted samples or a scored verifier's samples at or above a threshold $\tau$. Its precision is the fraction of those samples that are actually correct.
 
 ## Evaluation, reporting, and robustness terms {#sec-evaluation-reporting-terms}
 
@@ -23,6 +25,7 @@
 - **Audit suite**: A held-out set of checks, examples, adversarial probes, or human review items used to test the verifier itself.
 - **High-reward tail**: The region of outputs selected by best-of-$N$, search, or gradient optimization because the verifier scores them highly.
 - **pass@1**: Single-sample policy quality under the specified decoding setup.
+- **Best-of-$N$**: Drawing $N$ samples from the policy and returning the one the verifier scores highest.
 - **pass@$N$**: Policy plus sampling; the probability that at least one of $N$ samples passes the checker, and an upper bound on best-of-$N$ with a deployable verifier, which must pick one of those same $N$ samples.
 - **Search-guided score**: A system-level score that includes active test-time control, reranking, verifier-guided search, or tool-mediated exploration.
 - **Generation budget**: The number of samples, tokens, tool calls, search steps, or other generation-side work used to produce the answer.
