@@ -204,7 +204,7 @@ Reproduced from Gao et al. [@gao2023scaling].
 
 ## Precision of the accepted pool
 
-The over-optimization curve shows what happens as optimization pressure grows; this section shows where the damage comes from. Chapter 6 judged a yes/no verifier by the precision of its accepted pool: the fraction of accepted samples that are actually correct. Once a model is optimized against a verifier that outputs a score, the samples that matter are no longer typical accepted ones but the highest-scoring ones, because selection and RL both push toward whatever the verifier scores highest. Average verifier accuracy therefore tells us little. What matters is precision among the top-scoring samples.
+The over-optimization curve shows what happens as optimization pressure grows; this section shows where the damage comes from. Chapter 6 judged a yes/no verifier by the precision of its accepted pool, i.e. the fraction of accepted samples that are actually correct. Once a model is optimized against a verifier that outputs a score, the samples that matter are the highest-scoring ones, because selection and RL both push toward whatever the verifier scores highest. Average verifier accuracy therefore tells us little, and what matters is precision among the top-scoring samples.
 
 Let $q(y)$ be the proxy score assigned by the verifier and $t(y)$ be the true task utility. Best-of-$N$ draws $N$ samples from the policy and returns the one with the highest proxy score:
 
