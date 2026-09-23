@@ -29,7 +29,7 @@ Lightman et al. showed why this reduction matters at test time: on the MATH benc
 
 The remaining design choice is how to collapse step scores into a trajectory score. Math-Shepherd uses the minimum step score when reranking full solutions, based on the intuition that one invalid step can ruin a plausible derivation (only strong as the weakest link) [@wang2024mathshepherd].
 
-Let's go through the basic arithmetic behind best-of-$N$ (WLOG we assume a perfect verifier so that the calculations are clean): Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$; we can write the complement, which is at least one correct sample, as:
+Let's go through the basic arithmetic behind best-of-$N$ (we assume a perfect verifier so that the calculations are clean): Let $p$ be the probability that a single sample is correct; therefore, a single sample is wrong with probability $1 - p$. If we assume sample independence, the probability that all $N$ samples are wrong is the product of those failure probabilities: $(1 - p)^N$; we can write the complement, which is at least one correct sample, as:
 $$
 1 - (1 - p)^N.
 $$ {#eq-ch6-pass-n-idealized}
@@ -41,11 +41,15 @@ chance of producing at least one correct solution among $N = 10$ samples, and
 $$
 1 - 0.9^{20} \approx 0.88
 $$
-among $N = 20$. Samples drawn for one prompt are independent, but $p$ varies from prompt to prompt, so across a benchmark the formula is an idealization rather than an exact law. It still captures the core reason best-of-$N$ can buy large gains from modest per-sample competence.
+among $N = 20$. Real model samples are not truly independent if one considers mode collapse: a model often repeats the same answer to a prompt, so $p$ sits near zero on some prompts and near one on others. The formula is therefore an idealization rather than an exact law, but it captures the core reason best-of-$N$ can buy large gains from modest per-sample competence.
+
+::: {.column-margin}
+A perfect verifier accepts a sample exactly when it is correct: it never accepts a wrong sample and never rejects a right one.
+:::
 
 ### pass@$k$
 
-Chen et al. defined pass@$k$: the probability that at least one of $k$ samples passes all tests [@chen2021codex]. Because the benchmark's unit tests act as a perfect verifier, pass@$k$ is an upper bound on what best-of-$k$ with a deployable verifier can reach. The gap between pass@1 and pass@$k$ shows how much the reported result depends on the evaluation protocol rather than the model. For example, the original Codex paper reported 28.8% pass@1 on HumanEval but 70.2% pass@100 from sampling alone [@chen2021codex]. If every problem had the same per-sample success rate, @eq-ch6-pass-n-idealized would put pass@100 above 99% for any rate of 5% or more. The gap to 70.2% comes from problems the model almost never solves.
+Chen et al. defined pass@$k$: the probability that at least one of $k$ samples passes all tests [@chen2021codex]. pass@$k$ counts a problem as solved if any of the $k$ samples passes, as if a perfect verifier always picked the correct one. A deployed verifier must also pick from those same $k$ samples, so it can do no better, which makes pass@$k$ an upper bound on best-of-$k$. The gap between pass@1 and pass@$k$ shows how much the reported result depends on the evaluation protocol rather than the model. For example, the original Codex paper reported 28.8% pass@1 on HumanEval but 70.2% pass@100 from sampling alone [@chen2021codex]. If every problem had the same per-sample success rate, @eq-ch6-pass-n-idealized would put pass@100 above 99% for any rate of 5% or more. The gap to 70.2% comes from problems the model almost never solves.
 
 ::: {#fig-ch6-pass-at-k}
 
@@ -71,14 +75,16 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
     <g id="sva-yticks"></g>
     <g id="sva-xticks"></g>
 
-    <polyline id="sva-base-line" fill="none" stroke="#6c757d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <polyline id="sva-rl-line" fill="none" stroke="var(--bs-primary, #2c7be5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline id="sva-base-line" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline id="sva-rl-line" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 
     <g id="sva-base-dots"></g>
     <g id="sva-rl-dots"></g>
 
-    <text x="445" y="150" fill="#6c757d" font-size="11" font-weight="600">Baseline model</text>
-    <text id="sva-rl-label" x="445" y="70" fill="var(--bs-primary, #2c7be5)" font-size="11" font-weight="600">After RLVR</text>
+    <g font-size="11" fill="var(--bs-body-color, #333)">
+      <line x1="76" y1="34" x2="96" y2="34" stroke="#2563eb" stroke-width="2.5"/><text x="102" y="38">After RLVR</text>
+      <line x1="76" y1="52" x2="96" y2="52" stroke="#dc2626" stroke-width="2.5"/><text x="102" y="56">Baseline model</text>
+    </g>
   </svg>
 
   <div class="sva-summary" id="sva-summary" aria-live="polite"></div>
@@ -138,9 +144,9 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
       });
     }
     document.getElementById("sva-base-line").setAttribute("points", pts(baseAcc));
-    dots(baseAcc, "sva-base-dots", "#6c757d");
+    dots(baseAcc, "sva-base-dots", "#dc2626");
     document.getElementById("sva-rl-line").setAttribute("points", pts(rlAcc));
-    dots(rlAcc, "sva-rl-dots", "var(--bs-primary, #2c7be5)");
+    dots(rlAcc, "sva-rl-dots", "#2563eb");
 
     const b = budgets[maxIdx];
     const ba = baseAcc[maxIdx], ra = rlAcc[maxIdx];
@@ -178,7 +184,7 @@ Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-bu
   
 ### Selection under verifier noise
 
-@eq-ch6-pass-n-idealized assumes that the checker is perfect; that may not always be the case, e.g. a code patch that passes unit tests but removes input validation. We will model this discrepancy in this section. This is a binary-verifier simplification; the more general setting is score-based selection, where the main failure mode is misranking over verifier scores rather than acceptance precision alone.
+@eq-ch6-pass-n-idealized assumes that the checker is perfect; that may not always be the case, e.g. a code patch that passes unit tests but removes input validation. This section models a verifier that answers yes or no and is sometimes wrong, and asks how often best-of-$N$ still returns a correct answer. Verifiers that output a score instead of yes or no fail in a similar way: they can rank a wrong answer above a right one.
 
 Let $C \in \{0,1\}$ denote true correctness and $V \in \{0,1\}$ denote whether the verifier accepts a sample. If a single rollout has true success probability $p = \Pr(C=1)$, then the following are true:
 
@@ -192,35 +198,37 @@ $$
 = 1 - \bigl(1 - \beta p - \alpha(1-p)\bigr)^N.
 $$ {#eq-ch6-verifier-acceptance}
 
-The accepted pool, that is, the verifier tail, contains both true positives and false positives. @eq-ch6-tail-precision gives the precision of that tail, i.e. among accepted samples, what fraction are genuinely correct?
+The accepted pool contains both true positives and false positives. @eq-ch6-tail-precision gives the precision of the accepted pool, i.e. among accepted samples, what fraction are genuinely correct?
 
 $$
 \Pr(C=1 \mid V=1)
 =
-\frac{\beta p}{\beta p + \alpha(1-p)}.
+\frac{\beta p}{\beta p + \alpha(1-p)}
+=
+\frac{\text{TP}}{\text{TP} + \text{FP}}.
 $$ {#eq-ch6-tail-precision}
 
-The numerator is "correct and accepted." The denominator is "accepted for any reason," including mistakes that slipped through.
+Here $\text{TP} = \beta p$ is the probability that a sample is correct and accepted, and $\text{FP} = \alpha(1-p)$ is the probability that it is wrong and accepted.
 
-If the unconditional probability, $p$, that a sampled rollout is actually correct before any verifier check is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. Therefore, a small leak in the checker can still pollute the accepted tail. For a hard problem with $p=0.05$ (5% base success), $\beta=0.9$ (90% true-positive rate), and $\alpha=0.01$ (1% false-positive rate), the verifier-accepted tail is only
+If the unconditional probability, $p$, that a sampled rollout is actually correct before any verifier check is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. Therefore, a small leak in the checker can still pollute the accepted pool. For a hard problem with $p=0.05$ (5% base success), $\beta=0.9$ (90% true-positive rate), and $\alpha=0.01$ (1% false-positive rate), the accepted pool is only
 
 $$
 \frac{0.9 \cdot 0.05}{0.9 \cdot 0.05 + 0.01 \cdot 0.95}
 \approx 0.83
 $$
 
-correct. If $\alpha$ rises to $0.05$, tail precision drops to
+correct. If $\alpha$ rises to $0.05$, its precision drops to
 
 $$
 \frac{0.9 \cdot 0.05}{0.9 \cdot 0.05 + 0.05 \cdot 0.95}
 \approx 0.49.
 $$
 
-Best-of-$N$ therefore depends on the verifier's precision in the selected tail, not merely on its average accuracy. As $N$ grows, the chance that at least one candidate is accepted approaches one, so best-of-$N$ accuracy approaches the tail precision rather than one: about 0.83 or 0.49 in this example, however many samples are drawn. This bridges us to Chapter 7, where we discuss how more search increases both the chance of finding a correct sample and the surface area for finding a false positive that the verifier cannot reject.
+Best-of-$N$ therefore depends on the verifier's precision on the accepted pool, not merely on its average accuracy. As $N$ grows, the chance that at least one candidate is accepted approaches one, so best-of-$N$ accuracy approaches this precision rather than one: about 0.83 or 0.49 in this example, however many samples are drawn. This bridges us to Chapter 7, where we discuss how more search increases both the chance of finding a correct sample and the surface area for finding a false positive that the verifier cannot reject.
 
 ### Compute-optimal selection
 
-One question which naturally arises from verification is the exploration/exploitation argument, with exploration corresponding to more generations and exploitation corresponding to more time spent on verification. Snell et al. asked: given a fixed compute budget, how should you split it between generating more candidates and spending more on verification [@snell2024scaling]? Their conclusion is that the optimal allocation depends on problem difficulty. For hard problems where per-sample success is rare, PRM-guided selection can be 4x more efficient than naive best-of-$N$, and a smaller model with more search can match or exceed the performance of a 14x larger model at matched compute.
+One question which naturally arises from verification is the exploration/exploitation argument, with exploration corresponding to more generations and exploitation corresponding to more time spent on verification. Snell et al. asked: given a fixed compute budget, how should you split it between generating more candidates and spending more on verification [@snell2024scaling]? Their conclusion is that the optimal allocation depends on problem difficulty. Allocating compute per prompt by difficulty can be 4x more efficient than naive best-of-$N$, and on problems where a smaller model already has non-trivial success, a smaller model with more search can match or exceed the performance of a 14x larger model at matched compute. On the hardest problems, however, more pretraining beats more test time compute.
 
 ## Search: verifier as controller
 
