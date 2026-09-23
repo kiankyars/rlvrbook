@@ -64,6 +64,10 @@ jobs:
         run: |
           mkdir -p "$TEXMFHOME" "$TEXMFVAR" "$TEXMFCONFIG" "$XDG_CACHE_HOME"
           quarto render book --to html --output-dir ../build/html
+          if grep -rlE '\?@(fig|tbl|eq|sec)-' build/html --include='*.html'; then
+            echo 'unresolved cross-references in the rendered HTML (listed above)' >&2
+            exit 1
+          fi
           quarto render book --to pdf --output-dir ../build/pdf
           cp build/pdf/rlvrbook.pdf build/html/rlvrbook.pdf
           touch build/html/.nojekyll
