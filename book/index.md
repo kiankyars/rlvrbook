@@ -20,11 +20,11 @@ Read [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-r
 
 ## Building Systems
 
-Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Chapter 5](chapters/05-turning-checks-into-training-signal.md), and [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md).
+Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Chapter 5](chapters/05-turning-checks-into-training-signal.md), and [Chapter 10](chapters/10-long-context-multimodal-and-agentic-rlvr.md).
 
 ## Frontier Research
 
-Read [Chapter 8](chapters/08-a-frontier-recipe.md), [Chapter 9](chapters/09-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 10](chapters/10-open-problems-and-the-research-agenda.md).
+Read [Chapter 9](chapters/09-a-frontier-recipe.md), [Chapter 10](chapters/10-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 11](chapters/11-open-problems-and-the-research-agenda.md).
 
 ## LLM Use
 
@@ -46,9 +46,9 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 
 - 2026-04-16: Officially announced v0 of the book!
 - 2026-04-19: Used my [ML review textbook skill](https://skills.sh/kiankyars/rlvrbook/review-ml-textbook) to refine each chapter and fix erratum.
-- 2026-05-29: Expanded Chapter 8 with an end-to-end OLMo 3 Think training walkthrough.
-- 2026-06-10: Reframed Chapter 9 around agentic harnesses and corrected the DeepSWE case study.
-- 2026-07-18: Rebuilt Chapter 10 as an explicit RLVR research agenda.
+- 2026-05-29: Expanded Chapter 9 with an end-to-end OLMo 3 Think training walkthrough.
+- 2026-06-10: Reframed Chapter 10 around agentic harnesses and corrected the DeepSWE case study.
+- 2026-07-18: Rebuilt Chapter 11 as an explicit RLVR research agenda.
 - 2026-08-15: Added the ML textbook review skill used for the second review pass.
 - 2026-09-04: Revised Chapters 1 and 2 and normalized citation placement across the book.
 - 2026-09-05: Revised Chapter 3's process reward explanations.

@@ -1,6 +1,6 @@
 # A Frontier Recipe
 
-![M. C. Escher, _Morano Calabria_ (1930).](../escher/08-morano-calabria.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Morano Calabria_ (1930).](../escher/09-morano-calabria.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 

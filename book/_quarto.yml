@@ -46,9 +46,9 @@ book:
         - chapters/07-reward-hacking-and-verifier-robustness.md
     - part: "Domains and Frontiers"
       chapters:
-        - chapters/08-a-frontier-recipe.md
-        - chapters/09-long-context-multimodal-and-agentic-rlvr.md
-        - chapters/10-open-problems-and-the-research-agenda.md
+        - chapters/09-a-frontier-recipe.md
+        - chapters/10-long-context-multimodal-and-agentic-rlvr.md
+        - chapters/11-open-problems-and-the-research-agenda.md
   appendices:
     - appendices/a-minimal-rl-and-post-training-background.md
     - appendices/b-practical-verifier-design-checklist.md

@@ -1,6 +1,6 @@
 # Long-context, multimodal, and agentic RLVR
 
-![M. C. Escher, _Cimino Barbarano_ (1929).](../escher/09-cimino-barbarano.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Cimino Barbarano_ (1929).](../escher/10-cimino-barbarano.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
@@ -15,13 +15,13 @@ The harness decides what the policy is allowed to observe, what actions it can t
 ::: {#fig-ch9-agentic-harness-stack fig-cap="An agentic RLVR harness makes the trajectory, environment state, and verifier stack part of the training interface."}
 
 ::: {.content-visible when-format="html"}
-![](../diagrams/09-agentic-harness-stack.png){.light-content}
+![](../diagrams/10-agentic-harness-stack.png){.light-content}
 
-![](../diagrams/09-agentic-harness-stack-dark.png){.dark-content}
+![](../diagrams/10-agentic-harness-stack-dark.png){.dark-content}
 :::
 
 ::: {.content-visible when-format="pdf"}
-![](../diagrams/09-agentic-harness-stack.png)
+![](../diagrams/10-agentic-harness-stack.png)
 :::
 
 :::
