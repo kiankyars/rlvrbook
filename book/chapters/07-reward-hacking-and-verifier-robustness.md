@@ -273,7 +273,6 @@ Hardening measures cost compute, engineering time, or both. We justify their use
 
 ## Open questions
 
-- Is there a practical pre-training audit protocol to evaluate verifier robustness?
-- Is there a useful analog to Gao et al.'s gold reward model for programmatic verifiers?
+- What's a good protocol to evaluate verifier robustness?
 - Can the model's own internal representations be used to detect reward hacking?
 - Does combining hidden tests, ensembles, and KL constraints give diminishing or compounding returns?
