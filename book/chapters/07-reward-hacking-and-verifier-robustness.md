@@ -25,7 +25,7 @@ RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as
     
     c. For imperfect, non-trivial proxies, such misalignment directions exist somewhere in policy space, so over-optimization can still lead to degraded target performance, but this is not mathematically guaranteed for every trajectory.
 
-Example intuition: imagine three choices. The true evaluator says A is best, B is second-best, C is worst. The proxy treats A as best but says B and C are equally bad. Moving mass from B to C leaves the proxy unchanged while hurting true performance. Combine that with a small move from B to A, and the proxy improves while true performance still falls.
+Example intuition for case b of the footnote, where improving the proxy worsens the target: imagine three choices. The true evaluator says A is best, B is second-best, C is worst. The proxy treats A as best but says B and C are equally bad. Moving mass from B to C leaves the proxy unchanged while hurting true performance. Combine that with a small move from B to A, and the proxy improves while true performance still falls.
 
 ## Taxonomy of verifier exploits
 
@@ -87,7 +87,7 @@ Another exploit came from clarifying questions. Part of the reward was derived f
 
 The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is to consider the reward model, which is normally the proxy, as a "gold" (in quotations because we don't normally consider a reward model as such) ground truth which stays fixed during training. The authors then optimize a policy against a separate reward model, which acts as the true proxy. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF, but the dynamics apply whenever a proxy is imperfect. In the context of RLVR, the proxy can be the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
 
-Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
+Pan et al. built four RL environments with deliberately misspecified rewards (traffic control, COVID response, blood glucose monitoring, and the Atari game Riverraid) and varied agent capability through model size, action resolution, observation noise, and training time. They found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
 ::: {.content-visible when-format="html"}
 <div class="ghg-widget" id="ghg-widget">
@@ -97,7 +97,7 @@ Pan et al. found that as the policy becomes stronger, it finds exploits that wea
 <button class="ghg-tab" role="tab" data-type="weak" aria-selected="false">Weak learned</button>
 <button class="ghg-tab" role="tab" data-type="hybrid" aria-selected="false">Hybrid stack</button>
 </div>
-<svg class="ghg-svg" id="ghg-svg" viewBox="0 0 620 380" aria-label="The Goodhart gap: proxy reward vs true performance as optimization pressure increases.">
+<svg class="ghg-svg" id="ghg-svg" viewBox="0 0 620 400" aria-label="The Goodhart gap: proxy reward vs true performance as optimization pressure increases.">
 <text x="310" y="16" text-anchor="middle" class="ghg-title">The Goodhart gap</text>
 <line x1="65" y1="300" x2="580" y2="300" class="ghg-axis"/>
 <line x1="65" y1="30" x2="65" y2="300" class="ghg-axis"/>
@@ -115,10 +115,10 @@ Pan et al. found that as the policy becomes stronger, it finds exploits that wea
 <line id="ghg-indicator" class="ghg-indicator" y1="30" y2="300"/>
 <circle id="ghg-proxy-dot" r="4" class="ghg-proxy-dot"/>
 <circle id="ghg-true-dot" r="4" class="ghg-true-dot"/>
-<text x="500" y="55" class="ghg-legend-text ghg-proxy-color">Proxy reward</text>
-<text x="500" y="75" class="ghg-legend-text ghg-true-color">True performance</text>
-<line x1="480" y1="51" x2="496" y2="51" class="ghg-proxy-line" fill="none"/>
-<line x1="480" y1="71" x2="496" y2="71" class="ghg-true-line" fill="none"/>
+<line x1="190" y1="376" x2="206" y2="376" class="ghg-proxy-line" fill="none"/>
+<text x="212" y="380" class="ghg-legend-text ghg-proxy-color">Proxy reward</text>
+<line x1="340" y1="376" x2="356" y2="376" class="ghg-true-line" fill="none"/>
+<text x="362" y="380" class="ghg-legend-text ghg-true-color">True performance</text>
 </svg>
 <div class="ghg-slider-wrap">
 <label for="ghg-slider" class="ghg-slider-label">Optimization pressure:</label>
@@ -202,11 +202,11 @@ Illustrative curves with the shape reported by Gao et al. [@gao2023scaling].
 Reproduced from Gao et al. [@gao2023scaling].
 :::
 
-## Tail precision
+## Precision of the accepted pool
 
-Average verifier accuracy is the wrong object once the model is optimizing against the verifier. What matters is the verifier's behavior in the extreme tail that the optimizer selects.
+The over-optimization curve shows what happens as optimization pressure grows; this section shows where the damage comes from. Chapter 6 judged a yes/no verifier by the precision of its accepted pool: the fraction of accepted samples that are actually correct. Once a model is optimized against a verifier that outputs a score, the samples that matter are no longer typical accepted ones but the highest-scoring ones, because selection and RL both push toward whatever the verifier scores highest. Average verifier accuracy therefore tells us little. What matters is precision among the top-scoring samples.
 
-Let $q(y)$ be the proxy score assigned by the verifier and $t(y)$ be the true task utility. A best-of-$N$ selector returns
+Let $q(y)$ be the proxy score assigned by the verifier and $t(y)$ be the true task utility. Best-of-$N$ draws $N$ samples from the policy and returns the one with the highest proxy score:
 
 $$
 y_N^\star = \arg\max_{1 \le i \le N} q(y_i),
@@ -225,21 +225,21 @@ $$
 
 If $q$ and $t$ agree in the bulk of the distribution but disagree in the upper tail of $q$, then increasing $N$ can make the system worse. The selector is not sampling typical verifier-approved outputs. It is sampling the most extreme verifier-approved output it can find.
 
-A useful diagnostic is tail precision at threshold $\tau$:
+A useful diagnostic is the precision of the accepted pool at threshold $\tau$, where a sample counts as accepted when its score is at least $\tau$:
 
 $$
-\operatorname{TailPrecision}(\tau)
+\operatorname{Precision}(\tau)
 =
 \Pr\bigl(t(y)=1 \mid q(y) \ge \tau\bigr).
 $$
 
-With a yes/no verifier and $\tau = 1$, this is the precision of the accepted pool in @eq-ch6-tail-precision.
+With a yes/no verifier and $\tau = 1$, this reduces to @eq-ch6-tail-precision.
 
-For a verifier that only grades single samples, moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $q$ is maximal, so robustness means that $q$ remains aligned with $t$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
+For a verifier that only grades single samples (pass@1), moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $q$ is maximal, so robustness means that $q$ remains aligned with $t$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
 
 ## Test time exploits
 
-Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores high on the proxy but low on true capability. With best-of-16, the chance of seeing at least one exploit is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
+Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores highest on the proxy but low on true capability. Because the exploit scores highest, best-of-$N$ returns it whenever it is among the candidates. The chance that at least one of $N$ independent rollouts is an exploit is $1 - 0.99^N$, the same calculation as @eq-ch6-pass-n-idealized with exploits in place of correct answers. With best-of-16, that chance is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
 
 ## Hardening techniques
 
