@@ -1,0 +1,15 @@
+<script>
+// The color scheme toggle is a link to the current page; drop the href so
+// clicking it never navigates or scrolls, and keep it keyboard-accessible.
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".quarto-color-scheme-toggle").forEach(function (el) {
+    el.removeAttribute("href");
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.style.cursor = "pointer";
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.click(); }
+    });
+  });
+});
+</script>

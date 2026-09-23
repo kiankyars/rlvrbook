@@ -79,6 +79,7 @@ format:
     canonical-url: true
     css: styles/custom.css
     include-in-header: includes/seo.html
+    include-after-body: includes/theme-toggle.html
   pdf:
     toc: true
     toc-depth: 2
