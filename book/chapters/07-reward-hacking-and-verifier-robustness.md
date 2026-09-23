@@ -25,13 +25,13 @@ RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as
     
     c. For imperfect, non-trivial proxies, such misalignment directions exist somewhere in policy space, so over-optimization can still lead to degraded target performance, but this is not mathematically guaranteed for every trajectory.
 
-Example intuition: imagine three choices. The true evaluator says A is best, B is second-best, C is worst. The proxy treats A as best but says B and C are equally bad. Moving a little mass from B to C (or toward a specific mix with more A, depending on setup) can improve proxy while hurting true performance.
+Example intuition: imagine three choices. The true evaluator says A is best, B is second-best, C is worst. The proxy treats A as best but says B and C are equally bad. Moving mass from B to C leaves the proxy unchanged while hurting true performance. Combine that with a small move from B to A, and the proxy improves while true performance still falls.
 
 ## A taxonomy of verifier exploits
 
 ### Extraction exploits
 
-The model satisfies the answer extractor without doing the task. Anything inside the `<answer>` tags that matches the gold answer gets reward 1.0, regardless of what preceded it. A model can learn to produce minimal-effort responses that place a plausible answer in the right position: a single line of text, no reasoning, occasionally correct by chance.
+The model satisfies the answer extractor without doing the task. Anything inside the `<answer>` tags that matches the gold answer gets full correctness reward, regardless of what preceded it. A model can learn to produce minimal-effort responses that place a plausible answer in the right position: a single line of text, no reasoning, occasionally correct by chance.
 
 ### Reward shaping exploits
 
@@ -194,7 +194,13 @@ Pan et al. found that as the policy becomes stronger, it finds exploits that wea
 ![](../diagrams/07-overoptimization-gao-rm-size.png){fig-alt="Reproduced figure from Gao et al. showing gold and proxy reward curves as KL distance increases across reward-model sizes." width="96%"}
 :::
 
+::: {.content-visible when-format="html"}
+Illustrative curves with the shape reported by Gao et al. [@gao2023scaling].
+:::
+
+::: {.content-visible when-format="pdf"}
 Reproduced from Gao et al. [@gao2023scaling].
+:::
 
 ## Tail precision
 
@@ -227,11 +233,13 @@ $$
 \Pr\bigl(t(y)=1 \mid q(y) \ge \tau\bigr).
 $$
 
-For a verifier used at pass@1, moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $q$ is maximal, so robustness means that $q$ remains aligned with $t$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
+With a yes/no verifier and $\tau = 1$, this is the precision of the accepted pool in @eq-ch6-tail-precision.
+
+For a verifier that only grades single samples, moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $q$ is maximal, so robustness means that $q$ remains aligned with $t$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
 
 ## Test time exploits
 
-Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores high on the proxy but low on true capability. With best-of-16, the chance of seeing at least one exploit is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
+Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores high on the proxy but low on true capability. Because an exploit scores high, best-of-$N$ returns it whenever one is among the candidates. With best-of-16, the chance that at least one exploit is among them is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough to grade single samples may not be good enough for best-of-64.
 
 ## Hardening techniques
 
@@ -243,7 +251,7 @@ Hardening measures cost compute, engineering time, or both. We justify their use
 
 3. **Red-teaming before training.** Probing the verifier adversarially is a proactive way to de-risk training runs.
 
-4. **KL constraints and early stopping.** PPO's KL penalty, GRPO's gradient clipping, or simply stopping training before the over-optimization peak keeps the policy close enough to its initial state that the verifier's calibration still holds.
+4. **KL constraints and early stopping.** A KL penalty to the reference policy, PPO-style ratio clipping (which GRPO also uses), or simply stopping training before the over-optimization peak keeps the policy close enough to its initial state that the verifier's calibration still holds.
 
 5. **Progressive curriculum.** Increase task difficulty as the model improves, following the competence-band principle from Chapter 5. Progressive difficulty keeps the optimization pressure focused on genuinely informative tasks.
 
