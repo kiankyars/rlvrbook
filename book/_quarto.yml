@@ -44,6 +44,7 @@ book:
     - part: "Optimization Pressure"
       chapters:
         - chapters/07-reward-hacking-and-verifier-robustness.md
+        - chapters/08-optimization-pressure-in-the-wild.md
     - part: "Domains and Frontiers"
       chapters:
         - chapters/09-a-frontier-recipe.md
