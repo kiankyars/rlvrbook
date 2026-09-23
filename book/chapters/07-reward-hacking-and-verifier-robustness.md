@@ -235,6 +235,22 @@ $$
 
 With a yes/no verifier and $\tau = 1$, this reduces to @eq-ch6-tail-precision.
 
+@fig-ch7-accepted-pool-precision illustrates the pattern. Raising the threshold first filters out ordinary wrong answers, so precision rises. Past a point, the only samples left are the rare exploits that score higher than any honest answer, and precision collapses.
+
+:::: {#fig-ch7-accepted-pool-precision fig-cap="Illustrative score distributions for correct answers, wrong answers, and a rare exploit that the verifier scores highest (left), and the resulting precision of the accepted pool as the threshold rises (right)."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/07-accepted-pool-precision-light.svg){.light-content}
+
+![](../diagrams/07-accepted-pool-precision-dark.svg){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/07-accepted-pool-precision-light.svg)
+:::
+
+::::
+
 For a verifier that only grades single samples (pass@1), moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $q$ is maximal, so robustness means that $q$ remains aligned with $t$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
 
 ## Test time exploits
