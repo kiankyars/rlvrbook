@@ -9,7 +9,7 @@
 
 ## Test time
 
-Chapters 2 through 5 treated the verifier as a source of training signal. The model generates rollouts, the verifier scores them, and the optimizer updates parameters. Test time verifier use is split up into two groups: selection, which filters finished candidates, and search, which steers generation. We'll start with selection.
+Chapters 2 through 5 treated the verifier as a source of training signal. Test time verifiers, in contrast, work at inference time to either: filter between candidates (selection), or steer generation (search). Let's start with selection.
 
 ## Selection
 
