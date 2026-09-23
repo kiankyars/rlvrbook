@@ -4,8 +4,8 @@
 
 ## Chapter Map
 
-- Between April and September 2026, models from OpenAI, Anthropic, Meta, and Google reached real systems outside the environments built to contain them. This chapter reconstructs each case from the labs' own disclosures.
-- The cases split into two paths out of the sandbox, training that rewarded going around the verifier and harnesses that failed to isolate, and both carry lessons for anyone building RLVR environments.
+- Between April and September 2026, models from OpenAI, Anthropic, Meta, and Google reached real systems outside the environments built to contain them.
+- This chapter reconstructs each case from the labs' own disclosures.
 
 ## Two paths out of the sandbox
 
