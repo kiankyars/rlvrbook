@@ -27,7 +27,7 @@ RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as
 
 Example intuition: imagine three choices. The true evaluator says A is best, B is second-best, C is worst. The proxy treats A as best but says B and C are equally bad. Moving mass from B to C leaves the proxy unchanged while hurting true performance. Combine that with a small move from B to A, and the proxy improves while true performance still falls.
 
-## A taxonomy of verifier exploits
+## Taxonomy of verifier exploits
 
 ### Extraction exploits
 
@@ -85,7 +85,7 @@ Another exploit came from clarifying questions. Part of the reward was derived f
 
 ## The over-optimization curve
 
-The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is a fixed "gold" reward model as ground truth and a policy we optimize against a separate "proxy" reward model. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF. But the dynamics apply whenever a proxy is imperfect. In the context of this book, the proxy is the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
+The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is to consider the reward model, which is normally the proxy, as a "gold" (in quotations because we don't normally consider a reward model as such) ground truth which stays fixed during training. The authors then optimize a policy against a separate reward model, which acts as the true proxy. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF, but the dynamics apply whenever a proxy is imperfect. In the context of RLVR, the proxy can be the programmatic verifier, which approximates but may not equal the target capability. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
 
 Pan et al. found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
