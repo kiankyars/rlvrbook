@@ -239,7 +239,7 @@ For a verifier that only grades single samples (pass@1), moderate thresholds may
 
 ## Test time exploits
 
-Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores highest on the proxy but low on true capability. Because the exploit scores highest, best-of-$N$ returns it whenever it is among the candidates. The chance that at least one of $N$ independent rollouts is an exploit is $1 - 0.99^N$, the same calculation as @eq-ch6-pass-n-idealized with exploits in place of correct answers. With best-of-16, that chance is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
+Best-of-$N$ selection helps when the verifier is faithful, but can increase probability of high-scoring false positives. Suppose 1 in 100 rollouts contains a verifier exploit: a response that scores high on the proxy but low on true capability. Because the exploit scores highest, best-of-$N$ returns it whenever it is among the candidates. The chance that at least one of $N$ independent rollouts is an exploit is $1 - 0.99^N$, the same calculation as @eq-ch6-pass-n-idealized with exploits in place of correct answers. With best-of-16, that chance is about 15%. With best-of-64, it rises to about 47%. With best-of-256, it reaches about 92%. Search is not gradient descent, but it still finds the gap between proxy and true, and a verifier that is good enough for pass@1 may not be good enough for best-of-64.
 
 ## Hardening techniques
 
