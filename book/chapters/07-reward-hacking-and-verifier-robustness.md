@@ -21,7 +21,7 @@ RLVR is in some sense the epitome of Goodhart's Law when we view the verifier as
 
     a. Different rewards can rank low-level behaviors differently while still sharing optimal policies; in this case, optimization can still reach a good target-optimal policy.
 
-    b. There can also be policies with $J_{R_2}(\pi_2) > J_{R_2}(\pi_1)$ and $J_{R_1}(\pi_2) < J_{R_1}(\pi_1)$, so improving proxy reward worsens target reward.
+    b. There can also be policies with $J_{\tilde{R}}(\pi_2) > J_{\tilde{R}}(\pi_1)$ and $J_{R}(\pi_2) < J_{R}(\pi_1)$, where $R$ is the true reward, $\tilde{R}$ the proxy, and $J_R(\pi)$ the expected return of policy $\pi$ under $R$, so improving proxy reward worsens target reward.
     
     c. For imperfect, non-trivial proxies, such misalignment directions exist somewhere in policy space, so over-optimization can still lead to degraded target performance, but this is not mathematically guaranteed for every trajectory.
 
@@ -206,31 +206,31 @@ Reproduced from Gao et al. [@gao2023scaling].
 
 The over-optimization curve shows what happens as optimization pressure grows; this section shows where the damage comes from. Chapter 6 judged a yes/no verifier by the precision of its accepted pool, i.e. the fraction of accepted samples that are actually correct. Once a model is optimized against a verifier that outputs a score, the samples that matter are the highest-scoring ones, because selection and RL both push toward whatever the verifier scores highest. Average verifier accuracy therefore tells us little, and what matters is precision among the top-scoring samples.
 
-Let $q(y)$ be the proxy score assigned by the verifier and $t(y)$ be the true task utility. Best-of-$N$ draws $N$ samples from the policy and returns the one with the highest proxy score:
+As in Chapter 6, let $v(x, y)$ be the score the verifier assigns to response $y$ for prompt $x$, and let $C(y) \in \{0,1\}$ record whether $y$ is actually correct. The verifier score is the proxy; $C$ is the target. Best-of-$N$ draws $N$ samples from the policy and returns the one the verifier scores highest:
 
 $$
-y_N^\star = \arg\max_{1 \le i \le N} q(y_i),
+y_N^\star = \arg\max_{1 \le i \le N} v(x, y_i),
 \qquad y_i \sim \pi_\theta(\cdot \mid x).
 $$
 
-The quantity we care about is not $\mathbb{E}[q(y_N^\star)]$. That will almost always rise with $N$. The quantity we care about is
+The quantity we care about is not $\mathbb{E}[v(x, y_N^\star)]$. That will almost always rise with $N$. The quantity we care about is the probability that the returned answer is correct:
 
 $$
-\mathbb{E}[t(y_N^\star)]
+\Pr\bigl(C(y_N^\star) = 1\bigr)
 =
-\mathbb{E}\!\left[
-t\!\left(\arg\max_{1 \le i \le N} q(y_i)\right)
-\right].
+\Pr\!\left(
+C\!\left(\arg\max_{1 \le i \le N} v(x, y_i)\right) = 1
+\right).
 $$
 
-If $q$ and $t$ agree in the bulk of the distribution but disagree in the upper tail of $q$, then increasing $N$ can make the system worse. The selector is not sampling typical verifier-approved outputs. It is sampling the most extreme verifier-approved output it can find.
+If $v$ and $C$ agree in the bulk of the distribution but disagree in the upper tail of $v$, then increasing $N$ can make the system worse. The selector is not sampling typical verifier-approved outputs. It is sampling the most extreme verifier-approved output it can find.
 
 A useful diagnostic is the precision of the accepted pool at threshold $\tau$, where a sample counts as accepted when its score is at least $\tau$:
 
 $$
 \operatorname{Precision}(\tau)
 =
-\Pr\bigl(t(y)=1 \mid q(y) \ge \tau\bigr).
+\Pr\bigl(C(y)=1 \mid v(x, y) \ge \tau\bigr).
 $$
 
 With a yes/no verifier and $\tau = 1$, this reduces to @eq-ch6-tail-precision.
@@ -251,7 +251,7 @@ With a yes/no verifier and $\tau = 1$, this reduces to @eq-ch6-tail-precision.
 
 ::::
 
-For a verifier that only grades single samples (pass@1), moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $q$ is maximal, so robustness means that $q$ remains aligned with $t$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
+For a verifier that only grades single samples (pass@1), moderate thresholds may be enough. For best-of-64, PRM-guided beam search, or RL over many gradient steps, the relevant threshold is much higher. The optimizer pushes probability mass toward the region where $v$ is maximal, so robustness means that $v$ remains aligned with $C$ in that region. This is why red-teaming should search for high-score false positives, not just estimate average verifier accuracy on held-out samples.
 
 ## Test time exploits
 
