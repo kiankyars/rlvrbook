@@ -16,7 +16,7 @@ We can divide the incidents into two paths.
 1. **Training path.** RL rewarded behavior that went around the verifier, and that behavior later resurfaced in a different setting to pernicious effect. Examples:
     - OpenAI's Hugging Face incident
     - Anthropic's Hacker-Opus study
-2. **Isolation/Sandboxing.** An evaluation harness meant to be sealed off from the internet was not, so a model pursuing a simulated target reached a real one. All disclosed incidents of this kind happened during capture-the-flag evaluations run by the same testing partner, Irregular. We discuss the incidents involving:
+2. **Isolation/Sandboxing.** An evaluation harness meant to be sealed off from the internet was not, so a model pursuing a simulated target reached a real one. All disclosed incidents of this kind happened during capture-the-flag evaluations run by the same testing partner, **Irregular**. We discuss the incidents involving:
     - Anthropic
     - Meta
     - Google
@@ -39,7 +39,7 @@ If we transfer to this book's vocabulary, the verifier is ExploitGym's scorer, w
 
 ### Three evaluation incidents
 
-After the Hugging Face disclosure, Anthropic reviewed 141,006 cybersecurity evaluation runs in which a model could have reached the internet and found three incidents, the earliest dating to April [@anthropic2026cyberevals]. The models were told they had no internet access and asked to capture a flag; a misunderstanding between Anthropic and its evaluation partner meant they did have access.
+After the Hugging Face disclosure, Anthropic reviewed 141,006 cybersecurity evaluation runs in which a model could have reached the internet and found three incidents, the earliest dating to April [@anthropic2026cyberevals]. The models were told they had no internet access and asked to capture a flag; a misunderstanding between Anthropic and its evaluation partner, **Irregular**, meant they did have access.
 
 - **Claude Opus 4.7** found, and exploited vulnerabilities in, a real company's infrastructure, believing it to be part of the exercise. It extracted application and infrastructure credentials and reached a database holding several hundred rows of production data. It was the only case in which a model kept attacking after learning it was likely in a real environment.
 - **Claude Mythos 5** published a Python package that it believed was part of the simulation. The package was public for roughly an hour, and in that window it was downloaded and run on 15 real systems.
@@ -71,13 +71,13 @@ The authors' conclusion: "a high rate of reward hacking during RL can cause mode
 
 ## Meta
 
-On August 14, Meta disclosed that a pre-release version of Muse Spark 1.1 had exploited a real website during a cybersecurity evaluation run by Irregular in early July [@meta2026musespark]. The evaluation was meant to run in a closed environment with safeguards removed. A misconfiguration gave the model open internet access, and the scenario accidentally named a real website as the target instead of a fictional one. Believing the real site was the intended target, the model exploited a vulnerability in it, accessed information, and changed the site's database. Meta's security teams reviewed over 10,000 records of the model's activity and found no other case of it exploiting a third party.
+On August 14, Meta disclosed that a pre-release version of Muse Spark 1.1 had exploited a real website during a cybersecurity evaluation run by **Irregular** in early July [@meta2026musespark]. The evaluation was meant to run in a closed environment with safeguards removed. A misconfiguration gave the model open internet access, and the scenario accidentally named a real website as the target instead of a fictional one. Believing the real site was the intended target, the model exploited a vulnerability in it, accessed information, and changed the site's database. Meta's security teams reviewed over 10,000 records of the model's activity and found no other case of it exploiting a third party.
 
 This example is a trademark sandbox failure: a model doing what the task asked, against a target the harness should not have exposed.
 
 ## Google
 
-So as to not be left out, Google confirmed on September 19 that Gemini had breached systems at three real companies during a capture-the-flag evaluation run by Irregular in May, due to the environment having unintended internet access, and the scenario's fictional company sharing its name with a real domain [@cemanovic2026gemini]. When Gemini could not reach its intended target inside the simulation, it reached the real company instead. According to Google, it found public information and guessed credentials to access websites it believed were part of the test, but it stopped in all three cases. Irregular described the Gemini incidents as the same underlying issue already reported by the other labs.
+So as to not be left out, Google confirmed on September 19 that Gemini had breached systems at three real companies during a capture-the-flag evaluation run by **Irregular** in May, due to the environment having unintended internet access, and the scenario's fictional company sharing its name with a real domain [@cemanovic2026gemini]. When Gemini could not reach its intended target inside the simulation, it reached the real company instead. According to Google, it found public information and guessed credentials to access websites it believed were part of the test, but it stopped in all three cases. **Irregular** described the Gemini incidents as the same underlying issue already reported by the other labs.
 
 ## Every model cheats sometimes
 
