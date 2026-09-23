@@ -23,7 +23,7 @@
 - **Audit suite**: A held-out set of checks, examples, adversarial probes, or human review items used to test the verifier itself.
 - **High-reward tail**: The region of outputs selected by best-of-$N$, search, or gradient optimization because the verifier scores them highly.
 - **pass@1**: Single-sample policy quality under the specified decoding setup.
-- **pass@$N$**: Policy plus sampling; the probability that at least one of $N$ samples passes the checker.
+- **pass@$N$**: Policy plus sampling; the probability that at least one of $N$ samples passes the checker, and an upper bound on best-of-$N$ with a deployable verifier, which must pick one of those same $N$ samples.
 - **Search-guided score**: A system-level score that includes active test-time control, reranking, verifier-guided search, or tool-mediated exploration.
 - **Generation budget**: The number of samples, tokens, tool calls, search steps, or other generation-side work used to produce the answer.
 - **Verification budget**: The number or cost of tests, judge calls, proof checks, environment runs, or other verifier-side work used to score or select the answer.
