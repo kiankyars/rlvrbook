@@ -208,7 +208,9 @@ $$
 \frac{\text{TP}}{\text{TP} + \text{FP}}.
 $$ {#eq-ch6-tail-precision}
 
-Here $\text{TP} = \beta p$ is the probability that a sample is correct and accepted, and $\text{FP} = \alpha(1-p)$ is the probability that it is wrong and accepted.
+Here $\text{TP} = \beta p$ is the probability that a sample is correct and accepted, and $\text{FP} = \alpha(1-p)$ is the probability that it is wrong and accepted.[^ch6-rates]
+
+[^ch6-rates]: In case you're wondering why $\beta$ and $\alpha$ do not add to one, they describe different groups of samples. Each group's rates add to one on their own: $\Pr(V=1 \mid C=1) + \Pr(V=0 \mid C=1) = 1$, the true-positive rate plus the false-negative rate, and $\Pr(V=1 \mid C=0) + \Pr(V=0 \mid C=0) = 1$, the false-positive rate plus the true-negative rate.
 
 If the unconditional probability, $p$, that a sampled rollout is actually correct before any verifier check is small, even a low false-positive rate can dominate the accepted set because most samples are incorrect. Therefore, a small leak in the checker can still pollute the accepted pool. For a hard problem with $p=0.05$ (5% base success), $\beta=0.9$ (90% true-positive rate), and $\alpha=0.01$ (1% false-positive rate), the accepted pool is only
 
