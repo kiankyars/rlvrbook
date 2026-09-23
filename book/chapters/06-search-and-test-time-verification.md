@@ -15,7 +15,7 @@ Chapters 2 through 5 treated the verifier as a source of training signal. Test t
 
 | Technique | Decision rule | Verifier use | Best when | Main limitation |
 | --- | --- | --- | --- | --- |
-| Best-of-$N$ with an ORM [@cobbe2021training] | Score each candidate and return the top one | Post-hoc scoring over full outputs | Cheap parallel reranking is enough | No Exploration |
+| Best-of-$N$ with an ORM [@cobbe2021training] | Score each candidate and return the top one | Post-hoc scoring over full outputs | Cheap parallel reranking is enough | No exploration |
 | Best-of-$N$ with a PRM [@lightman2023letsverify] | Rank candidates by process rather than outcome | Step-level or intermediate scoring folded into a final rank | Harder problems where reasoning quality matters | Higher scoring cost |
 | Self-consistency [@wang2022selfconsistency] | Sample multiple paths and vote or cluster by agreement | No external verifier; agreement acts as the signal | Available verifiers suck | Correlated errors |
 
