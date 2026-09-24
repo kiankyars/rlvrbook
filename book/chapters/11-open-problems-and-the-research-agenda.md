@@ -123,6 +123,8 @@ If the verifier matters more than the optimizer, and the model writes the verifi
 
 ## The agenda at a glance
 
+Okay, once again, with respect to this appendix that I think could be called "Research Ideas," I think "appendix" is the most obvious choice here, but if you have a better idea, let me know. Here in this table, we can move any promising experiment idea from this table to the new "Research Ideas" section, and then simplify this table to only have two columns.
+
 | Problem | Best current evidence | Deciding experiment |
 |---|---|---|
 | Elicitation or creation | Default RLVR sharpens; targeted recipes expand | Outcome-only RL on pass@4096-zero problems at two scales |
