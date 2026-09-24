@@ -14,26 +14,13 @@ description-meta: "RLVR means reinforcement learning from verifiable rewards: tr
 
 Reinforcement learning from verifiable rewards (RLVR) studies how models can improve by learning from reward signals derived from checkable task outcomes, executable feedback, formal validation, or other reliable forms of verification. This book's purpose is to explain what kinds of rewards can be made verifiable, what those rewards train, where the paradigm has been most successful, and where it breaks.
 
-(What are your thoughts on these three bullet points below, which categorize the chapters of the book? My opinion is that, since we already have a table of contents, this is redundant, and the chapter titles should explain themselves and not need additional classification.)
-## New to RLVR
-
-Read [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md).
-
-## Building Systems
-
-Read [Chapter 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [Chapter 5](chapters/05-turning-checks-into-training-signal.md), and [Chapter 10](chapters/10-long-context-multimodal-and-agentic-rlvr.md).
-
-## Frontier Research
-
-Read [Chapter 9](chapters/09-a-frontier-recipe.md), [Chapter 10](chapters/10-long-context-multimodal-and-agentic-rlvr.md), and [Chapter 11](chapters/11-open-problems-and-the-research-agenda.md).
-
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is as intelligible as black and white (Interestingly, this is an anecdote which is extremely relevant in the context of this book. That is to say, the more a task is verifiable, the more we can improve it, and writing is extremely unverifiable.plz fix fromating). It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as easy to tell apart from genuine human text as black from white. Interestingly, this is extremely relevant in the context of this book: the more verifiable a task is, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
 
 - helping me plan out the structure
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
-- creating the diagrams and equations, since this is much more effecient, and does not require the same human creativity as writing english (lower-entropy)
+- creating the diagrams and equations, since this is much more efficient, and does not require the same human creativity as writing English (lower-entropy)
 
 ## Target Audience
 
@@ -41,7 +28,7 @@ I wrote this book with the intent to cater to the largest audience possible. Wit
 
 ## How to Use This Book
 
-Each chapter has a TL;DR at the beginning. Although the chapters do minimally build off of each other, they can still read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. The citations are plentiful to facilitate further research if there's a specific theme which captivates you.
+Each chapter has a TL;DR at the beginning. Although the chapters do minimally build off of each other, they can still read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. If you are new to RLVR, start with [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md); if you build training systems, [Chapters 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [5](chapters/05-turning-checks-into-training-signal.md), and [10](chapters/10-long-context-multimodal-and-agentic-rlvr.md); and for frontier research, [Chapters 9](chapters/09-a-frontier-recipe.md) to [11](chapters/11-open-problems-and-the-research-agenda.md). The citations are plentiful to facilitate further research if there's a specific theme which captivates you.
 
 ## Changelog
 
