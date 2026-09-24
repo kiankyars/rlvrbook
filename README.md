@@ -23,4 +23,4 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 
 ## Remaining action items
 
-- Add image-gen diagrams to textbook
+- Add image-gen diagrams to textbook where there is clear clarity gain
