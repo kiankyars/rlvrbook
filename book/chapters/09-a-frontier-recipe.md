@@ -157,35 +157,22 @@ The technical report compares RL from SFT versus RL from DPO, and the result was
 
 OLMo 3 is the most fully open of the frontier recipes, with data, code, and checkpoints released, but it is not the only way to do RLVR at scale. Two recent reports from Chinese open-weight labs make useful contrasts: Kimi K3 [@kimiteam2026k3] and DeepSeek-V4.1-Flash [@deepseekai2026v41flash].
 
-**Pipeline.** The three labs put RL in different places.
+| | OLMo 3 Think | Kimi K3 | DeepSeek-V4.1-Flash |
+|---|---|---|---|
+| Pipeline | SFT, DPO, one mixed RLVR stage | SFT, RL on nine specialists, MOPD into one model | SFT, RL, on-policy distillation |
+| Rewards | Four domain verifiers; LM judge for chat | Verifiable environments; rubric-writing judge for the rest | Synthesized tasks, each with its own audited verifier |
+| Stale data | Capped importance ratio; in-flight updates | Per-token regularizer; shared quantization | Off-policy bound; stale-token mask |
+| Length control | None | Token budget; verbose outputs lose | Early short samples discarded |
 
-- **OLMo 3:** SFT, then DPO, then one RLVR stage over a mix of domains.
-- **Kimi K3:** SFT, then RL on nine separate experts, one per domain and reasoning-effort level, then multi-teacher on-policy distillation of all nine into one model.
-- **DeepSeek-V4.1-Flash:** SFT, then RL, then on-policy distillation.
+: OLMo 3 Think's RL stage compared with Kimi K3 and DeepSeek-V4.1-Flash [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash]. {#tbl-ch9-open-recipes}
 
-**Where rewards come from.** All three reach past strict verifiers.
+Each cell of @tbl-ch9-open-recipes compresses a longer mechanism. Kimi K3's nine specialists cover three domains at three reasoning-effort levels, and its judge writes a rubric and runs a tournament of pairwise comparisons. DeepSeek's tasks are audited by an inspection agent for ways to hack them. Kimi K3 keeps rollouts that span several training iterations stable with the per-token regularizer, and runs rollout and training under one quantization scheme so the two engines match; DeepSeek masks tokens that are too stale and keeps the KV cache and expert routing across weight updates. Kimi K3 sets the reward to -1 when a response exceeds its per-problem token budget; OLMo 3 tried a length-control verifier and found it did not help; DeepSeek discards early short samples to counter the bias of asynchronous generation toward short rollouts.
 
-- **OLMo 3:** four domain verifiers, plus a Qwen3 32B judge for chat.
-- **Kimi K3:** verifiable environments, plus, for tasks without one, a reward model that writes a rubric and runs a tournament of pairwise comparisons.
-- **DeepSeek-V4.1-Flash:** synthesized tasks that each ship with their own verification system, audited by an inspection agent for ways to hack them.
+Three patterns in @tbl-ch9-open-recipes matter.
 
-**Stale and mismatched data.** All three train asynchronously and have to handle rollouts from older weights.
-
-- **OLMo 3:** a capped importance-sampling ratio for engine mismatch, and in-flight updates that keep the KV cache.
-- **Kimi K3:** rollouts that span several iterations, kept stable by a per-token regularizer, with rollout and training sharing one quantization scheme so the engines match.
-- **DeepSeek-V4.1-Flash:** a bound on how off-policy the data may get, a mask on overly stale tokens, and a KV cache and expert routing that persist across weight updates.
-
-**Length control.** Only the newer recipes control length directly.
-
-- **OLMo 3:** none; a length-control verifier did not help.
-- **Kimi K3:** a per-problem token budget, where exceeding it sets the reward to -1, and verbose outputs automatically lose judge comparisons.
-- **DeepSeek-V4.1-Flash:** early short samples are discarded to counter the bias of asynchronous generation toward short rollouts.
-
-Three patterns stand out. Both newer recipes train specialists and then distill them into one model, whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization.
-
-Where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4.
-
-DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash].
+1. Both newer recipes train specialists and then distill them into one model, whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization. Kimi K3 calls its version multi-teacher on-policy distillation (MOPD): the single student model generates its own responses, and for each prompt the specialist for that domain and effort level acts as the teacher, giving the student a per-token reward equal to the clipped log-ratio of the teacher's probability for the token to the student's. Because the student is scored on its own samples, it is trained on the states it actually visits, just as in RL.
+2. Where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4.
+3. DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer.
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
 
