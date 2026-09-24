@@ -25,6 +25,7 @@ book:
     image-alt: "M. C. Escher, Corsica Corte (1929)."
   sidebar:
     title: "rlvrbook"
+  reader-mode: true
   downloads:
     - pdf
   chapters:

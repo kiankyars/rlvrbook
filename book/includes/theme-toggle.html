@@ -12,4 +12,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+// Quarto's toggle has a Safari-only scrollbar workaround that calls
+// scrollTo(0, 1) and then scrollTo(0, 0), which jumps the reader to the top
+// of the page. Keep the nudge but apply it at the current scroll position.
+(function () {
+  var toggle = window.quartoToggleColorScheme;
+  if (typeof toggle !== "function") return;
+  window.quartoToggleColorScheme = function () {
+    var x = window.scrollX, y = window.scrollY;
+    var scrollTo = window.scrollTo;
+    window.scrollTo = function (a, b) {
+      if (typeof a === "number" && a === 0 && (b === 0 || b === 1)) {
+        return scrollTo.call(window, x, y + b);
+      }
+      return scrollTo.apply(window, arguments);
+    };
+    try { toggle(); } finally {
+      setTimeout(function () { window.scrollTo = scrollTo; }, 100);
+    }
+  };
+})();
 </script>
