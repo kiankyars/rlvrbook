@@ -29,7 +29,7 @@ Read [Chapter 9](chapters/09-a-frontier-recipe.md), [Chapter 10](chapters/10-lon
 
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is still *very* intelligible from genuine human text. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as intelligible as black and white (Interestingly, this is an anecdote which is extremely relevant in the context of this book. That is to say, the more a task is verifiable, the more we can improve it, and writing is extremely unverifiable.plz fix fromating). It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
 
 - helping me plan out the structure
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
