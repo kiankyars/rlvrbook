@@ -1,3 +1,5 @@
+Sep 24, 2026 at 14:51Important notice: I'm currently in the process of rewriting chapters 10 to 11, so if you read them and find many errors, please wait until I resolve them before you commit. (change to all caps please)
+
 # RLVR Book
 
 This repository contains **Reinforcement Learning from Verifiable Rewards**, a reference book on RLVR as a paradigm for learning from verifiable reward signals.
