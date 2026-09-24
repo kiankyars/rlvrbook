@@ -259,4 +259,4 @@ Adding components to a verifier stack can amplify errors rather than cancel them
 
 ## What comes next
 
-The verifier stack defines what gets checked and how, not how those checks become training signal. A stack returning binary outcomes, one returing graded scores, and one returing step-level annotations will produce very different learning dynamics even if they agree on output correctness. Transforming verifier outputs into something an optimizer can use is the subject of Chapter 5.
+The verifier stack defines what gets checked and how, not how those checks become training signal. A stack returning binary outcomes, one returning graded scores, and one returning step-level annotations will produce different learning dynamics even if they agree on output correctness. Transforming verifier outputs into something an optimizer can use is the subject of Chapter 5.
