@@ -5,12 +5,11 @@
 ## Chapter Map
 
 - Open problems in RLVR.
-- One organizing claim: RLVR improves a model exactly as far as verification reaches, so each open problem asks where verification ends or how it fails.
-- For each problem: the research question, what the evidence settles, what it leaves open, and an experiment that would move it.
+- RLVR improves a model exactly as far as verification reaches.
 
 ## The frontier is the verifier
 
-Jason Wei states the premise of this book as a rule: "the ease of training AI to solve a task is proportional to how verifiable the task is" [@wei2025asymmetry]. DeepSeek reports that its latest post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains" [@deepseekai2026v41flash]. If both are right, the open problems of RLVR are mostly problems of verification.
+Jason Wei states: "the ease of training AI to solve a task is proportional to how verifiable the task is" [@wei2025asymmetry]. If right, the open problems of RLVR are mostly problems of verification.
 
 They fall into three groups:
 
