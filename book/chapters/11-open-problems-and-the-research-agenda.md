@@ -17,13 +17,11 @@ They fall into three groups:
 2. **Whether the reward can be trusted.** Verifiers are wrong in both directions, and optimization pressure finds the errors. What does the policy learn from them, and can we still see what it learned?
 3. **How far verification extends.** Long horizons, tasks without a reference answer, the model grading itself, and the model writing its own tasks all push the verifier past the setting where earlier chapters showed it works.
 
-The sections follow that order. Each gives the research question first, then what is known, then what is open.
-
 ## Elicitation or creation
 
 **Research question.** Does RLVR with outcome rewards create reasoning capability that was absent from the base model, or does it only reallocate probability mass toward solutions the base model could already sample?
 
-**The case for reallocation.** Yue et al. compared base and RLVR-trained models with pass@k at large k. RL wins at $k = 1$, but the base model overtakes it as $k$ grows: on Minerva with a 32B model, the base model is ahead by about 9 points at $k = 128$ [@yue2025doesrl]. Six different RLVR algorithms behaved similarly, while distillation from a stronger model did expand the set of solvable problems. The Invisible Leash formalizes the pattern: RLVR can in principle reach new solutions, but in practice the support it loses outweighs the support it gains [@wu2025invisibleleash]. Entropy explains part of the mechanism. Cui et al. find that performance is bought with policy entropy, following $R = -a e^{H} + b$, so a policy that has collapsed to zero entropy has a predictable ceiling [@cui2025entropy].
+**The case for reallocation.** Yue et al. compared base and RLVR-trained models with pass@k at large k. RL wins at $k = 1$, but the base model overtakes it as $k$ grows: on Minerva with a 32B model, the base model is ahead by about 9 points at $k = 128$ [@yue2025doesrl]. Six different RLVR algorithms behaved similarly, while off-policy distillation from a stronger model expanded the set of solvable problems. The Invisible Leash formalizes the pattern: RLVR can in principle reach new solutions, but in practice the support it loses outweighs the support it gains [@wu2025invisibleleash]. Entropy explains part of the mechanism. Cui et al. find that performance is bought with policy entropy, following $R = -a e^{H} + b$, so a policy that has collapsed to zero entropy has a predictable ceiling [@cui2025entropy].
 
 **The case for creation.** Several results show RL solving problems the base model never solved:
 
