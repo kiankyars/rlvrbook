@@ -16,7 +16,7 @@ Reinforcement learning from verifiable rewards (RLVR) studies how models can imp
 
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is as easy to tell apart from genuine human text as black from white. Interestingly, this is extremely relevant in the context of this book: the more verifiable a task is, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as intelligble as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
 
 - helping me plan out the structure
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
