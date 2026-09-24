@@ -4,8 +4,8 @@
 
 ## Chapter Map
 
-- Describe OLMo 3 Think's RLVR recipe.
-- Scope: a case study in hybrid frontier post-training, where RLVR is the final stage of an SFT, DPO, RLVR pipeline rather than a standalone recipe, contrasted with Kimi K3 and DeepSeek-V4.1-Flash.
+- Describe OLMo 3 Think's RLVR recipe, contrasted with Kimi K3 and DeepSeek-V4.1-Flash.
+- Scope: a case study in hybrid frontier post-training, where RLVR is the final stage of an SFT, DPO, RLVR pipeline rather than a standalone recipe
 
 ## Setup
 
@@ -32,7 +32,7 @@ The following modifications are made to vanilla GRPO:
 
 1. Any group of rollouts where all samples have the same reward is removed to avoid training on samples that provide zero gradient.
 2. No KL loss to prevent restrictive policy updates.
-3. A token-level loss is used despite the reward being outcome based; the reason for this is to normalize the loss by the total number of tokens across the batch, rather than per sample, to avoid a length bias.
+3. A token-level loss is used despite the reward being outcome based; the reason for this is to normalize the loss by the total number of tokens across the batch, rather than per sample, to avoid length bias.
     - Suppose one model response is 10 tokens long and another is 100 tokens long. If you normalize loss per sample and both samples had the same reward, each response contributes equally in total, so each token of the longer response counts one-tenth as much as a token of the shorter one. With token-level normalization every token counts equally.
 4. GRPO already limits how much one update can change token probabilities, and the clipping is tweaked to be asymmetric, such that the positive limit is larger than the negative limit, meaning a positive-advantage token's probability can rise by up to 27.2% per update while a negative-advantage token's can fall by only up to 20%.
 5. The advantage calculation uses a simplified group-relative advantage $A_i = r_i - \bar r$ instead of $A_i = (r_i - \bar r) / \sigma_r$, because dividing by a tiny within-group standard deviation can artificially magnify prompts where all completions had almost the same reward.
@@ -78,7 +78,7 @@ Concretely:
 3. The actors load the new weights.
 4. The actors resume the same generation queue.
 
-The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked: up to 4x faster with the same resources, without hurting accuracy.[^ch8-inflight-update-boundary] A single rollout can therefore mix tokens generated under several policy versions. In fact, the released 7B Think RLVR run used Ai2's initial infrastructure, without PipelineRL or truncated importance sampling, and took 15 days; a replication on the newer infrastructure, which added both among other changes, reached similar performance in 6 days [@teamolmo2025olmo3].
+The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked: up to 4x faster with the same resources, without hurting accuracy.[^ch8-inflight-update-boundary] In fact, the released 7B Think RLVR run used Ai2's initial infrastructure, without PipelineRL or truncated importance sampling, and took 15 days; a replication on the newer infrastructure, which added both among other changes, reached similar performance in 6 days [@teamolmo2025olmo3].
 
 | Infrastructure | Tokens per second | Memory bandwidth utilization |
 |---|---:|---:|
@@ -100,7 +100,7 @@ The pieces above are easiest to hold together by following a single prompt throu
 3. **Reward vector.** The math verifier extracts each rollout's final answer, normalizes it, and checks symbolic equality against the reference with SymPy. Say it returns $r = (1, 0, 0, 1, 0, 0, 0, 1)$: three of eight correct.
 4. **Filtering.** The rewards are not all identical, so the group carries gradient signal and is kept. Had all eight matched, the group would be dropped, and active sampling would pull replacement groups off the actors until the batch held its full 64 unique prompts, 512 rollouts in total.
 5. **Advantage.** The group mean is $\bar r = 0.375$. Each correct rollout gets advantage $A_i = 1 - 0.375 = +0.625$; each incorrect one gets $-0.375$. That one scalar is broadcast to every token of its rollout.
-6. **Learner update.** The token-level loss sums over all tokens of all 512 rollouts in the batch and normalizes by the total token count, so each token of our prompt's 20K-token rollout counts as much as each token of a 6K-token one, and the asymmetric clip range $[0.8, 1.272]$ lets positive-advantage tokens move further than negative ones.
+6. **Learner update.** The token-level loss sums over all tokens of all 512 rollouts in the batch and normalizes by the total token count, and the asymmetric clip range $[0.8, 1.272]$ lets positive-advantage tokens move further than negative ones.
 7. **Refreshed actors.** In the released 7B run, which used Ai2's initial infrastructure, the actors sync to the new weights after each step, running at most one step behind the learner. On the newer infrastructure, used in the 6-day replication, the learner instead broadcasts the new weights in-flight: the actor that generated our group swaps them in, keeps its KV cache, and continues the generations it had in progress, now under a slightly newer policy.
 
 The loop then repeats from step 2 with the updated weights, roughly 1,400 times for the 7B reasoner.
@@ -122,7 +122,11 @@ OLMo 3 is the most fully open of the frontier recipes, with data, code, and chec
 
 : OLMo 3 Think's RL stage compared with Kimi K3 and DeepSeek-V4.1-Flash [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash]. {#tbl-ch9-open-recipes}
 
-Three contrasts in @tbl-ch9-open-recipes matter for this book. First, both newer recipes train specialists and then distill them into one model, whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization. Second, where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4. Third, DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer.
+Three patterns in @tbl-ch9-open-recipes matter.
+
+1. Both newer recipes train specialists and then distill them into one model (MOPD), whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization.
+2. Where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4.
+3. DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer.
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
 

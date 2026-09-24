@@ -334,7 +334,7 @@ Comparison of eight rollouts under correctness versus correctness & format desig
 
 The correctness component should dominate such that auxiliary rewards do not determine the advantage sign for incorrect rollouts. The weighting split between `correctness_reward_func` and the four auxiliary reward functions in Brown's script sits at the boundary (2.0 vs 2.0). In a group where every rollout is wrong, increasing correctness weight cannot help: a formatted wrong answer scores 2.0 and a bare wrong answer 0.5, so the formatted one gets advantage +0.75. Weighting protects wrong rollouts only when the group contains enough correct ones; as the solve rate falls toward zero, no weight is large enough. @sec-ch5-task-filtering shows how keeping prompts inside the 20–80% band avoids this regime.
 
-@fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of a close variant of the same GRPO script ([the Chapter 5 notebook](https://github.com/kiankyars/rlvrbook/blob/main/code/chapter05_grpo_reward_tracking_colab.ipynb)), where the format reward does in fact dominate.
+@fig-ch5-grpo-reward-components, @fig-ch5-grpo-format-reward-share, and @fig-ch5-grpo-total-reward show the result of a 200-step run of a close variant of the same GRPO script ([the Chapter 5 notebook](https://github.com/kiankyars/rlvrbook/blob/main/scripts/chapter05_grpo_reward_tracking_colab.ipynb)), where the format reward does in fact dominate.
 
 :::: {#fig-ch5-grpo-reward-components fig-cap="Mean reward of correctness vs format over time."}
 

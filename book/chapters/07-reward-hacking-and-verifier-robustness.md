@@ -202,9 +202,9 @@ Illustrative curves with the shape reported by Gao et al. [@gao2023scaling].
 Reproduced from Gao et al. [@gao2023scaling].
 :::
 
-## Precision of the accepted pool
+## Are the highest-scoring answers actually correct?
 
-The over-optimization curve shows what happens as optimization pressure grows; this section shows where the damage comes from. Chapter 6 judged a yes/no verifier by the precision of its accepted pool, i.e. the fraction of accepted samples that are actually correct. Once a model is optimized against a verifier that outputs a score, the samples that matter are the highest-scoring ones, because selection and RL both push toward whatever the verifier scores highest. Average verifier accuracy therefore tells us little, and what matters is precision among the top-scoring samples.
+A verifier can judge most answers correctly yet give its highest scores to answers that exploit its mistakes. Chapter 6 judged a yes/no verifier by the precision of its accepted pool, i.e. the fraction of accepted samples that are actually correct. Once a model is optimized against a verifier that outputs a score, the samples that matter are the highest-scoring ones, because selection and RL both push toward whatever the verifier scores highest. Average verifier accuracy therefore tells us little, and what matters is precision among the top-scoring samples.
 
 As in Chapter 6, let $v(x, y)$ be the score the verifier assigns to response $y$ for prompt $x$, and let $C(y) \in \{0,1\}$ record whether $y$ is actually correct. The verifier score is the proxy; $C$ is the target. Best-of-$N$ draws $N$ samples from the policy and returns the one the verifier scores highest:
 
