@@ -87,7 +87,7 @@ DeepSeek scales RL along training compute and the number of scaffolds; on DeepSW
 
 ## Where environments come from {#sec-ch10-environments}
 
-Ilya Sutskever (aka the GOAT) proclaimed at NeurIPS 2024 that "pre-training as we know it will unquestionably end", because compute keeps growing while "we have but one internet": "the fossil fuel of AI" [@sutskever2024neurips]. Environments are the RL counterpart of pretraining's internet, and high-quality environments scale slower than pretraining data. DeepSWE trained on 4,500 human-made environments, and although expert data will only become more important over time, automating environment construction will inexorably grow, because of the cost of human-made environments and as a by-product of recursive self-improvement (RSI). DeepSeek is aware of this and consequently runs a synthetic environment effort, which defines tasks as a triplet:
+Ilya Sutskever (aka the GOAT) proclaimed at NeurIPS 2024 that "pre-training as we know it will unquestionably end", because compute keeps growing while "we have but one internet": "the fossil fuel of AI" [@sutskever2024neurips]. Environments are the RL counterpart of pretraining's internet, and high-quality environments scale slower than pretraining data. DeepSWE trained on 4,500 human-made environments, and although expert data will only become more important over time, automating environment construction will inexorably grow, because of the cost of man-made environments and as a by-product of recursive self-improvement (RSI). DeepSeek is aware of this and consequently runs a synthetic environment effort, which defines tasks as a triplet:
 
 1. a problem,
 2. an environment, and
