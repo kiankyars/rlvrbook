@@ -55,6 +55,7 @@ book:
     - appendices/a-minimal-rl-and-post-training-background.md
     - appendices/b-practical-verifier-design-checklist.md
     - appendices/c-core-terminology.md
+    - appendices/d-research-ideas.md
 
 bibliography: bibliography.bib
 
