@@ -54,6 +54,7 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 - 2026-09-05: Revised Chapter 3's process reward explanations.
 - 2026-09-22: Revised Chapter 4's verifier explanations and Chapter 5's reward shaping.
 - 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims.
+- 2026-09-24: Added Chapter 8 on optimization pressure in the wild.
 
 ## Acknowledgments
 

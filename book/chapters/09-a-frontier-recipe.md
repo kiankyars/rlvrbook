@@ -28,15 +28,61 @@ If we zoom into the RLVR recipe specifically, we get the following sequence:
 
 ## GRPO
 
-The following modifications are made to vanilla GRPO:
+The following modifications are made to vanilla GRPO.
 
-1. Any group of rollouts where all samples have the same reward is removed to avoid training on samples that provide zero gradient.
-2. No KL loss to prevent restrictive policy updates.
-3. A token-level loss is used despite the reward being outcome based; the reason for this is to normalize the loss by the total number of tokens across the batch, rather than per sample, to avoid length bias.
-    - Suppose one model response is 10 tokens long and another is 100 tokens long. If you normalize loss per sample and both samples had the same reward, each response contributes equally in total, so each token of the longer response counts one-tenth as much as a token of the shorter one. With token-level normalization every token counts equally.
-4. GRPO already limits how much one update can change token probabilities, and the clipping is tweaked to be asymmetric, such that the positive limit is larger than the negative limit, meaning a positive-advantage token's probability can rise by up to 27.2% per update while a negative-advantage token's can fall by only up to 20%.
-5. The advantage calculation uses a simplified group-relative advantage $A_i = r_i - \bar r$ instead of $A_i = (r_i - \bar r) / \sigma_r$, because dividing by a tiny within-group standard deviation can artificially magnify prompts where all completions had almost the same reward.
-6. Truncated importance sampling played an important role too. vLLM and the training engine compute slightly different token probabilities for the same weights, so the loss is multiplied by the ratio between the two, capped at $\rho$: $\min\bigl(\pi_{\mathrm{train}}(a_t\mid h_t)/\pi_{\mathrm{vLLM}}(a_t\mid h_t), \rho\bigr)$. The result is that numerical differences between the engine that samples and the engine that trains do not bias the update. The 32B run capped the ratio at $\rho = 2$; the released 7B run did not use it.
+**Zero-gradient filtering.** Any group of rollouts where all samples have the same reward is removed to avoid training on samples that provide zero gradient.
+
+**No KL loss.** There is no KL loss, to prevent restrictive policy updates.
+
+**Token-level loss.** A token-level loss is used despite the reward being outcome based; the reason for this is to normalize the loss by the total number of tokens across the batch, rather than per sample, to avoid length bias. Suppose one model response is 10 tokens long and another is 100 tokens long. If you normalize loss per sample and both samples had the same reward, each response contributes equally in total, so each token of the longer response counts one-tenth as much as a token of the shorter one. With token-level normalization every token counts equally, as @fig-ch9-token-level-normalization shows.
+
+:::: {#fig-ch9-token-level-normalization fig-cap="Per-sample normalization gives each response a total weight of one, so tokens in long responses count less; token-level normalization gives every token the same weight."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/09-token-level-normalization-light.svg){.light-content}
+
+![](../diagrams/09-token-level-normalization-dark.svg){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/09-token-level-normalization-light.svg)
+:::
+
+::::
+
+**Asymmetric clipping.** GRPO already limits how much one update can change token probabilities, and the clipping is tweaked to be asymmetric, such that the positive limit is larger than the negative limit. The objective stops pushing a positive-advantage token's probability up once it has risen 27.2% relative to the sampling policy, but stops pushing a negative-advantage token's probability down after a 20% drop (@fig-ch9-asymmetric-clipping). The looser upper bound comes from DAPO, which found that a symmetric clip keeps unlikely but rewarded tokens from gaining probability quickly, so the policy stops exploring and its entropy collapses [@yu2025dapo].
+
+:::: {#fig-ch9-asymmetric-clipping fig-cap="Clipping thresholds on the probability ratio in OlmoRL: 0.8 below and 1.272 above. They bound how far one update pushes a token, not the probability itself."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/09-asymmetric-clipping-light.svg){.light-content}
+
+![](../diagrams/09-asymmetric-clipping-dark.svg){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/09-asymmetric-clipping-light.svg)
+:::
+
+::::
+
+**No standard-deviation normalization.** The advantage calculation uses a simplified group-relative advantage $A_i = r_i - \bar r$ instead of $A_i = (r_i - \bar r) / \sigma_r$, because dividing by a tiny within-group standard deviation can artificially magnify prompts where all completions had almost the same reward.
+
+**Truncated importance sampling.** Rollouts come from actors whose weights can lag the learner's, so GRPO already weights each token by the ratio between its probability under the current policy and under the policy that sampled it, the same ratio the clipping bounds; a token the policy has since made more or less likely counts accordingly. OLMo 3 ran into a subtler mismatch: even with identical weights, vLLM and the training engine assign slightly different probabilities to the same token, because their kernels add floating-point numbers in different orders and the result depends on the batch size [@he2025nondeterminism]. To correct for this, the loss is multiplied by the ratio of the trainer's probability to vLLM's, capped at $\rho$ so that no single token can dominate the update [@yao2025offpolicy]. @fig-ch9-truncated-importance-sampling shows the resulting weight.
+
+:::: {#fig-ch9-truncated-importance-sampling fig-cap="Truncated importance sampling: each token's loss is weighted by the ratio of the trainer's probability to vLLM's, up to a cap."}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/09-truncated-importance-sampling-light.svg){.light-content}
+
+![](../diagrams/09-truncated-importance-sampling-dark.svg){.dark-content}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/09-truncated-importance-sampling-light.svg)
+:::
+
+::::
 
 ## Rewards
 
@@ -55,9 +101,9 @@ OLMo 3 Think is trained on four reward domains:
 
 ## Filtering and data mixing
 
-Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts. The 32B run skipped this step, reused the 7B's filtered prompts, and relied on active sampling instead.
+Prompt filtering is the first step, where eight rollouts are sampled per prompt from the initial DPO checkpoint, and any prompts with pass rate greater than 62.5% are removed from the dataset. This is done offline before RL, and then the model is trained over the filtered prompts. The 32B run skipped this step, reused the 7B's filtered prompts, and relied instead on the filtering during training described next.
 
-Second, in spite of the aforementioned filtering of zero-gradient groups, a consistent batch size is maintained by actively sampling and filtering rollouts until the desired batch size is reached, importantly all of those groups having non-homogeneous reward, providing a better signal.
+Second, dropping zero-gradient groups would make the batch shrink over training. Instead, the actors keep generating rollouts for new prompts, and any group whose rollouts all received the same reward, all correct or all wrong, is thrown away, until the desired batch size is reached, importantly all of those groups having non-homogeneous reward, providing a better signal.
 
 The data mixture between the four domains is non trivial in determining downstream performance. Since every mixture could not be tested with a full run, 500 to 1000 step runs on individual datasets, starting from an intermediate SFT checkpoint, showed which datasets improved or regressed downstream evaluations, with periodic runs on the whole mixture to check that it stayed stable. The result was a mixed-domain batch with extra weight on math and instruction following [@teamolmo2025olmo3].
 
@@ -78,7 +124,7 @@ Concretely:
 3. The actors load the new weights.
 4. The actors resume the same generation queue.
 
-The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked: up to 4x faster with the same resources, without hurting accuracy.[^ch8-inflight-update-boundary] In fact, the released 7B Think RLVR run used Ai2's initial infrastructure, without PipelineRL or truncated importance sampling, and took 15 days; a replication on the newer infrastructure, which added both among other changes, reached similar performance in 6 days [@teamolmo2025olmo3].
+The weird part is the KV cache. The technical report states despite the prefix cache being computed under the older weights, they **do not invalidate/clear the KV cache** when swapping in the new weights, because empirically they found it worked: up to 4x faster with the same resources, without hurting accuracy.[^ch8-inflight-update-boundary] In fact, the released 7B Think RLVR run used Ai2's initial infrastructure, without PipelineRL, and took 15 days; a replication on the newer infrastructure, which added PipelineRL among other changes, reached similar performance in 6 days [@teamolmo2025olmo3].
 
 | Infrastructure | Tokens per second | Memory bandwidth utilization |
 |---|---:|---:|
@@ -98,7 +144,7 @@ The pieces above are easiest to hold together by following a single prompt throu
 1. **Dataset.** The prompt is in the pool at all because it survived offline filtering: eight rollouts from the DPO checkpoint at temperature 1.0 solved it 3 times out of 8, a 37.5% pass rate, below the 62.5% removal threshold.
 2. **Actor rollout group.** An actor, one vLLM instance on one GPU of the 56-GPU actor pool, picks up the prompt and samples a group of $G = 8$ reasoning rollouts at temperature 1.0, each capped at 32K tokens.
 3. **Reward vector.** The math verifier extracts each rollout's final answer, normalizes it, and checks symbolic equality against the reference with SymPy. Say it returns $r = (1, 0, 0, 1, 0, 0, 0, 1)$: three of eight correct.
-4. **Filtering.** The rewards are not all identical, so the group carries gradient signal and is kept. Had all eight matched, the group would be dropped, and active sampling would pull replacement groups off the actors until the batch held its full 64 unique prompts, 512 rollouts in total.
+4. **Filtering.** The rewards are not all identical, so the group carries gradient signal and is kept. Had all eight matched, the group would be dropped, and the actors would keep generating replacement groups from new prompts until the batch held its full 64 unique prompts, 512 rollouts in total.
 5. **Advantage.** The group mean is $\bar r = 0.375$. Each correct rollout gets advantage $A_i = 1 - 0.375 = +0.625$; each incorrect one gets $-0.375$. That one scalar is broadcast to every token of its rollout.
 6. **Learner update.** The token-level loss sums over all tokens of all 512 rollouts in the batch and normalizes by the total token count, and the asymmetric clip range $[0.8, 1.272]$ lets positive-advantage tokens move further than negative ones.
 7. **Refreshed actors.** In the released 7B run, which used Ai2's initial infrastructure, the actors sync to the new weights after each step, running at most one step behind the learner. On the newer infrastructure, used in the 6-day replication, the learner instead broadcasts the new weights in-flight: the actor that generated our group swaps them in, keeps its KV cache, and continues the generations it had in progress, now under a slightly newer policy.
@@ -113,20 +159,35 @@ The technical report compares RL from SFT versus RL from DPO, and the result was
 
 OLMo 3 is the most fully open of the frontier recipes, with data, code, and checkpoints released, but it is not the only way to do RLVR at scale. Two recent reports from Chinese open-weight labs make useful contrasts: Kimi K3 [@kimiteam2026k3] and DeepSeek-V4.1-Flash [@deepseekai2026v41flash].
 
-| | OLMo 3 Think | Kimi K3 | DeepSeek-V4.1-Flash |
-|---|---|---|---|
-| Pipeline | SFT, then DPO, then one mixed RLVR stage | SFT, then RL on nine experts (three domains at three reasoning-effort levels), then multi-teacher on-policy distillation into one model | SFT, then RL, then on-policy distillation |
-| Where rewards come from | Four domain verifiers plus a Qwen3 32B judge | Verifiable environments, plus an agentic reward model that writes a rubric and runs a tournament of pairwise comparisons for non-verifiable tasks | Synthesized tasks that each ship with their own verification system, audited by an inspection agent for hackability |
-| Off-policy handling | Truncated importance sampling for engine mismatch; in-flight updates keep the KV cache | Partial rollouts that span iterations, held stable by a per-token regularizer; rollout and training share one quantization scheme, removing engine mismatch | A bound on how off-policy the data can get and a mask on overly stale tokens; KV cache and expert routing persist across checkpoint switches |
-| Length control | None; a length-control verifier did not help | A per-problem token budget, where exceeding it sets the reward to -1, and verbose outputs automatically lose judge comparisons | Early short samples are discarded to counter the length bias of asynchronous generation |
+**Pipeline.** The three labs put RL in different places.
 
-: OLMo 3 Think's RL stage compared with Kimi K3 and DeepSeek-V4.1-Flash [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash]. {#tbl-ch9-open-recipes}
+- **OLMo 3:** SFT, then DPO, then one RLVR stage over a mix of domains.
+- **Kimi K3:** SFT, then RL on nine separate experts, one per domain and reasoning-effort level, then multi-teacher on-policy distillation of all nine into one model.
+- **DeepSeek-V4.1-Flash:** SFT, then RL, then on-policy distillation.
 
-Three patterns in @tbl-ch9-open-recipes matter.
+**Where rewards come from.** All three reach past strict verifiers.
 
-1. Both newer recipes train specialists and then distill them into one model (MOPD), whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization.
-2. Where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4.
-3. DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer.
+- **OLMo 3:** four domain verifiers, plus a Qwen3 32B judge for chat.
+- **Kimi K3:** verifiable environments, plus, for tasks without one, a reward model that writes a rubric and runs a tournament of pairwise comparisons.
+- **DeepSeek-V4.1-Flash:** synthesized tasks that each ship with their own verification system, audited by an inspection agent for ways to hack them.
+
+**Stale and mismatched data.** All three train asynchronously and have to handle rollouts from older weights.
+
+- **OLMo 3:** a capped importance-sampling ratio for engine mismatch, and in-flight updates that keep the KV cache.
+- **Kimi K3:** rollouts that span several iterations, kept stable by a per-token regularizer, with rollout and training sharing one quantization scheme so the engines match.
+- **DeepSeek-V4.1-Flash:** a bound on how off-policy the data may get, a mask on overly stale tokens, and a KV cache and expert routing that persist across weight updates.
+
+**Length control.** Only the newer recipes control length directly.
+
+- **OLMo 3:** none; a length-control verifier did not help.
+- **Kimi K3:** a per-problem token budget, where exceeding it sets the reward to -1, and verbose outputs automatically lose judge comparisons.
+- **DeepSeek-V4.1-Flash:** early short samples are discarded to counter the bias of asynchronous generation toward short rollouts.
+
+Three patterns stand out. Both newer recipes train specialists and then distill them into one model, whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization.
+
+Where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4.
+
+DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash].
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
 
