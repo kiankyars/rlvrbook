@@ -75,7 +75,9 @@ A DeepSWE-style rollout has this shape:
 
 The crux here is that the harness itself shapes the policy (the Qwen model we are post-training) through the observations it returns, unique tools, valid action syntax, and timeout rules. That is to say, putting the post-trained model in an equivalent harness that only had different tool names would lead to worse results, since the tokens the model would need to generate in order to call tools would be farther out of distribution. Kimi K3's report makes the same observation: training in a single fixed harness can make a model overfit to its tool schema, system prompt, context management, and interaction protocol. Given Kimi is a model which is used across many third-party harnesses and cannot afford to be overfit to one harness in the same sense that a model trained mainly for its lab's own harness, such as Claude Code or Codex, can, K3 is therefore trained across many harness configurations, including ones that mimic Claude Code and Codex [@kimiteam2026k3].
 
-The other two Chinese frontier labs reach the same conclusion. MiniMax routes model calls through a gateway so that it can train on agents whose internals it cannot see, as @fig-ch10-minimax-gateway shows. The gateway sits where a model API would normally be: an agent, whether MiniMax's own or an off-the-shelf scaffold, sends each request to the gateway as if it were calling any hosted model, and the gateway forwards the request to the policy being trained, returns the completion, and logs both. What matters is what the log contains, namely the exact context the policy saw at that call. Agents routinely rewrite their own history by dropping old tool outputs, summarizing, or handing work to sub-agents, so the transcript a user sees is not what the model saw at each step, and training on the transcript would update the policy on inputs it never received.
+## MiniMax
+
+routes model calls through a gateway so that it can train on agents whose internals it cannot see, as @fig-ch10-minimax-gateway shows. The gateway sits where a model API would normally be: an agent, whether MiniMax's own or an off-the-shelf scaffold, sends each request to the gateway as if it were calling any hosted model, and the gateway forwards the request to the policy being trained, returns the completion, and logs both. What matters is what the log contains, namely the exact context the policy saw at that call. Agents routinely rewrite their own history by dropping old tool outputs, summarizing, or handing work to sub-agents, so the transcript a user sees is not what the model saw at each step, and training on the transcript would update the policy on inputs it never received.
 
 The two kinds of agent differ in how much the trainer knows about that rewriting. A white-box agent registers its context-management logic, such as sliding-window truncation or periodic summarization, so the trainer can rebuild the exact states the policy saw. A black-box agent is treated as an opaque producer of trajectories, and the trainer learns only from the requests it sends and the responses it receives. Either way, every request passes through the gateway, so the trainer never needs to know how the scaffold works, which is how MiniMax reports training across hundreds of scaffolds and thousands of tool-call formats [@minimax2026m2].
 
@@ -93,7 +95,9 @@ The two kinds of agent differ in how much the trainer knows about that rewriting
 
 :::
 
-DeepSeek reaches the same conclusion from the other direction. It scales RL along two axes, training compute and the number of scaffolds, and then measures the result. On DeepSWE v1.1, DeepSeek-V4.1-Flash resolves between 65.5% and 74.2% of tasks across eight scaffolds, including Claude Code, Codex, and OpenCode, a spread DeepSeek attributes to the diversity of tool schemas and interaction formats in its training environments [@deepseekai2026v41flash].
+## DeepSeek
+
+scales RL along training compute and the number of scaffolds; on DeepSWE v1.1, DeepSeek-V4.1-Flash resolves between 65.5% and 74.2% of tasks across eight scaffolds, including Claude Code, Codex, and OpenCode, a spread DeepSeek attributes to the diversity of tool schemas and interaction formats in its training environments [@deepseekai2026v41flash].
 
 ## Where environments come from
 
