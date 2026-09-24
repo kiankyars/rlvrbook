@@ -1,4 +1,4 @@
-Sep 24, 2026 at 14:51Important notice: I'm currently in the process of rewriting chapters 10 to 11, so if you read them and find many errors, please wait until I resolve them before you commit. (change to all caps please)
+**SEP 24, 2026: IMPORTANT NOTICE: I'M CURRENTLY IN THE PROCESS OF REWRITING CHAPTERS 10 AND 11, SO IF YOU READ THEM AND FIND MANY ERRORS, PLEASE WAIT UNTIL I RESOLVE THEM BEFORE YOU COMMIT.**
 
 # RLVR Book
 
