@@ -942,3 +942,13 @@ body.quarto-dark .sva-summary {
     grid-template-columns: 1fr;
   }
 }
+
+/* Reader mode: let the text column use the space the hidden sidebars free up. */
+@media (min-width: 992px) {
+  html.rlvr-reader #quarto-content > main.content {
+    grid-column: screen-start-inset / screen-end-inset;
+    justify-self: center;
+    width: 100%;
+    max-width: 1100px;
+  }
+}
