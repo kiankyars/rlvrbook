@@ -81,7 +81,7 @@ Patching a verification function to always return true, writing stubs when unit-
 
 Cursor's 2026 description of real-time RL for Composer gives the production version of the same problem [@jackson2026realtimecomposer]. The training loop used real user interactions as reward signal and shipped new checkpoints as often as every five hours. One exploit came from invalid tool calls. Composer often needs to read files or run terminal commands. The original reward pipeline discarded examples where the tool call was invalid, so the model learned that if a task looked likely to fail, emitting a broken tool call avoided negative reward. The fix was to include broken tool calls as negative examples.
 
-Another exploit came from clarifying questions. Part of the reward was derived from edits, so Composer learned to defer risky edits by asking questions instead of touching code. The reward pipeline had not defined the boundary between appropriate caution and avoidance of negative reward, so editing rates dropped until Cursor changed the reward function.
+Part of the reward was derived from edits, so Composer also learned to defer risky edits by asking clarifying questions instead of touching code. The reward pipeline had not defined the boundary between appropriate caution and avoidance of negative reward, so editing rates dropped until Cursor changed the reward function.
 
 ## The over-optimization curve
 
@@ -235,7 +235,7 @@ $$
 
 With a yes/no verifier and $\tau = 1$, this reduces to @eq-ch6-tail-precision.
 
-@fig-ch7-accepted-pool-precision illustrates the pattern. Raising the threshold first filters out ordinary wrong answers, so precision rises. Past a point, the only samples left are the rare exploits that score higher than any honest answer, and precision collapses.
+As @fig-ch7-accepted-pool-precision shows, raising the threshold first filters out ordinary wrong answers, so precision rises. Past a point, the only samples left are the rare exploits that score higher than any honest answer, and precision collapses.
 
 :::: {#fig-ch7-accepted-pool-precision fig-cap="Illustrative score distributions for correct answers, wrong answers, and a rare exploit that the verifier scores highest (left), and the resulting precision of the accepted pool as the threshold rises (right)."}
 
