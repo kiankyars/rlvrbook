@@ -97,6 +97,8 @@ format:
       - bottom=0.9in
       - left=0.95in
       - right=0.95in
+    filters:
+      - filters/pdf-figures.lua
     include-in-header:
       text: |
         \let\cleardoublepage\clearpage

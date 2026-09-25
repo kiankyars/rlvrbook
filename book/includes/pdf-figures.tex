@@ -1,0 +1,57 @@
+% PDF figure layout, loaded by filters/pdf-figures.lua.
+% Every rule here applies to all figures, so no figure needs its own
+% width, placement, or page-break settings in the PDF.
+\makeatletter
+
+% 1. Size. Whatever size the Markdown asks for, a graphic is scaled down
+%    until it is no wider than the line and no taller than
+%    \rlvrbookmaxgraphicheight, keeping its aspect ratio. Graphics that
+%    already fit are left alone, never enlarged. The cap leaves room on
+%    the same page for a caption, and for a chapter heading and chapter
+%    map above and below an opening image.
+\newcommand*\rlvrbookmaxgraphicheight{0.55\textheight}
+\newsavebox\rlvrbook@graphic
+\newcommand*\rlvrbook@fitgraphic{%
+  \def\@tempa{1}%
+  \ifdim\dimexpr\ht\rlvrbook@graphic+\dp\rlvrbook@graphic\relax>\rlvrbookmaxgraphicheight\relax
+    \Gscale@div\@tempa{\rlvrbookmaxgraphicheight}%
+      {\dimexpr\ht\rlvrbook@graphic+\dp\rlvrbook@graphic\relax}%
+  \fi
+  \ifdim\wd\rlvrbook@graphic>\linewidth
+    \Gscale@div\@tempb{\linewidth}{\wd\rlvrbook@graphic}%
+    \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi
+  \fi
+  \ifdim\@tempa\p@<\p@
+    \scalebox{\@tempa}{\usebox\rlvrbook@graphic}%
+  \else
+    \usebox\rlvrbook@graphic
+  \fi}
+\AtBeginDocument{%
+  \NewCommandCopy\rlvrbook@includegraphics\includegraphics
+  \RenewDocumentCommand\includegraphics{s O{} o m}{%
+    \sbox\rlvrbook@graphic{%
+      \IfBooleanTF{#1}%
+        {\IfNoValueTF{#3}%
+          {\rlvrbook@includegraphics*[#2]{#4}}%
+          {\rlvrbook@includegraphics*[#2][#3]{#4}}}%
+        {\IfNoValueTF{#3}%
+          {\rlvrbook@includegraphics[#2]{#4}}%
+          {\rlvrbook@includegraphics[#2][#3]{#4}}}}%
+    \rlvrbook@fitgraphic}}
+
+% 2. Placement. A figure may sit where it is written or at the top or
+%    bottom of a page next to text. A page of figures alone is made only
+%    when the figures fill most of it, and it starts at the top of the
+%    page instead of floating in the middle.
+\renewcommand*\topfraction{0.85}
+\renewcommand*\bottomfraction{0.7}
+\renewcommand*\textfraction{0.1}
+\renewcommand*\floatpagefraction{0.75}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\setlength\@fptop{0pt}
+\setlength\@fpsep{\floatsep}
+\setlength\@fpbot{0pt plus 1fil}
+
+\makeatother
