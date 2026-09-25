@@ -204,6 +204,4 @@ If the verifier matters more than the optimizer, and the model writes the verifi
 | Self-reward | Early gains, then collapse |
 | Self-generated tasks | Self-play and frontier task synthesis work with grounded checkers |
 
-: Open problems in RLVR and the strongest current evidence on each; @sec-research-ideas collects experiments that would move them. {#tbl-ch11-agenda}
-
-@tbl-ch11-agenda compresses the chapter. Read down its rows and one pattern mostly holds: the more a checker is grounded in formal proof or an exact answer, the better RLVR works; as checkers become learned, self-referential, or sparse over a long horizon, or when execution tests underspecify the task, the open problems begin.
+: Open problems in RLVR and the strongest current evidence on each; @sec-research-ideas lists experiments inspired from this table. {#tbl-ch11-agenda}
