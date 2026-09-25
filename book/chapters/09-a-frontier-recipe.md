@@ -162,16 +162,16 @@ OLMo 3 is the most fully open of the frontier recipes, with data, code, and chec
 | Pipeline | SFT, DPO, one mixed RLVR stage | SFT, RL on nine specialists, MOPD into one model | SFT, RL, on-policy distillation |
 | Rewards | Four domain verifiers; LM judge for chat | Verifiable environments; rubric-writing judge for the rest | Synthesized tasks, each with its own audited verifier |
 | Stale data | Capped importance ratio; in-flight updates | Per-token regularizer; shared quantization | Off-policy bound; stale-token mask |
-| Length control | None | Token budget; verbose outputs lose | Early short samples discarded |
+| Length control | None | Token budget; verbose outputs lose | Length penalty that shrinks with requested effort |
 
 : OLMo 3 Think's RL stage compared with Kimi K3 and DeepSeek-V4.1-Flash [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash]. {#tbl-ch9-open-recipes}
 
 - Kimi K3's nine specialists cover three domains at three reasoning-effort levels.
 - Kimi K3's judge writes a rubric for each task and ranks candidates in a tournament of pairwise comparisons.
-- DeepSeek audits each synthesized task with an inspection agent that looks for ways to hack it.
-- Kimi K3 keeps rollouts that span several training iterations stable with a per-token regularizer.
-- Kimi K3 runs rollout and training under one quantization scheme, so the two engines assign the same probabilities.
-- DeepSeek masks tokens that are too stale, and keeps the KV cache and expert routing across weight updates.
+- DeepSeek audits each synthesized coding task with an inspection agent that looks for flaws, including ways to hack it.
+- Kimi K3 keeps rollouts that span several training iterations stable with a per-token regularizer, a penalty on each token that keeps the updated policy close to the one that sampled it.
+- Kimi K3 runs rollout and training under one quantization scheme, the low-precision format it is served in (4-bit expert weights, 8-bit activations), so the two engines assign the same probabilities.
+- DeepSeek masks tokens that are too stale, i.e. sampled from a checkpoint too far behind the current one, and keeps the KV cache and expert routing across weight updates, so an interrupted rollout resumes where it stopped.
 - Kimi K3 sets the reward to -1 when a response exceeds its per-problem token budget.
 - OLMo 3 tried a length-control verifier and found it did not help.
 - DeepSeek discards early short samples to counter the bias of asynchronous generation toward short rollouts.
