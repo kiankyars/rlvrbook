@@ -176,10 +176,14 @@ OLMo 3 is the most fully open of the frontier recipes, with data, code, and chec
 - OLMo 3 tried a length-control verifier and found it did not help.
 - DeepSeek discards early short samples to counter the bias of asynchronous generation toward short rollouts.
 
-Three patterns in @tbl-ch9-open-recipes matter.
+Three patterns in @tbl-ch9-open-recipes deserve emphasis.
 
-1. Both newer recipes train specialists and then distill them into one model, whereas OLMo 3 trains one policy on a domain mix and credits the mix with preventing over-optimization. Kimi K3 calls its version multi-teacher on-policy distillation (MOPD): the single student model generates its own responses, and for each prompt the specialist for that domain and effort level acts as the teacher, giving the student a per-token reward equal to the clipped log-ratio of the teacher's probability for the token to the student's. Because the student is scored on its own samples, it is trained on the states it actually visits, just as in RL.
+1. Newer recipes train specialists and distill them into one model
+
+    - Kimi K3 calls its version multi-teacher on-policy distillation (MOPD): the single student model generates its own responses, and for each prompt the specialist for that domain and effort level acts as the teacher, giving the student a per-token reward equal to the clipped log-ratio of the teacher's probability for the token to the student's.
+
 2. Where verifiers run out, Kimi K3's judge writes its own rubric for each task, and its length rule is a hard verifier bolted onto a learned one, the hybrid pattern of Chapter 4.
+
 3. DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer.
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
