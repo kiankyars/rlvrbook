@@ -171,8 +171,6 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
 | 4 | Solution set: $\{2,3\}$ | --- | $\checkmark$ (PRM) |
 | 5 | Report: `<answer>x = 2</answer>` | $r=0$ | $r=0$ (Symbolic) |
 
-: Outcome verification scores only the endpoint. The hybrid stack uses a programmatic checker for the endpoint and a PRM for intermediate steps.
-
 :::
 
 The same trajectory scored by two verification regimes. The PRM assessments are illustrative; how they become training credit depends on the reward construction and optimizer discussed in Chapter 5.

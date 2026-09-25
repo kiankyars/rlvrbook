@@ -122,6 +122,20 @@ format:
             {\rlvrbookoldsection*{#3}}
             {\IfValueTF{#2}{\rlvrbookoldsection[#2]{#3}}{\rlvrbookoldsection{#3}}}%
         }
+        % Keep every heading off the bottom of a page. LaTeX already keeps a
+        % heading with the first lines of text or list after it, but a table
+        % (longtable) makes its own page break and can leave the heading
+        % alone at the bottom of a page. So when a table directly follows a
+        % heading (\if@nobreak) and less than \rlvrbookheadingtablespace is
+        % left below the heading, the heading moves to the next page too.
+        \newcommand*\rlvrbookheadingtablespace{8\baselineskip}
+        \AddToHook{env/longtable/before}{%
+          \if@nobreak
+            \nobreak
+            \vskip\rlvrbookheadingtablespace
+            \penalty9999
+            \vskip-\rlvrbookheadingtablespace
+          \fi}
         \AtBeginDocument{%
           \RenewDocumentCommand{\marginnote}{O{} +m O{}}{%
             \par\smallskip

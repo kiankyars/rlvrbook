@@ -303,27 +303,29 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
 
 ::: {.content-visible when-format="pdf"}
 
-**Correctness only** (3 correct, 5 incorrect out of 8 rollouts):
 
 | Rollout | Correctness | Format | Reward | Advantage |
 |---------|-------------|--------|--------|-----------|
 | 1–3     | Correct     | N/A    | 2.0    | +1.29     |
 | 4–8     | Wrong       | N/A    | 0.0    | −0.77     |
 
+: Correctness only (3 correct, 5 incorrect out of 8 rollouts). {#tbl-ch5-reward-correctness}
+
 Group mean: 0.75. Advantage sign matches correctness for every rollout.
 
-**Correctness + format rewards** (same eight rollouts):
 
 | Rollout | Correctness | Format | Reward | Advantage |
 |---------|-------------|--------|--------|-----------|
-| 1       | Correct     | ✓      | 3.8    | +1.43     |
-| 2       | Correct     | ✓      | 3.5    | +1.21     |
+| 1       | Correct     | $\checkmark$ | 3.8    | +1.43     |
+| 2       | Correct     | $\checkmark$ | 3.5    | +1.21     |
 | 3       | Correct     | ~      | 3.0    | +0.84     |
-| 4       | Wrong       | ✓      | 1.8    | **−0.04** |
-| 5       | Wrong       | ✓      | 1.5    | −0.26     |
+| 4       | Wrong       | $\checkmark$ | 1.8    | **−0.04** |
+| 5       | Wrong       | $\checkmark$ | 1.5    | −0.26     |
 | 6       | Wrong       | ~      | 1.0    | −0.62     |
-| 7       | Wrong       | ✗      | 0.2    | −1.21     |
-| 8       | Wrong       | ✗      | 0.0    | −1.36     |
+| 7       | Wrong       | $\times$ | 0.2    | −1.21     |
+| 8       | Wrong       | $\times$ | 0.0    | −1.36     |
+
+: Correctness + format rewards (same eight rollouts). {#tbl-ch5-reward-format}
 
 Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.
 
