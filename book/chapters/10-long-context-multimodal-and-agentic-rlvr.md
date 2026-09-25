@@ -32,9 +32,9 @@ The harness decides what the policy is allowed to observe, what actions it can t
 
 Long-context RLVR keeps the verifier unchanged, since final-answer verification is independent of context length; nevertheless, it stretches everything before the check, as the evidence the model needs sits somewhere in tens of thousands of input tokens. QwenLong-L1 found that applying RL directly to long inputs trains inefficiently and unstably, so it adapts a short-context reasoning model in stages: a supervised warm-up, then RL phases on progressively longer inputs, with hard examples from earlier phases sampled again later [@wan2025qwenlongl1]. Kimi K3 grows its context window in stages during pre-training, from 8K to 1M tokens, and its RL environments then run agents over hundreds or thousands of tool calls and millions of accumulated context tokens [@kimiteam2026k3].
 
-Long rollouts finish anywhere from seconds to hours after starting, meaning batching becomes king, since a naive trainer that greedily batches rollouts fills its early batches with short, easy tasks and its later batches with hard ones. MiniMax found greedy batching causeing gradient oscillation and optimization instability, and for its M2 models uses what it calls *windowed FIFO*: the trainer is greedy only inside a sliding window at the head of the generation queue, and a finished rollout beyond the window must wait until the window reaches it. Accordingly, the trainer never runs more than one window ahead of the oldest unfinished rollout; the effect is that short rollouts beyond the window cannot crowd slow ones out of a batch. The window's size is a tunable fraction of the queue, which MiniMax sets to 30% [@minimax2026m2]. DeepSeek-V4.1-Flash counters the same bias by capping how many rollouts each dataset can have in flight and optionally discarding the short samples that return first at the start of training, when the length bias is strongest, until batches reach their steady-state length distribution [@deepseekai2026v41flash].
+Long rollouts finish anywhere from seconds to hours after starting, meaning batching becomes king, since a naive trainer that greedily batches rollouts fills its early batches with short, easy tasks and its later batches with hard ones. MiniMax argues greedy batching causes gradient oscillation and optimization instability, and for its M2 models uses what it calls *windowed FIFO*: the trainer is greedy only inside a sliding window at the head of the generation queue, and a finished rollout beyond the window must wait until the window reaches it. Accordingly, the trainer never runs more than one window ahead of the oldest unfinished rollout; the effect is that short rollouts beyond the window cannot crowd slow ones out of a batch. The window's size is a tunable fraction of the queue, which MiniMax sets to 30% [@minimax2026m2]. DeepSeek-V4.1-Flash counters the same bias by capping how many rollouts each dataset can have in flight and optionally discarding the short samples that return first at the start of training, when the length bias is strongest, until batches reach their steady-state length distribution [@deepseekai2026v41flash].
 
-::: {#fig-ch10-windowed-fifo fig-cap="Windowed FIFO. Rollouts enter the queue in the order they start (rabbits finish fastest, turtles slowest). The trainer may take any finished rollout inside the window (blue), but none beyond it (red cross), and the window advances when its oldest rollouts are consumed."}
+::: {#fig-ch10-windowed-fifo}
 
 ::: {.content-visible when-format="html"}
 ![](../diagrams/10-windowed-fifo.png){.light-content}
@@ -45,6 +45,8 @@ Long rollouts finish anywhere from seconds to hours after starting, meaning batc
 ::: {.content-visible when-format="pdf"}
 ![](../diagrams/10-windowed-fifo.png)
 :::
+
+Windowed FIFO. Rollouts enter the queue in the order they start (rabbits finish fastest, turtles slowest). The trainer may take any finished rollout inside the window (blue), but none beyond it (red cross), and the window advances when its oldest rollouts are consumed. Inspired by Figure 5 of the MiniMax-M2 report [@minimax2026m2].
 
 :::
 
@@ -81,7 +83,7 @@ During training, an agent, whatever its implementation, calls a gateway that emu
 
 For example, take an agent fixing a bug over three calls. In the first call, the model sees the issue and asks to read a file. In the second, it sees the issue, its request, and the file's 2,000 lines, and runs the tests. Before the third call, the agent replaces the 2,000 lines with a two-line summary to save space, so the model sees the issue, the summary, and the test output. The gateway records three training examples, each holding exactly what the model saw at that call, including the summary in the third. A trainer that rebuilt the context from the agent's full history would instead train the third step on 2,000 lines the model never saw at that point.
 
-MiniMax calls such an agent a black box. A white-box agent also registers its context-management rules with the trainer, so the trainer can rebuild the model's states itself instead of reading them off the calls. The black-box mode gives up that visibility in exchange for working with any agent unchanged [@minimax2026m2].
+MiniMax distinguishes two kinds of agent by how much of this the trainer can see. A white-box agent runs its context management, such as sliding-window truncation or periodic summarization, inside the training framework, so the trainer sees each transformation and can build training sequences that match the states the policy faces at inference. A black-box agent is opaque: the trainer sees only what each call exposes, namely the context sent to the model, the model's response, and the tool results, as in the example above. That is enough to train on, and it lets MiniMax plug in agents with deep thinking loops, aggressive context rewriting, or hierarchical multi-agent coordination without modifying them. The gateway serves both; a white-box agent differs only in also registering its context-management operations [@minimax2026m2].
 
 ## DeepSeek
 
@@ -96,8 +98,6 @@ Ilya Sutskever (aka the GOAT) proclaimed at NeurIPS 2024 that "pre-training as w
 3. a verification system.
 
 They score each task on difficulty and correctness and use those scores as rewards to train the model to build better tasks [@deepseekai2026v41flash]. For coding, specialized agents check whether a repository can build and run in a container, choose a starting commit or session turn, design implementation directions, specify fail-to-pass and pass-to-pass evaluation points, and then turn them into test code in an isolated container.
-move the figure here, I belive it's better than at the chapter end
-Writing the patch that resolves an issue is hard, while running tests against a patch is cheap, so a model can write the check for a task it cannot yet solve. Jason Wei calls this difference the asymmetry of verification: "some tasks are much easier to verify than to solve" [@wei2025asymmetry].  For general agents, DeepSeek builds mocked tools that reproduce the interfaces and behaviors of real tools seen in employee and partner usage, and turns failure cases submitted by employees into new environments that replay them [@deepseekai2026v41flash]. Anchoring task generation in real workflows and real failures is one way such a process may guard against model collapse.[^ch10-model-collapse]
 
 ::: {#fig-ch10-fail-to-pass fig-cap="Fail-to-pass (top) and pass-to-pass (bottom) tests."}
 
@@ -112,5 +112,7 @@ Writing the patch that resolves an issue is hard, while running tests against a 
 :::
 
 :::
+
+Writing the patch that resolves an issue is hard, while running tests against a patch is cheap, so a model can write the check for a task it cannot yet solve. Jason Wei calls this difference the asymmetry of verification: "some tasks are much easier to verify than to solve" [@wei2025asymmetry]. For general agents, DeepSeek builds mocked tools that reproduce the interfaces and behaviors of real tools seen in employee and partner usage, and turns failure cases submitted by employees into new environments that replay them [@deepseekai2026v41flash]. Anchoring task generation in real workflows and real failures is one way such a process may guard against model collapse.[^ch10-model-collapse]
 
 [^ch10-model-collapse]: Model collapse is the degradation of models trained on data generated by earlier models: over successive generations they progressively lose the tails of the original distribution [@shumailov2023curse].
