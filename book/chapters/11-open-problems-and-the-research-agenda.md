@@ -127,7 +127,7 @@ Each fitted curve has three parameters: $A$, the ceiling the run approaches, $C_
 ![](../diagrams/11-scalerl-ceiling-vs-efficiency-light.svg)
 :::
 
-Ceiling versus efficiency in ScaleRL's sigmoid fit. Changing the ceiling $A$ (orange) and reaching the same ceiling sooner (dashed) look alike early in training and diverge only at scale (Unless I'm interpreting this graph incorrectly, this statement is not true. Just based on the graph, the gray dotted graph and the orange one are completely different. I don't know why we have a dotted graph and the other two are solid. There needs to be a legend here instead of labeling the graphs in the graph itself.). The curves are illustrative, not fitted to a run.
+Ceiling versus efficiency in ScaleRL's sigmoid fit. A recipe that reaches the same ceiling sooner leads early in training, while a recipe with a higher ceiling $A$ can trail early and pull ahead only at scale. The curves are illustrative, not fitted to a run.
 
 :::
 
