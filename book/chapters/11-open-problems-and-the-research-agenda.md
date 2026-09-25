@@ -23,7 +23,7 @@ They fall into three groups:
 
 ### The case for reallocation
 
-Yue et al. compared base and RLVR-trained models with pass@k at large k. RL wins at $k = 1$, but the base model overtakes it as $k$ grows: on Minerva with a 32B model, the base model is ahead by about 9 points at $k = 128$ [@yue2025doesrl]. Six different RLVR algorithms behaved similarly, while off-policy distillation from a stronger model expanded the set of solvable problems. Wu et al. argue that RLVR is held on an invisible leash, confined to the base model's support: it can occasionally surface correct solutions the base model rarely samples, but in practice the support it loses outweighs the support it gains [@wu2025invisibleleash].
+Can you change this to how it was before, where I specifically said "in Invisible Leash…", just cite it properly by either using the quotation or italics, or whatever is the standard format?Yue et al. compared base and RLVR-trained models with pass@k at large k. RL wins at $k = 1$, but the base model overtakes it as $k$ grows: on Minerva with a 32B model, the base model is ahead by about 9 points at $k = 128$ [@yue2025doesrl]. Six different RLVR algorithms behaved similarly, while off-policy distillation from a stronger model expanded the set of solvable problems. Wu et al. argue that RLVR is held on an invisible leash, confined to the base model's support: it can occasionally surface correct solutions the base model rarely samples, but in practice the support it loses outweighs the support it gains [@wu2025invisibleleash].
 
 ### In entropy we trust
 
