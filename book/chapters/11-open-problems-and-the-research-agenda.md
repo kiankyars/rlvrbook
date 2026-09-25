@@ -83,7 +83,7 @@ Two partial answers to the faithfulness question have appeared:
 1. auditing verifiers with certified-equivalent and certified-wrong variants of known answers, which measures both false negatives and false positives [@xin2026verifierfails]
 2. verifier-free diagnostics computed from the policy's own log-probabilities [@mahmoud2026rubrichacking].
 
-No method can list everything the verifier misses, thought experiment: any behavior we learn to measure becomes one more check, and some complement always remains ad inifitum. (I like the terse way that I phrased it initially. Apart from the typo that was initially there, is this correct?)
+No method can list everything the verifier misses. Thought experiment: any behavior we learn to measure becomes one more check, and some complement always remains, ad infinitum.
 
 A better framing is: on a random accepted policy sample, how often does an oracle reject what the verifier accepted, and how does that rate change as training proceeds? This is similar to the concept of a sample versus population in statistics: we can estimate the rate even though the unchecked complement can never be eliminated. In math, Huang et al. scored 1,000 sampled training queries at each checkpoint with GPT-4o as an oracle and compared the oracle's reward with the training reward, which exposed a fine-tuned model-based verifier being exploited during RL [@huang2025verifiers]. One culmination of this line of work is (I dislike conditional statements. To satisfy you, I added one instead of that at the beginning to allow for other combinations to occur, but if this is correct, then let's do it this way.) published results at frontier scale for agentic tasks, where each audit is expensive.
 
