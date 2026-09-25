@@ -1,6 +1,6 @@
 # Research Ideas {#sec-research-ideas}
 
-This appendix collects experiments that the open problems of Chapter 11 call for. Each entry states the question, what the closest published work already covers as of September 2026, and an experiment that would close the remaining gap. They are sized for a research group rather than a frontier lab, and each one would move a question that the book currently has to leave open.
+This appendix collects accomplishable ideas from Chapter 11 i.e. sized for a research group rather than a frontier lab.
 
 ## Outcome-only RL on problems the base model never solves
 
