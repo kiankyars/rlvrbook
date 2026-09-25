@@ -33,27 +33,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 })();
-
-// Quarto's reader mode only hides the side columns. Mark it on <html> so the
-// stylesheet can also widen the text column while it is on.
-(function () {
-  var root = document.documentElement;
-  var local = false;
-  var read = function () {
-    try {
-      if (window.location.protocol !== "file:") {
-        return window.localStorage.getItem("quarto-reader-mode") === "true";
-      }
-    } catch (e) {}
-    return local;
-  };
-  var sync = function () { root.classList.toggle("rlvr-reader", read()); };
-  sync();
-  document.addEventListener("click", function (e) {
-    if (e.target.closest && e.target.closest(".quarto-reader-toggle")) {
-      local = !local;
-      setTimeout(sync, 0);
-    }
-  });
-})();
 </script>
