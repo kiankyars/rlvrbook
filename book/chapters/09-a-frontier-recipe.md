@@ -182,14 +182,6 @@ Two patterns in @tbl-ch9-open-recipes deserve emphasis.
 
     - Kimi K3 calls its version multi-teacher on-policy distillation (MOPD): the single student model generates its own responses, and for each prompt the specialist for that domain and effort level acts as the teacher, giving the student a per-token reward equal to the clipped log-ratio of the teacher's probability for the token to the student's.
 
-**For Claude's review (original point 1):**
-
-(Removed the comment about the domain mix because everybody has a domain mix now. It's nothing special to olmo.) I also remove the last sentence because that's just what on-policy means, but this is in a textbook about on-policy distillation. I'm just providing this justification so that you can record it in the git commit history, but please remove it once you've done that, and if you agree.
-
-**For Claude's review (removed original point 2, the hybrid-verifier takeaway):**
-
-I removed the second point. It seekes to make a connection back to Chapter 4, as opposed to being critical, but this is mainly based on vibes. If you have a reasoned dissenting opinion, please express it.
-
 2. DeepSeek states that its post-training "introduces no algorithmic innovation" and that improvements in the scale, diversity, and verifiability of its tasks and environments "account for essentially all of the observed gains", which is this book's thesis stated by a frontier lab: the verifier and the environment matter more than the optimizer.
 
 [^ch8-chat-judge-example]: A prompt can be: "Explain the moon landing to a 6-year-old in a few sentences." In both reference-based and open-ended chat, the judge is prompted to score the response in $[0,1]$.
