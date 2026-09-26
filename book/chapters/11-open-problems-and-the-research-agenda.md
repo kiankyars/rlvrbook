@@ -127,7 +127,13 @@ In toy environments, reward terms on the chain of thought that conflict with the
 
 **Research question.** Does RL post-training admit predictive scaling laws of the kind pretraining has, and what determines the asymptote a recipe saturates toward?
 
-The least understood stage of training now takes the largest share of lab compute. SemiAnalysis says that, across Anthropic and OpenAI combined, post-training and RL rose from about 5% of lab compute capacity in the second quarter of 2024 to 36% in the fourth quarter of 2025, when it overtook pretraining at 32%, and to 50% in the second quarter of 2026, against 13% for pretraining [@xie2026shortking].
+The least understood stage of training now takes the largest share of lab compute. SemiAnalysis says that, across Anthropic and OpenAI combined, post-training and RL rose from about 5% of lab compute capacity in the second quarter of 2024 to 36% in the fourth quarter of 2025, when it overtook pretraining at 32%, and to 50% in the second quarter of 2026, against 13% for pretraining (@fig-ch11-compute-share) [@xie2026shortking].
+
+::: {#fig-ch11-compute-share fig-cap="Share of Anthropic's and OpenAI's combined compute capacity by workload, by quarter, from the first quarter of 2024 to an estimate for the fourth quarter of 2026. Reproduced from SemiAnalysis with permission."}
+
+![](../diagrams/11-semianalysis-compute-share.png){fig-alt="Stacked bars per quarter showing pre-training falling from 67% to 7%, post-training and RL rising from under 5% to 55%, and inference between 29% and 39%." width="90%"}
+
+:::
 
 The largest systematic datapoint is ScaleRL: a study totaling more than 400,000 GPU-hours that fits sigmoidal compute-performance curves to RL training runs and validates them by predicting, from the first half of a single run, where that run lands at 100,000 GPU-hours [@khatri2025scalerl]. Performance is the pass rate on 1,000 math prompts held out from the training set: the fraction of 16 samples per prompt that the checker marks correct, averaged over the prompts.
 
@@ -165,7 +171,13 @@ Open questions follow directly:
 - How should a fixed budget split between pretraining, SFT, and RL?
 - Does prolonged RL erode the plasticity it relies on [@dohare2024plasticity]? Plasticity is not the entropy collapse of @sec-ch11-elicitation: entropy measures how spread out the policy's samples are, while plasticity measures how easily further training can still change the model. There is little direct evidence for LLMs. ProRL periodically resets the reference policy of its KL term to a recent snapshot, and the optimizer state with it, when runs stop improving, a technique the paper introduces rather than inherits from GRPO, which keeps the reference fixed, and DeepSeek-V4.1-Flash merges checkpoints to reinitialize successive RL runs and extend RL compute beyond a single run, but neither measures plasticity [@liu2025prorl; @deepseekai2026v41flash].
 
-There is little published work on the frontier regarding the science of RL compute; notwithstanding, we can look one level down at OLMo 3, whose 32B Think RL run took ~five days and 750 steps, and a continuation ran 21 more days to 2,300 steps with performance "not yet fully saturated" [@teamolmo2025olmo3]. Kimi K3, DeepSeek-V4.1-Flash, and the MiniMax-M2 series report RL results but no RL compute totals. For single open models from early 2025, published figures and outside estimates put RL compute at under 4% of pretraining compute for DeepSeek-R1-Zero, about 5.5% for the whole DeepSeek-R1 pipeline, SFT included, and under 1% for Llama-Nemotron Ultra [@khatri2025scalerl; @deepseekai2025r1; @deepseekai2024v3; @epoch2025reasoningscale]. No published scaling law covers multi-domain, agentic, million-token RL, which is where the frontier labs now spend their RL compute.
+There is little published work on the frontier regarding the science of RL compute, even though that is where the compute is. SemiAnalysis's model of OpenAI's total capacity (@fig-ch11-openai-compute) has training and inference both growing steeply through 2030, and @fig-ch11-compute-share says that most of that training compute is now RL. Kimi K3, DeepSeek-V4.1-Flash, and the MiniMax-M2 series report RL results but no RL compute totals, so we can only look one level down at OLMo 3, whose 32B Think RL run took ~five days and 750 steps, and a continuation ran 21 more days to 2,300 steps with performance "not yet fully saturated" [@teamolmo2025olmo3]. No published scaling law covers multi-domain, agentic, million-token RL, which is where the frontier labs now spend their RL compute.
+
+::: {#fig-ch11-openai-compute fig-cap="OpenAI's total compute capacity by quarter, split between training and inference, with SemiAnalysis's projection beyond the third quarter of 2026. Reproduced from SemiAnalysis with permission."}
+
+![](../diagrams/11-semianalysis-openai-compute.png){fig-alt="Stacked bars per quarter from 2024 to 2030 showing OpenAI's training and inference compute capacity growing exponentially, with a marker for the current quarter." width="100%"}
+
+:::
 
 ## Credit assignment at horizon scale {#sec-ch11-credit-assignment}
 
