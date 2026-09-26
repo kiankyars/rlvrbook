@@ -170,7 +170,7 @@ OLMo 3 is the most fully open of the frontier recipes, with data, code, and chec
 - Kimi K3's judge writes a rubric for each task and ranks candidates in a tournament of pairwise comparisons.
 - DeepSeek audits each synthesized coding task with an inspection agent that looks for flaws, including ways to hack it.
 - Kimi K3 keeps rollouts that span several training iterations stable with a per-token regularizer, a penalty on each token that keeps the updated policy close to the one that sampled it.
-- Kimi K3 runs rollout and training under one quantization scheme, the low-precision format it is served in (4-bit expert weights, 8-bit activations), so the two engines assign the same probabilities.
+- Kimi K3 runs rollout and training under one quantization scheme (4-bit expert weights, 8-bit activations), so the two engines assign the same probabilities.
 - DeepSeek masks tokens that are too stale, i.e. sampled from a checkpoint too far behind the current one, and keeps the KV cache and expert routing across weight updates, so an interrupted rollout resumes where it stopped.
 - Kimi K3 sets the reward to -1 when a response exceeds its per-problem token budget.
 - OLMo 3 tried a length-control verifier and found it did not help.
