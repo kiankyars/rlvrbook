@@ -85,7 +85,23 @@ Another exploit came from clarifying questions. Part of the reward was derived f
 
 ## The over-optimization curve
 
-The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is to treat one large reward model as a stand-in for human judgment, the "gold" model, whose scores count as ground truth and stay fixed during training. The authors train a smaller proxy reward model on the gold model's labels and optimize the policy against the proxy. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF, but the dynamics apply whenever a proxy is imperfect. In the context of RLVR, the proxy can be the programmatic verifier, which approximates but may not equal the target capability. The natural stand-in for the gold model is then a stronger check held out from training, such as hidden tests or an augmented test suite like EvalPlus [@liu2023evalplus]. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
+The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is to treat one large reward model as a stand-in for human judgment, the "gold" model, whose scores count as ground truth and stay fixed during training. The authors train a smaller proxy reward model on the gold model's labels and optimize the policy against the proxy. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF, but the dynamics apply whenever a proxy is imperfect. In the context of RLVR, the proxy can be the programmatic verifier, which approximates but may not equal the target capability. The natural stand-in for the gold model is then a stronger check held out from training, such as hidden tests or an augmented test suite like EvalPlus [@liu2023evalplus]. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly. @fig-ch7-gold-proxy-setup shows the two setups side by side.
+
+::: {#fig-ch7-gold-proxy-setup}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/07-gold-proxy-setup-light.png){.light-content fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
+
+![](../diagrams/07-gold-proxy-setup-dark.png){.dark-content fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/07-gold-proxy-setup-light.png)
+:::
+
+In real RLHF, human labellers produce the comparisons that train the proxy reward model. In Gao et al.'s synthetic setup, a large gold reward model, itself trained on real comparisons, labels the comparisons instead, so its score can stand in for ground truth. Redrawn after Gao et al.'s Figure 2 [@gao2023scaling].
+
+:::
 
 Pan et al. built four RL environments with deliberately misspecified rewards (traffic control, COVID response, blood glucose monitoring, and the Atari game Riverraid) and varied agent capability through model size, action resolution, observation noise, and training time. They found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
