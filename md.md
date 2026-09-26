@@ -1,107 +1,114 @@
+Review round of September 26. Delete each entry as you handle it. Commits are listed at the end; each answers one group of points, so any commit can be dropped on its own.
+
 ### Chapter 10
 
-- **L34:** "and optionally (your note) discarding" → "and discarding". DeepSeek lists both as "two mechanisms" it employs. The report never shows a separate hero-run setting.
-- **L56, L60:** the two "Vision in…" titles are now `###` headings, and both of your notes are removed. For the other chapters, I converted only Chapter 3's three limitations. The short run-in titles in Ch 4, 6 and 9 would become one-sentence sections or break a list after a colon, so they stay bold.
-- **L62:** your note asked for "rubric judges" if there's a rubric; there isn't. K3's web-dev reward uses "an internal reward model", and its rubric protocol is only for non-verifiable general tasks. So "LLM judges" stays.
-- **L85:** since you still didn't get the gateway, I rewrote the paragraph to start from the problem:
-  - The model runs inside an agent program (like Claude Code) that rewrites the prompt between calls.
-  - To train, you need the exact prompt and response of every call, and each agent rewrites prompts its own way.
-  - The gateway is a logging proxy: the agent calls it like any model API, and it forwards each call to the model being trained and saves the exact prompt and response.
-  - L89: "how much of this" → "how much of this rewriting".
-- **L97, your question:** you originally wrote "DeepSWE trained on 4,500 human-made environments" to show that hand-built environments are costly. In fact R2E-Gym built them semi-automatically from GitHub commits, so the example now shows automation already happening. It no longer illustrates the cost of building environments by hand. The sentence still reads fine; I'm only pointing out that its role changed.
-- **L119:** "As is standard in reinforcement learning environment creation, for general agents DeepSeek builds mocked tools that reproduce, at train time, …" is back.
-- **L119, your question:** your original was "Anchoring task generation in real workflows and real failures is one way how the process avoids model collapse." I had hedged "avoids" to "may guard against", because DeepSeek never mentions model collapse. It's your inference, not their claim. Your new "is one clever way to guard against" reads as your view, which is fine.
-
-
+- **L85:** rewritten as you asked: "The agent sends each of its requests to the gateway's model API instead of directly to a model; the gateway passes the call to the policy being trained, returns the policy's answer to the agent, and saves the exact prompt and response as a training example."
+- **L97:** "(aka the GOAT)" is now a footnote, per the new asides rule.
 
 ### Chapter 11
 
-- **"Research question." labels:** I kept them bold. A heading has to head something, and in those sections the question is itself the content, with the section's subheadings below it. The two-question section is different because each question heads its own body.
-- **L26:** your note is removed, and the sentence again reads "*The Invisible Leash: Why RLVR May or May Not Escape Its Origin* argues that…". The book-wide rule is now that a work named by its title is italicized, so Ch 1 L41 and Ch 8 L54 name their works by italic title too.
-- **L152:** "(really worth reading this paper)" is back. The "(this is relatively speaking…)" aside at L75 stays as written.
-
-Here's the rest of Chapter 11, with quotes this time:
-
-- **L32:** "…which is the reallocation Yue et al. measured" → "…which is **part of** the reallocation…". In this section, elicitation and reallocation are the same side; the other side is creation. So yes, plain RLVR looks like reallocation. But that evidence is Yue's pass@k, not Cui's entropy law, so it's "part of."
-- **L54:** you removed "The gains were largest where the base model was weakest." I didn't restore it. I only think it isn't self-evident: RL learns only from successes, so you'd expect it to help *least* where the base model is weakest.
-- **L56:** "On code problem families" → "On a code problem family" (the paper shows one). "a dense-reward warm-up" → "a warm-up that first rewards the fraction of test cases passed before switching to the binary reward". "experience replay was needed to shorten" → "experience replay shortened".
-- **L57:** your "converging or diverging?" note is replaced by: RL "trails its base model slightly at k = 1 but leads at k = 64, solving 81 of 100 … against 77 …, while SFT … ends at 73". The gap widens with k.
-- **L61:** an HTML comment tags "A reconciliation" as pending; the README lists it too.
-- **L63:** "the large-k (your note) decline" → "the large-k decline **Yue et al. measured**". "narrowes" → "narrows".
-- **L67:** "…failed(your note): … collapsed for lack of any positive signal" → "…failed for a mechanical reason: … stalled, because GRPO has no gradient on groups in which every rollout fails. That rules out plain GRPO on such problems, not outcome-only RL in general."
-- **L73:** "rubric aggregates or generative verifiers … have no principled stopping criterion" → "LLM judges, including the rubric judges of Section 11.6, so practitioners optimizing against them find the peak by monitoring a stronger held-out judge or benchmark rather than predicting it in advance".
-- **L75:**
-  - "the share of newly credited criteria…" now spells out the metric: of the criteria the training judge newly marks as met at each checkpoint, the share all three panel judges reject. The strong verifier "fluctuated between 15% and 21%, staying within 5 points of its starting value". That's a band, not a trend.
-  - "larger (your note) judges" → "non-reasoning judges fine-tuned from Qwen3 models of 1.7B, 4B, 8B, and 14B parameters, larger judges…".
-  - Removed "What no study has fitted is the functional form…", since it's idea 2 in Appendix D.
-- **L81:** ", ," and "Purposefully" fixed.
-- **L97:** your "two partial answers to the question of verifier coverage" is kept. My opinion: "coverage" is jargon here.
-- **L99–100:** items capitalized with periods. Item 2, "verifier-free diagnostics…", now says what it does: it "flags when the policy stops improving even though the training reward keeps rising."
-- **L102:**
-  - "scored 1,000 sampled training queries (your note)" → "trained Qwen2.5-7B Base with GRPO on the DeepScaleR problem set and, at each checkpoint, had GPT-4o, which never supplied training reward, grade responses to 1,000 of those same training problems…" What's held out is the grader, not the problems.
-  - "unkown" → "unknown". Your "No published results yet extend this…" stays.
-- **L110:** "but do not grade" → "but does not grade".
-- **L112:**
-  - "Astra controlled its reasoning as instructed" → a test "that instructs a model to reshape its chain of thought, for example to avoid certain keywords or to write only in lowercase". Then OpenAI's words: "an undesirable property for monitorability". Your reading was right.
-  - Pachocki's list is numbered, with "many" (not "some") interactions and "reasoning about and manipulating" their own reasoning. Your "in his blog post" is kept.
-- **L118:** "studying" → "study", "monotibility" → "monitorability". Your wording is otherwise untouched.
-- **L124:** "the least understood … compute.; emiAnalysis says" → "The least understood … compute. SemiAnalysis says".
-- **L126:** new sentence defining pass rate: "the fraction of 16 samples per prompt that the checker marks correct, averaged over the prompts". The book never defined it before.
-- **L134:** "Most recipe choices turn out to answer the second question (your note)" → "In ScaleRL's ablations, most recipe choices changed how fast a run rises, not how high it goes:". The basis: reverting any one of eight choices from the final recipe left the fitted ceiling within noise.
-- **L148:** the figure is redrawn with a legend. The old caption, "look alike early… diverge only at scale", was false for the old curves. It now reads "A recipe that reaches the same ceiling sooner leads early in training, while a recipe with a higher ceiling A can trail early and pull ahead only at scale."
-- **L152, the scarce regime:**
-  - "A second regularity (your note)" → "A second pattern".
-  - "…data-constrained regime on the 7B model, with fewer distinct problems than the run needs": Tan et al.'s term, which I had deleted. So yes, every problem is repeated, and the finding is that up to 25 repeats hardly matter.
-  - "(And even when the student strictly fails! …)" → "and is still useful on a prompt the student never solves".
-- **L156:** "Does the base model's support establish the asymptotic perfoamcne… (your note)" → "How much of the asymptotic performance is set by the base model's support…, and how much by inefficiencies in training recipes?" Both matter.
-- **L158:** your note is removed; this question isn't asked anywhere else in the book.
-- **L159:** "Does prolonged RL erode the plasticity it relies on (your note)?" gains a definition, "the network's ability to keep learning from new data", and "This is not the entropy collapse of Section 11.3…".
-- **L161:** "about 20% for DeepSeek-R1" → "about 5.5% for the whole DeepSeek-R1 pipeline, SFT included". DeepSeek's own numbers replaced an outside estimate.
-- **L165:** "increasining" → "increasing".
-- **L167:**
-  - Added "Karpathy's phrase for this, quoted in Chapter 2, is 'sucking supervision through a straw'…".
-  - "The same survey claims that…" became a sentence of its own, keeping your "while possible in math".
-  - "Mythos is Anpril" → "an early version of Claude Mythos Preview, evaluated in March 2026".
-  - Deleted the pasted Opus text and "At the frontier, Kimi K3 trains on rollouts…".
-- **L169:** only "ewith", "important" and "trajetoreis" are fixed; your "very large qualifier" wording is kept.
-- **L171:** "What is open: whether…" → a `### What is open` heading, matching L65.
-- **L179:**
-  - "Rubric" is defined only here, so the first sentence stays.
-  - Cut "; in medicine and science, the second version worked best, and both beat a judge with no rubric".
-  - Kimi is shortened to "Kimi K3's judge writes a rubric for each task, as Table 9.2 shows".
-  - The DeepSeek-V4 sentence is removed. It wasn't a repeat of L204, though: V4's rubric reward model and V4.1-Flash's task synthesis are different reports.
-- **L180:** removed "No frontier report documents this reward yet; it remains a research method."
-- **L186:**
-  - "math-only RL preserved general capabilities while math-only SFT eroded them" → "carried its gains over to other reasoning and even non-reasoning tasks, while math-only SFT gained less on other reasoning and fell below the base model on non-reasoning tasks".
-  - RL's Razor now sits right after that result.
-  - "…is open. (your note)" → "So RL on verifiable reasoning does transfer, but mainly between domains the base model already knows well; domains like logic, simulation, and tabular reasoning can still be improved directly, as Wei's rule predicts, once they have verifiers of their own."
-- **L192:** the Qwen2.5 examples are replaced by Llama results (TTRL: MATH-500 48.6% → 63.7%; self-certainty close to GRPO), and "minimizing entropy alone matched…" is dropped. Your take on it was broadly right.
-- **L194:** your sentence "this answer is refreshing because it's a training problem which we can directly answer with complete certainty…" is restored verbatim, typos fixed. "Much of the early success is also specific to Qwen2.5 models…" is gone, per your proposal.
-- **L196:** removed "a version of that gap grows with pretraining compute". Added your conclusion in your words, "as you optimize against those judgments, the model's answers will become as good as its judgments, and then there is no longer any leverage", plus Song's finding that the gap reached about zero after two or three rounds.
-- **L202:**
-  - Your analogy is in text: "There needs to be some external input, such that the model does not collapse; think of it as analogous to the real workflows that DeepSeek brought into its environment creation pipeline." SPADE's own evidence follows: the same maze 41 times without its corpus.
-  - Your example: "The most contrived examples would be large multiplication or problems which involve a random number generator…".
-  - SGS's guide is explained as "a frozen copy of the initial model".
-  - Deleted the "MiniMax reports that M2.7 now handles 30% to 50%…" sentence (a one-off).
-- **L206:** "…Anthropic's is called X" → "…is open, although frontier labs run closed systems for this: Anthropic runs an automated review of all environments…, yet by spring 2026 it was producing RL environments 'faster than our systems could vet them'…". Anthropic gives the system no name.
-- **L214:** "Semantic faithfulness" row → "What the verifier misses".
-
-
+- **L32:** unchanged ("part of the reallocation"), as agreed.
+- **L54 (gains largest where the base is weakest):** you are right for the case you describe, a bad base model on a task where partial progress earns signal. The sentence was about pass@k, though, where "weakest" means the base model rarely or never samples a correct answer, and there RL with a binary reward has nothing to reinforce; the grokking paper shows exactly that stall until a dense warm-up gave signal. So the claim is self-evident with dense reward and not with binary reward, which is why the sentence stays out. If you want it back, "with a dense reward, the gains were largest where the base model was weakest" would be defensible.
+- **L56:** "code problem family" is now "a family of program-synthesis puzzles written in a custom language the model had never seen, verified by test cases". Your suggested "Python unit tests, based in MATLAB" does not match the paper: the pass@k = 0 family is Manufactoria, a domain-specific language the authors invented, and the Python tasks (BouncingSim) are in a different experiment where the base model already had non-zero pass.
+- **L57 (SFT below the base model):** the authors do give a reason, so SFT stays and the reason is in the text: imitating expert trajectories collapsed the variety of search strategies from about 40 distinct query sequences per problem to 15, so SFT lost 7 problems the base agent solved while gaining 3. I also fixed a factual problem in the sentence: the paper has only one setting where the RL curve pulls away from the base as k grows (the multi-hop "bridge" questions); the simpler comparison questions do not diverge. The sentence had described one result as two.
+- **L61 to L63, the reconciliation paragraph:** your instinct about the title was right. It is now "Why both cases can be right" and opens with the point in one sentence: both cases can be right because standard RLVR spends most of its updates where they can only sharpen. Three changes to your wording:
+  - "the large-k decline" now says what it is: "the decline Yue et al. measured, in which the RL model falls below the base model once k is large". That is what you assumed.
+  - "partly an artifact" became "reflects where standard RLVR spends its updates rather than an inability to learn anything new". The paper never calls the decline an artifact; it says the decline is real and expected, and that it masks genuine gains.
+  - "a sufficiently fine-grained advantage calculation" was not accurate, so it is gone. Nothing fine-grained is involved: the all-fail update is coarser than GRPO's, a constant negative advantage per rollout with no group baseline (negative-sample reinforcement). The text now says "the update needs a signal that does not vanish there, such as a penalty on the failed answers themselves". "Binary GRPO" is also gone; GRPO with binary rewards is the default the chapter already assumes.
+  - "on difficult benchmarks" now names them (MinervaMath and OlympiadBench, +2.6 and +0.9 pass@256 over the base model), since the paper calls those intermediate-difficulty elsewhere.
+  - The pending comment is removed; the roadmap still lists the paragraph until you sign off.
+- **L67:** "and so is whether composing known skills should count as new capability" is deleted; agreed that it is definitional, not an RL question.
+- **L73 (your DPO question):** no, practitioners do not fit Gao's law up front to predict where a run peaks. Its use is retrospective: it explains the hump. In practice people sweep the KL coefficient or beta and the number of steps and pick by a held-out judge or benchmark, which is what the sentence says. DPO has its own version of the hump (Rafailov et al., 2024, "Scaling laws for reward model overoptimization in direct alignment algorithms"), but it is used the same way. Your note is removed; the figure reference now points at the new Chapter 7 figure id.
+- **L75 (did the policy fool the reasoning judges?):** yes, both the training judge and the stronger gold judge. The text now gives the example: the policies learned one stereotyped output, a refusal citing a made-up "platform policy", then a fake end-of-response marker, then a self-assessment praising the refusal. GPT-OSS-120B, the gold judge the reasoning judges were distilled from, scored that output 9 out of 9 even after the authors hardened its prompt, and the same output won 90% on Arena-Hard creative writing under GPT-4.1 for a Llama-3.1-8B policy. Your "(this is relatively speaking, since today both of these models are impotent)" is now a footnote.
+- **L97:** your "two partial answers:" is kept.
+- **L102:** "No published results yet extend this to frontier-scale agentic tasks" is removed, as you proposed. For the record, that sentence was my replacement for a conditional you disliked in an earlier round, and Appendix D's audit idea covers the gap anyway. Your "As an aside" sentence is now a footnote, since you labelled it an aside.
+- **L112:** your Anthropic observation is held as an HTML comment after Pachocki's list rather than in the text, because it conflates two properties: monitorability is whether the chain of thought reveals intent, alignment is whether the model has good intent, and a model can be less monitorable and more aligned at once. If you want it in, a footnote such as "Anthropic, for its part, describes each successive model as its most aligned; that claim rests on evaluations, not on chain-of-thought monitoring" would be accurate. "(one eternity in AI time)" is now a footnote. "persuasivereasons" fixed.
+- **L128, figure caption:** fixed to "…mixture-of-experts model. Redrawn from Khatri et al.'s Figure 1 (CC BY 4.0), with the points digitized from the published figure."
+- **L131, the legend:** the figure is redrawn rather than edited. A script (`code/figures/11-scalerl-100k-gpu-hours.py`) digitizes the points from the paper's PNG, draws the paper's fitted curves, and puts the legend below the axes in two rows, with light and dark SVGs like the other figures. The digitized points are within about 1 pixel of the paper's; a few overlapping markers in the paper's clusters could not be separated. Your removed introducing sentence stays removed.
+- **L134:** the basis is now in the text with numbers: reverting any one of eight choices from the full recipe left the fitted ceiling between 0.590 and 0.610 against 0.610, inside the ±0.02 seed-to-seed margin, and only lowered the efficiency exponent (2.01 down to 1.62 for uniform sampling); the ceiling movers, with their numbers, follow. One correction to the old sentence: the loss function moved the ceiling only in the forward ablations (DAPO 0.520 against CISPO 0.595); reverting to DAPO from the full recipe did not, so the text now says so.
+- **L152:** "(really worth reading this paper)" is a footnote. The other asides converted to footnotes in this round: Chapter 11 L75 (relative judges), L102 (sample versus population), L112 (one eternity), L169 (the folding qualifier), L196 (interpretability artifact); index L19 (no em dashes) and L52 (public domain); Chapter 8 L34 (monitoring not set up); Chapter 10 L97 (the GOAT). Left inline because they define or explain rather than remark: Ch 1 L33 "(this is the basis of RLHF)", Ch 6 L30 and L32, Ch 8 L32 and L56, Ch 11 "(all common in pretraining data)". Your "dictated 'marketing practices'" I read as "remarks in parentheses"; say if you meant something else.
+- **L159:** "littlke" fixed. ProRL's reset is not standard: standard GRPO keeps the KL reference fixed for the whole run, and ProRL's paper introduces the hard reset of the reference to a recent snapshot, with the optimizer state, as one of its three contributions. The text now says that.
+- **L161:** the 2025 open-model shares (R1-Zero under 4%, R1 5.5%, Nemotron under 1%) are dropped, as you suggested once a SemiAnalysis figure sat there; the OLMo 3 durations stay as the one open datapoint. If you want the 5.5% sentence back, it is in the previous commit.
+- **L169:** the folding qualifier is a footnote in your words, grammar fixed.
+- **L179 (rubrics, your rewrite):** fine as a definition; I fixed "possibilites", "criteron", and the run-on. My one reservation: the cut example ("avoids misinformation" for a medical question) was the only concrete criterion a reader ever saw, and the house style leads with examples. Restore it if you agree; I did not.
+- **L186:** RL's Razor is introduced by its italic title; "forgets" is now "forgets less of what the model could do before than SFT does", which is what you assumed; the Guru sentence stays because the closing sentence rests on it (it is the evidence that logic, simulation, and tabular reasoning need their own data).
+- **L192:** "self-imporvement" fixed; INTUITOR's numbers added (47.6% against 49.4% on MATH500 from a 43.6% base; 72.3% against 71.4% on GSM8K).
+- **L196:** the interpretability aside is a footnote.
+- **L202 (pseudo-labels):** defined in a clause: "the answers the model treats as ground truth for its own training, such as the majority-vote answer".
+- **L202 (MiniMax 30% to 50%):** the reason it was cut: the sentence says M2.7 does 30% to 50% of the RL team's daily iteration work (reading logs, debugging, adjusting configs). That is a model automating RL research operations, not a model writing its own tasks or verifiers, so it did not support the section and nothing else in the book connects to it. It had already been moved once, out of the rubrics section, before being cut. I still think it does not belong; if you want it, the best home is a footnote in the environment-scaling part of Chapter 10.
+- **L204 (SPADE):** you were right. The privileged hint is written by the designer itself and serves only the designer's reward; the external input that stops the collapse is the seed document from the pretraining corpus, and it was removing the corpus that produced the same rotating-maze environment 41 times. The text now says so and keeps your DeepSeek analogy for the corpus. Self-Guided Self-Play is a method name, so it is plain; the text now reads "A method called Self-Guided Self-Play".
+- **L206:** the quote was already in the text from the last round; it now includes the second sentence too: producing environments "faster than our systems could vet them", "reward hacks and misconfigurations started outpacing our ability to filter or fix them", and the April freeze "to overhaul the stack". Source: Anthropic, "Improving our alignment and security efforts", August 31, 2026.
+- **New figures at L124 and L161:** both SemiAnalysis charts are in, reproduced with permission and captioned as such. The compute-share chart (Anthropic and OpenAI combined, 1Q24 to 4Q26E) follows the sentence that quotes it; the OpenAI capacity chart (training versus inference through 2030) anchors the frontier paragraph, which now says the science is missing exactly where the compute is. The ClusterMAX 3.0 report has a bibliography entry. The OpenAI chart is a dashboard screenshot with a large SemiAnalysis logo over it; it is what the article publishes.
 
 ### Appendix D
 
-- **L9:**
-  - "a cold start (your note)" → "a warm-up, in which RL first rewards the fraction of test cases passed…". It isn't R1-style; that explanation now lives in Ch 11 L56.
-  - "'solved' there means at least one success (your note)" → "solved three AIME 2025 problems at pass@4096…, though … only 15 of its 12,288 samples on those three were correct".
-  - "Test-time (your note)" → "TTT-Discover, which keeps updating the model's weights with RL…, is the closest test of whether RL finds what sampling from the frozen model does not".
-- **L11:** your 80/20 note is removed. At pass@4096 = 0 every rollout fails and GRPO learns nothing, so there's nothing to overfit. The experiment now uses GRPO as the control against a loss that learns from all-fail groups.
-- **L17:** "only partially?" Yes: all three studies track the gap over training steps; none fits a law against KL the way Gao et al. did. That's the experiment itself.
-- **L19:** "the stopping criterion Chapter 11 says they lack" → "predict when to stop, instead of finding out by monitoring a held-out judge".
-- **L25, L33, L41, L49:** "Closest work" now points to the Chapter 11 section and keeps only works Chapter 11 doesn't cover. Closers removed: "No study varies the horizon.", "but no study tracks it…", "What is missing is attribution…".
-- **L35:** "entropy-minimization rewards on clean, procedurally generated problems" → "majority-vote and self-certainty rewards on procedurally generated problems the models cannot have memorized".
+- **Format:** each idea is now three prose parts with no labels: the question and why the chapter leaves it open, what the closest work has and has not shown, and "The experiment:" as a numbered list of steps, followed by what the outcomes would mean. This is how Sutton and Barto's frontier chapter and Knuth's research problems read: a self-contained statement, then a procedure.
+- **L9 (AIME not in training data):** the sentence had the two facts in the wrong relation. Now: AIME 2025 was not in the training data, so the solutions are genuinely new, but only 15 of 12,288 samples were correct, so RL found them without making them reliable.
+- **L9 (TTT-Discover result):** added, with the ablation that matters for the question: it beat best-of-N on every problem where the paper reports that baseline (its best H100 kernel ran in 1,161 microseconds against 5,390 for best-of-N and 1,371 for the best human entry), but reusing earlier solutions accounts for most of that gap and weight updates for the rest.
+- **L11:** "fail even with 1,024 samples" now reads "which no open model of up to 8B parameters solves in any of 1,024 attempts".
+- **L17:** the answer you liked is now in the text: none of the studies fits a law, because none plots gold reward against KL from the initial policy and fits a functional form, which is what made Gao et al.'s result a law.
+- **L25:** Branching Policy Optimization is named and described (it snapshots the sandbox and forks sibling rollouts to estimate each step's value); GiGPO is named too.
+- **L31:** yes, the chapter establishes that the loops collapse. The question was badly put. It is now "Does the closing of the generation-verification gap predict when a self-reward loop collapses?", and the text says what is untested: whether the gap's decline during training predicts the collapse before it happens.
+- **L45 (format rewards as controls):** deleted, and your edit to the question stands. Why they were controls: a format reward acts on the surface of the output, not its content, so Kaufmann et al. used it as the null term that touches the chain of thought without conflicting with correctness; you are right that nobody expects it to change what the model learns. It matters only because production recipes do carry format terms, and "ablate one term at a time" already covers them without naming them.
+- **L51 (MBPP, wrong code):** MBPP is defined at first use (short Python problems, about three tests each). And yes: a rewarded false positive is code that passed the three training tests and earned reward but failed the hundred or so extra tests of MBPP+. The audit found about half of those were genuinely wrong code that the training verifier had let through; the other half were faults of the stricter suite, such as defective extra tests or inputs outside the task's contract. The text says this now.
+- **L53:** your alternative auditor is in, as "a frontier model of the next generation as the auditor, on tasks the previous generation had already saturated".
 
-Still open from before: should I remove the naming rule from `scripts/check-diagrams`, as in your unsent draft in the cloud session? If so, I'll also update the line in AGENTS.md that says the check verifies naming.
+### Roadmap items you commented on
 
-That scheduled check had nothing left to do. Everything from that round is on `origin/main` at `05b7076` and the working tree is clean; my previous message is the full report.
+- **Item 2 (Escher openers):** replaced. Chapter 6 opens with *Bonifacio, Corsica* (woodcut, October 1928, Bool 120; scan from Escher in Het Paleis, 713 by 1,200 px, the largest reachable) and Chapter 11 with *Street in Scanno, Abruzzi* (lithograph, January 1930, Bool 131; scan from a Sotheby's lot photograph, cropped to the printed image, 1,096 by 1,600 px). Both are editioned prints, so the index claim about 1930 publication holds. For the record, neither old opener is a catalogued print: both are unique drawings (Calanques de Piana is inscribed 8-'28, Alfedena 8-'29), and I found no publication before 1931 for either. Favicon left alone, as you said.
+- **Item 3 (license):** your premise is the wrong way round. Without a license, copyright reserves everything: nobody may copy, redistribute, or adapt the book at all, beyond fair use. What you describe wanting, use for any purpose as long as nobody claims authorship, is exactly CC BY 4.0. I added `LICENSE.md` with CC BY 4.0 for the text and original figures, MIT for the code, and the exceptions (Escher works as US public domain, reproduced paper figures under their own licenses, the SemiAnalysis charts by permission). It is its own commit, and it is the one decision here that is hard to undo once pushed, so drop the commit if you disagree.
+- **Item 4 (Chapter 7 figure):** what was going on: the figure had no id, so nothing could reference it by number; Chapter 11 referred to it in prose as "Chapter 7's over-optimization curve". It now has the id `fig-ch7-overoptimization`, one caption for both formats, and Chapter 11 cites it as a figure. For the PDF, the reproduced Gao plot is replaced by a plot of Gao et al.'s published functional form (R(d) = d(α − β log d), d = √KL) for three reward-model sizes, generated by `code/figures/07-overoptimization-curve.py`; the coefficients follow the trends in their Figure 3, since the paper prints no fitted values. Gao's Figure 2 is a diagram of the synthetic setup (labellers, gold RM, proxy RM), not a plot; the RM-size plot you mean is their Figure 1. I could not find your generated version anywhere in the repository, your Downloads, or Desktop. When you add it, tell me the path and I will swap it in for both formats.
+- **Item 24 (LLM use):** see the estimate below.
 
-One decision is still yours: should I remove the diagram-naming rule from `scripts/check-diagrams`, as in your unsent cloud-session draft? If yes, I'll also update the line in AGENTS.md that says the check verifies naming.
+### Indisputable roadmap items, done in their own commit
+
+- 6: og:image and twitter:image now resolve on chapter pages (leading slash; verified in a render).
+- 18: all six bibliography errors fixed (PPOCoder's real title and authors, RLTF's authors, Nye's author list, Ichter added to Wei et al., Chantzis, R1 as Nature 645:633–638 with its Nature title, Yue et al. as a NeurIPS 2025 oral, the working Fortune URL, the live TMTPost page). Chapter 1's footnote already attributed the quote to TMTPost and the war rooms to Fortune, which is correct; the Fortune article never contained the quote.
+- 20: pre-training, pass@n, and Pass@1 normalized; "test time" as a modifier left alone.
+- 21, first part only: the index no longer promises a TL;DR.
+- 23: appendix titles use a colon, the Chapter 4 table cells read n/a in both formats, and the one remaining em dash in the rendered book, from the Karpathy podcast title in the bibliography, is gone.
+- 25: the five typos.
+- 35: both ensemble findings are Eisenstein et al.'s; the sentence now contrasts them with Coste et al.'s synthetic result, and Eisenstein has an entry.
+- 36: `if not candidate: return None`, so an unparseable tagged answer goes to the judge like a missing one, and the sentence before the code says so.
+- 50: the reasoning trace in Chapter 7 is now T, not R.
+- 51: Chapter 8 cites Baker et al. directly instead of pointing at Chapter 7.
+- 61 and 62: the baseline sentence in Appendix A is corrected (a baseline reduces variance and leaves the expected update unchanged); the notation sentence names r(x, y) and v(x, y); w_i now appears in the equation it was defined for; the garbled KL sentence is rewritten. The multi-turn state without tool observations is left for you.
+
+### How much of the book is AI-written
+
+Method: git blame and a token-level replay of every commit over the 16 manuscript files at HEAD, counting prose words only (no code, math blocks, widgets). A commit is AI if it carries the Claude co-author trailer (every Claude Code commit since September 22); earlier Codex and Claude commits have no trailer and were classified by message style, which is unreliable, since you dictate capitalized one-liners too. The script is in the session scratchpad, not the repository.
+
+| Estimate | Share of prose tokens |
+|---|---|
+| Lines last touched by an AI commit (overstates; a one-word edit claims the line) | 68% |
+| Tokens first written by an AI commit, trailer only (lower bound) | 43% |
+| Tokens first written by an AI commit, trailer plus heuristic (central) | 54% |
+| Same, counting the April "chapter 8" file you called "all GPT" as AI | 58% |
+| Tokens from AI commits that added 30 or more lines (drafting, not editing) | 26% |
+
+By file, the token-origin estimate splits the book cleanly: Chapters 8 (90%), 10 (80%), 11 (89%), Appendix D (99%), and Appendix B (100%, Codex, which you called "vibe coded" in April) were drafted by AI and edited by you; Chapter 9 is 56% by commit and closer to 98% if your April statement counts; Chapters 1 to 7, Appendix A, and the index are 20 to 37% AI-origin, almost all of it small in-line edits from review passes rather than drafting, which matches what the index says about dictation.
+
+The index statement is yours to word; a version that matches the history: "I dictated Chapters 1 to 7 and edited every chapter, and Claude drafted Chapters 8, 10, and 11 and Appendix D from my notes and sources, which I then rewrote; by token count about half of the prose was first written by a model and every sentence has been edited by me." The changelog already records which chapters each pass covered.
+
+### AGENTS.md
+
+Added, one line each: italic titles for works named by title; no em dashes in rendered output; run-in titles versus headings; asides in footnotes; no figure-introducing sentences; define at first use and give numbers; typo-only edits to your sentences; claims and quotes as the source states them; say things once and cross-reference; no added summary or bridge sections; answer your questions with evidence; third-party figures only by license or permission, else a script in `code/figures/`; PDF layout by general rules only; the Escher opener spec; and a review-workflow section (roadmap as ledger, `md.md` as the response file, inline notes until addressed). Chapter 1 L41 and Chapter 8 L54 already had italic titles from the last round, so nothing changed there.
+
+### Left for the next round
+
+- Roadmap items without your commentary, untouched: 5, 7 to 17, 19, 22, 26 to 34, 37 to 49, 52 to 60, 63, 64, and the rest of 21 and 62.
+- PDF items (8, 9, 10, 11) cannot be checked here: this machine has no TeX (quarto check reports TinyTeX not installed), so I only rendered HTML.
+- The diagram-naming rule in `scripts/check-diagrams` is still in place; you did not answer that question last round, so I left it.
+- Your generated version of the Gao figure, once it exists.
+
+### Commits in this round, oldest first
+
+1. Address the September 26 review notes in Chapters 10 and 11 and Appendix D (this file, the README move, the roadmap's author items).
+2. Fix factual errors, typos, and site metadata flagged by the audit.
+3. Add the SemiAnalysis compute charts to Chapter 11.
+4. Redraw the ScaleRL scaling figure with the legend below the plot.
+5. Plot the Chapter 7 over-optimization curve and give it a figure id.
+6. Replace the Chapter 6 and 11 Escher openers with catalogued prints.
+7. Move author asides into footnotes outside Chapter 11.
+8. Add a license.
+9. Record the book-wide editorial rules in AGENTS.md.

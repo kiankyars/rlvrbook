@@ -1,20 +1,4 @@
-The book spans 11 chapters and 4 appendices (~38K words, 45 diagrams, 175 bibliography entries). I'll read the landing page next to establish the reader, thesis, and scope before auditing the rest.
-
-I've already spotted a few issues: chapters use a "Chapter Map" instead of the promised TL;DR, headings mix Title Case despite the sentence-case guideline, and a stray folder from another project is tracked in the repo. Now launching a seven-part audit workflow covering structure, consistency, coverage, correctness, rendering, reproducibility, and front matter, with each reviewer's findings cross-checked by a skeptic—no edits will be made to the book itself.
-
-The whole-book audit is running in the background. Seven reviewers are each covering one area, with a skeptic checking each one's findings. When it finishes, or at the 15:22 fallback check, I'll send you a single report of the confirmed findings. I won't edit anything in the book.
-
-The audit produced 86 findings: the skeptics confirmed 36, partly confirmed 46, and refuted 4. Reading them all so I can adjudicate before writing the report.
-
-I've reviewed all 86 findings. Now I'll independently verify the highest-impact claims—the favicon date, the invented bibliography authors, and the Coste/Eisenstein misattribution—before reporting.
-
-The favicon is confirmed as _Hand with Reflecting Sphere_ (1935). The arXiv API returned nothing, so I'm retrying via the abstract pages.
-
-The whole-book audit is done. I've changed nothing in the book. Fourteen agents did the work: seven reviewers each covered one area, and a separate skeptic tried to refute each reviewer's findings. I then checked the highest-stakes claims myself: the favicon's date, the bibliography author errors, and the ensemble misattribution. 86 raw findings merge into the 64 below; I dropped 4 refuted ones and a few that don't matter.
-
 **Verdict.** Chapters 5–11 hold up well after our rounds. The rest of the book has five kinds of remaining problems:
-
-- **Copyright exposure.** One Escher image is definitely not public domain, and two more may not be.
 - **Factual errors in Chapters 1–4 and the bibliography.** Two cited papers have invented titles and authors.
 - **Missing links between parts of the book.** No chapter points to Appendices A–C, the glossary describes an older version of Chapter 11, Chapter 9 references no other chapter, and the Chapter 1 roadmap is out of date.
 - **Rendered-site bugs.** Pages overflow sideways on phones, and link previews show no image on every chapter page.
@@ -24,14 +8,17 @@ Findings are in book order, and each is tagged high, med or low.
 
 ### Site, PDF, repository
 
-1. **[high] The favicon is Escher's _Hand with Reflecting Sphere_, from 1935** (`_quarto.yml:15`). That contradicts the landing page's claim that all the art was "published at the latest in 1930". It stays under US copyright through 2030, and it appears on every page. Fix: use a crop of a 1930-or-earlier opener, and delete `escher/escher.jpg`.
-2. **[high] The Ch 6 and Ch 11 openers may not be public domain.** "Calanques de Piana (1928)" and "Alfedena Abruzzi (1929)" aren't in Escher's catalogue of prints. They look like dated drawings with no known publication before 1931, and unpublished works stay protected in the US until 2042. Today's rescans didn't change this, since they're the same works. Fix: document a publication date, swap in catalogued 1930-or-earlier prints (for example Bonifacio 1928, Calvi 1928, Street in Scanno 1930), or narrow the claim.
-3. **[med] The repo has no license at all**, though it's public, invites contributions, and publishes your review skill. Pick licenses for text and code, and list the third-party exceptions.
+2. **[high] The Ch 6 and Ch 11 openers may not be public domain.** "Calanques de Piana (1928)" and "Alfedena Abruzzi (1929)" aren't in Escher's catalogue of prints. They look like dated drawings with no known publication before 1931, and unpublished works stay protected in the US until 2042. Today's rescans didn't change this, since they're the same works. Fix: document a publication date, swap in catalogued 1930-or-earlier prints (for example Bonifacio 1928, Calvi 1928, Street in Scanno 1930), or narrow the claim. Sure, if you want to replace with those two works that you mentioned, then go ahead, but the favicon is really trivial, so let's not get worried about that.
+3. **[med] The repo has no license at all**, though it's public, invites contributions, and publishes your review skill. Pick licenses for text and code, and list the third-party exceptions. (I generally have no qualms if people use my book for whatever purpose they desire, unless they claim that they wrote the book, which I think, even without a license, is not allowed. If what I'm saying is true, then we can ignore having a license.)
 4. **[med] Ch 7's over-optimization figure:**
    - The PDF reproduces Gao et al.'s plot, and its arXiv license grants no reuse, unlike the CC BY figures in Ch 11.
    - It has no figure id, so it's unnumbered in both formats and can't be cross-referenced.
    - Web and PDF show different content.
    - Fix: one `#fig-ch7-overoptimization` div. For the PDF, either get permission or plot Gao's published functional form with a script.
+   For this one, I'm not sure if the precedent here is to exclusively cite everything. If we don't ever refer to the figure, then we don't need to give it a figure ID, but if we do, then let us do that. I have the impression that we did cite it in certain places, and if that's the case, then we must have somehow used a figure ID. I'm kind of confused: what's going on here?
+   And then, for the PDF, let us either plot the Gauss published functional form with the script or adapt the web version somehow for the PDF.
+Also, figure 2 in the paper is extremely informative, so I have added my own generated version of it, please substitute my versions for the PDF as well as the web version.
+
 5. **[med] 13 of 16 pages scroll sideways at phone width.** Display equations are cut off (Ch 3 eq 3.2, Appendix A, Ch 7), and tables and long URLs overflow too. Fix: three CSS rules, tested, plus splitting one inline equation in a Ch 6 footnote.
 6. **[med] Link previews show no image on every chapter page, on the live site.** `og:image` resolves to `/chapters/escher/...`, which returns 404. Fix: a leading slash in `_quarto.yml` lines 16, 20 and 24.
 7. **[med] Dark-mode contrast.** Ch 7's Goodhart widget axes and ticks are at 1.6:1 contrast, and Ch 2 and Ch 4 widget labels at about 2.2:1. Fix: dark overrides in `custom.css`.
@@ -226,6 +213,7 @@ Findings are in book order, and each is tagged high, med or low.
 
 **Not checked:** Ch 5–11 correctness beyond our earlier rounds, Ch 8's incident sources, any legal determination beyond publication dates and arXiv licenses, and real phones or screen readers (mobile was emulated at 375 px).
 
-That was the scheduled fallback check. The audit had already finished, and my previous message is the full whole-book report: 64 verified findings in book order. I haven't edited anything since.
+### Author's items (moved from the README)
 
-Tell me which items you want done and I'll start with those. By default I'd go in the suggested order: the copyright items (1–2) first, then the factual errors.
+- Add image-gen diagrams to the textbook where there is a clear clarity gain.
+- Chapter 11, "A reconciliation" paragraph (elicitation section): rewritten and retitled in the September 26 round; the author's sign-off is pending.
