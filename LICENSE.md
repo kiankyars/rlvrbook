@@ -10,7 +10,7 @@ Suggested attribution: Kian Kyars, *Reinforcement Learning from Verifiable Rewar
 
 ## Code
 
-The scripts and code under `code/`, `scripts/`, `book/filters/`, `book/includes/`, `book/styles/`, and the code listings inside the chapters are licensed under the MIT License.
+The scripts and code under `scripts/`, `book/filters/`, `book/includes/`, `book/styles/`, and the code listings inside the chapters are licensed under the MIT License.
 
 Copyright (c) 2026 Kian Kyars
 

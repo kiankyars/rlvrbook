@@ -8,7 +8,7 @@ Writes book/diagrams/11-scalerl-100k-gpu-hours-{light,dark}.svg.
 
 Run from the repository root:
 
-    uv run code/figures/11-scalerl-100k-gpu-hours.py
+    uv run scripts/figures/11-scalerl-100k-gpu-hours.py
 
 This redraws Figure 1 of ScaleRL (Khatri et al., 2025, arXiv:2510.13786,
 CC BY 4.0), "Validation perf., Scaling RL Compute", so that the legend sits

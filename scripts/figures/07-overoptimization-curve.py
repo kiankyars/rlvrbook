@@ -8,7 +8,7 @@ Writes book/diagrams/07-overoptimization-curve-{light,dark}.svg.
 
 Run from the repository root:
 
-    uv run code/figures/07-overoptimization-curve.py
+    uv run scripts/figures/07-overoptimization-curve.py
 
 The curves use the RL functional form of Gao, Schulman and Hilton (2023,
 arXiv:2210.10760, Section 1, p. 2). With d = sqrt(KL(pi || pi_init)) the gold
