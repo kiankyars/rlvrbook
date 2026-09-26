@@ -137,9 +137,20 @@ The least understood stage of training now takes the largest share of lab comput
 
 The largest systematic datapoint is ScaleRL: a study totaling more than 400,000 GPU-hours that fits sigmoidal compute-performance curves to RL training runs and validates them by predicting, from the first half of a single run, where that run lands at 100,000 GPU-hours [@khatri2025scalerl]. Performance is the pass rate on 1,000 math prompts held out from the training set: the fraction of 16 samples per prompt that the checker marks correct, averaged over the prompts.
 
-::: {#fig-ch11-scalerl-100k fig-cap="Sigmoid curves fitted to the early training points of each run and extrapolated predict the extended training points for an 8B dense model and a 17Bx16 mixture-of-experts model. Reproduced from Khatri et al., CC BY 4.0."}
+::: {#fig-ch11-scalerl-100k}
 
-![](../diagrams/11-scalerl-100k-gpu-hours.png){fig-alt="Validation pass rate against GPU hours on a log scale for ScaleRL-8B Dense and ScaleRL-17Bx16 MoE, with fitted sigmoid curves and extrapolations that match extended training points." width="75%"}
+::: {.content-visible when-format="html"}
+![](../diagrams/11-scalerl-100k-gpu-hours-light.svg){.light-content fig-alt="Held-out pass rate against RL training compute on log scales for an 8B dense model and a 17Bx16 mixture-of-experts model, with sigmoid curves fitted to the training points and extrapolations that match the extended training points."}
+
+![](../diagrams/11-scalerl-100k-gpu-hours-dark.svg){.dark-content fig-alt="Held-out pass rate against RL training compute on log scales for an 8B dense model and a 17Bx16 mixture-of-experts model, with sigmoid curves fitted to the training points and extrapolations that match the extended training points."}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/11-scalerl-100k-gpu-hours-light.svg)
+:::
+
+Sigmoid curves fitted to the early training points of each run and extrapolated predict the extended training points for an 8B dense model and a 17Bx16 mixture-of-experts model. Redrawn from Khatri et al.'s Figure 1 (CC BY 4.0), with the points digitized from the published figure.
+
 :::
 
 Each fitted curve has three parameters: $A$, the ceiling the run approaches, $C_{mid}$, the compute at which it has made half its gain, and $B$, how sharply the curve rises. In ScaleRL's ablations, most recipe choices changed how fast a run rises, not how high it goes. The basis is a leave-one-out experiment: reverting any one of eight choices from the full recipe (advantage normalization, length control, zero-variance filtering, the off-policy algorithm, the FP32 logit fix, loss aggregation, the prompt curriculum, or the loss function) left the fitted ceiling between 0.590 and 0.610, against 0.610 for the full recipe and inside the $\pm 0.02$ margin measured across three seeds, and only lowered the efficiency exponent, from 2.01 to as low as 1.62 for uniform prompt sampling. The choices that did move the ceiling were the loss function in the forward ablations (DAPO's 0.520 against CISPO's 0.595), the FP32 logit fix (0.52 to 0.61), the generation length (14K to 32K tokens: 0.610 to 0.645), the batch size (768 to 2,048: 0.610 to 0.645), and the model size (the 8B dense model's 0.610 against the 17Bx16 mixture of experts' 0.710) [@khatri2025scalerl]. The practical lesson is to compare recipes by their fitted ceilings rather than by which one is ahead at a given step (@fig-ch11-scalerl-ceiling): raising the generation limit from 14K to 32K tokens slowed early progress but lifted the ceiling.
