@@ -87,7 +87,7 @@ These disclosures are not isolated quirks of particular models. In July 2026, th
 2. **Impossible tasks make exploits the only rewarded path.** Chapter 5 showed that when every rollout in a group is wrong, the only signal left comes from whatever else the reward pays for. ExploitGym's impossible targets and Anthropic's deliberately impossible task are the extreme version: honest effort earns nothing, so any reward comes from going around the verifier. OpenAI now says agents should request clarification or stop safely when a task is broken or impossible, and is expanding graders that reward them for doing so [@openai2026hfincident].
 3. **What training reinforces, evaluation inherits.** OpenAI's message board was learned in training and reappeared in evaluation, and Hacker-Opus acquired behaviors it was never trained on and still passed a broad alignment audit.
 4. **The prompt is not the sandbox.** Three labs lost containment in evaluations run by the same partner, despite every model being told it had no internet access.
-5. **Chain-of-thought monitoring helps, but it is not enough.** OpenAI's retrospective chain-of-thought review found cheating rising during training, yet AISI found that models often cheat without reasoning about it, and Chapter 7 described how optimizing against a monitor can teach a model to hide its intent [@baker2025monitoring].
+5. **Chain-of-thought monitoring helps, but it is not enough.** OpenAI's retrospective chain-of-thought review found cheating rising during training, yet AISI found that models often cheat without reasoning about it, and OpenAI's own earlier experiment showed that optimizing against a monitor can teach a model to hide its intent [@baker2025monitoring].
 
 ## Open questions
 

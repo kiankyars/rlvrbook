@@ -63,7 +63,7 @@ Kimi K3's web-development environments combine deterministic checks with LLM jud
 
 ## DeepSWE
 
-DeepSWE is a software coding agent trained with the rLLM platform that uses Qwen3-32B as the harness policy and is trained with GRPO++, a modified GRPO. Training took six days on 64 H100 GPUs, and on SWE-bench Verified the result is 42.2% Pass@1, 71.0% Pass@16, and 59.0% when hybrid test-time scaling selects among 16 rollouts [@agentica2025deepswe].
+DeepSWE is a software coding agent trained with the rLLM platform that uses Qwen3-32B as the harness policy and is trained with GRPO++, a modified GRPO. Training took six days on 64 H100 GPUs, and on SWE-bench Verified the result is 42.2% pass@1, 71.0% pass@16, and 59.0% when hybrid test-time scaling selects among 16 rollouts [@agentica2025deepswe].
 
 The training environment is a subset of R2E-Gym, i.e. dockerized and executable software-engineering tasks with natural-language task descriptions, repositories, unit tests, and reward calculation by running tests [@jain2025r2egym]. DeepSWE used 4,500 of these tasks, after removing any drawn from the same repositories as SWE-bench Verified to avoid contamination, and each RL iteration spawned 512 Docker containers in parallel: a batch of 64 tasks with 8 rollouts each [@agentica2025deepswe].
 
@@ -94,7 +94,7 @@ DeepSeek scales RL along training compute and the number of scaffolds; on DeepSW
 
 ## Where environments come from {#sec-ch10-environments}
 
-Ilya Sutskever (aka the GOAT) proclaimed at NeurIPS 2024 that "pre-training as we know it will unquestionably end", because compute keeps growing while "we have but one internet": "the fossil fuel of AI" [@sutskever2024neurips]. Environments are the RL counterpart of pretraining's internet, and high-quality environments are harder to scale than pretraining data. DeepSWE trained on 4,500 R2E-Gym environments, which were curated semi-automatically from real GitHub commits, and although expert data will only become more important over time, automating environment construction will inexorably grow, because of the cost of man-made environments and as a by-product of recursive self-improvement (RSI). DeepSeek is aware of this and consequently runs a synthetic environment effort, which defines tasks as a triplet:
+Ilya Sutskever (aka the GOAT) proclaimed at NeurIPS 2024 that "pretraining as we know it will unquestionably end", because compute keeps growing while "we have but one internet": "the fossil fuel of AI" [@sutskever2024neurips]. Environments are the RL counterpart of pretraining's internet, and high-quality environments are harder to scale than pretraining data. DeepSWE trained on 4,500 R2E-Gym environments, which were curated semi-automatically from real GitHub commits, and although expert data will only become more important over time, automating environment construction will inexorably grow, because of the cost of man-made environments and as a by-product of recursive self-improvement (RSI). DeepSeek is aware of this and consequently runs a synthetic environment effort, which defines tasks as a triplet:
 
 1. a problem,
 2. an environment, and

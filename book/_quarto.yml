@@ -13,15 +13,15 @@ book:
   repo-url: "https://github.com/kiankyars/rlvrbook"
   output-file: rlvrbook
   favicon: escher/escher.jpg
-  image: escher/00-corsica-corte.jpg
+  image: /escher/00-corsica-corte.jpg
   open-graph:
     site-name: "RLVR Book"
     locale: en_US
-    image: escher/00-corsica-corte.jpg
+    image: /escher/00-corsica-corte.jpg
     image-alt: "M. C. Escher, Corsica Corte (1929)."
   twitter-card:
     card-style: summary_large_image
-    image: escher/00-corsica-corte.jpg
+    image: /escher/00-corsica-corte.jpg
     image-alt: "M. C. Escher, Corsica Corte (1929)."
   sidebar:
     title: "rlvrbook"
@@ -61,6 +61,7 @@ bibliography: bibliography.bib
 
 crossref:
   chapters: true
+  appendix-delim: ":"
 
 execute:
   freeze: auto

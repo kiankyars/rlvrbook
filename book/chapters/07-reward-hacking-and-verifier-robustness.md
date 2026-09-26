@@ -53,20 +53,20 @@ The verifier was calibrated for one distribution of model outputs, yet the polic
 
 Turpin et al. showed that chain-of-thought explanations can hide factors that influenced the answer, and Lanham et al. tested faithfulness more directly by intervening on traces [@turpin2023language; @lanham2023measuring]. The mechanism gap is the difference between a trace that predicts correctness and a trace that causally controls the answer:
 
-Let $X$ be the prompt, $R$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,R,Y)$.
+Let $X$ be the prompt, $T$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,T,Y)$.
 
 The artifact-level question is:
 
 $$
-\Pr(Y \text{ correct} \mid X,R).
+\Pr(Y \text{ correct} \mid X,T).
 $$ {#eq-ch7-artifact-correctness}
 
 The causal question is different:
 
 $$
-\Pr(Y=y \mid \operatorname{do}(R=r), X)
+\Pr(Y=y \mid \operatorname{do}(T=t), X)
 \quad \text{versus} \quad
-\Pr(Y=y \mid \operatorname{do}(R=r'), X).
+\Pr(Y=y \mid \operatorname{do}(T=t'), X).
 $$ {#eq-ch7-causal-trace}
 
 ## Empirical exploits

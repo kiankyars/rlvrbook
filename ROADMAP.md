@@ -20,7 +20,6 @@ Findings are in book order, and each is tagged high, med or low.
 Also, figure 2 in the paper is extremely informative, so I have added my own generated version of it, please substitute my versions for the PDF as well as the web version.
 
 5. **[med] 13 of 16 pages scroll sideways at phone width.** Display equations are cut off (Ch 3 eq 3.2, Appendix A, Ch 7), and tables and long URLs overflow too. Fix: three CSS rules, tested, plus splitting one inline equation in a Ch 6 footnote.
-6. **[med] Link previews show no image on every chapter page, on the live site.** `og:image` resolves to `/chapters/escher/...`, which returns 404. Fix: a leading slash in `_quarto.yml` lines 16, 20 and 24.
 7. **[med] Dark-mode contrast.** Ch 7's Goodhart widget axes and ticks are at 1.6:1 contrast, and Ch 2 and Ch 4 widget labels at about 2.2:1. Fix: dark overrides in `custom.css`.
 8. **[med] The PDF bibliography has no heading and no table-of-contents or bookmark entry.** It runs straight on from D.6. Fix: a References page with `{#refs}`.
 9. **[low] PDF and web number figures differently.** The PDF counts through the whole book ("Figure 8") while the web numbers per chapter ("Figure 5.2"). Fix: `\counterwithin`, tested.
@@ -42,35 +41,16 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
     - `book/siboehm-cuda-mmm/` holds 9.4 MB of unused third-party images.
     - README lists no prerequisites: TinyTeX with koma-script, rsvg-convert, ripgrep, uv.
     - AGENTS.md's layout rules are out of date.
-18. **[med] Bibliography errors:**
-    - **PPOCoder:** the entry's title doesn't exist, and 5 of 6 authors are wrong. The real paper is "Execution-based Code Generation using Deep Reinforcement Learning" by Shojaee, Jain, Tipirneni and Reddy; I checked this on arXiv.
-    - **RLTF:** the authors are wrong; the real first author is Jiate Liu.
-    - **Other author lists:** Nye et al. lists 5 people who aren't authors, Wei et al. is missing Ichter, and the Codex entry has "Chanez" for "Chantzis".
-    - **Dead sources for Ch 1's Meta quotes:** the Fortune URL returns 404, though a working one exists. The TMTPost URL also returns 404; a live page (en.tmtpost.com/post/7436962) contains the quote but has a different title.
-    - **Venues:** R1 is still listed as a preprint (it's Nature 2025), and so is Yue et al. (NeurIPS 2025).
-    - **Low priority:** 31 entries are never cited, and arXiv-only papers use two entry styles.
 19. **[low] Heading case.** AGENTS.md asks for sentence case. Ch 1's section headings, Appendix A, every "Chapter Map" and the landing-page headings are Title Case. Chapter titles are also mixed: ten in Title Case, Ch 10 in sentence case, and Appendix B unlike A, C and D. Decide one convention.
-20. **[low] Spelling drift:**
-    - "pre-training" at Ch 11:124 and 161.
-    - "test time" used as a modifier, as in Ch 6's title.
-    - "pass@n" at Ch 11:194, and "Pass@1" in Ch 10 and 11.
+20. **[low] Spelling drift:** "test time" used as a modifier, as in Ch 6's title (the rest was normalized on September 26).
 
 ### Landing page
 
 21. **[med] L31 is out of date:**
-    - It promises a "TL;DR" per chapter, but chapters open with a chapter map.
     - The reading paths predate Chapter 8: Ch 3, 6 and 8 are in no path, and Ch 9 isn't in the builders' path.
     - Nothing points to Appendix A (RL background) or Appendix C (terms).
 22. **[low] Dead links in the PDF.** The "Open PDF" link and the `.md` chapter links don't work from inside the PDF.
-23. **[low] The "no EM dashes" guarantee is false in the rendered output.** Quarto titles appendices "Appendix A — …", and the Ch 4 table's `---` cells become em dashes. Fix: `crossref: appendix-delim: ":"` (tested) and "n/a" in those cells.
 24. **[low] The LLM-use statement vs the git history.** It lists only planning, scaffolding and diagrams, but Ch 8, Ch 11, Appendix D and much of Ch 10 were drafted by Claude and then edited by you. Only you can word this.
-25. **[low] Typos:**
-    - "intelligble"
-    - "can still read alone"
-    - "Exclaidraw"
-    - "artisitic"
-    - "Github"
-
 ### Chapter 1
 
 26. **[med] L39: DeepSeekMath is called the "first paper to apply critic-free RL to mathematical reasoning at LLM scale".** Uesato et al. (2022) already ran final-answer RL on a 70B model, and ReST-EM followed in 2023. DeepSeekMath's own GRPO run also used a learned reward model, not a verifier. Fix: drop "first".
@@ -104,11 +84,6 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
 
 ### Chapter 4
 
-35. **[med] L54: the ensemble findings belong to a different paper.** "Mitigate but do not eliminate" and "pretraining seeds generalize better" are from Eisenstein et al. (arXiv 2312.09244). Coste et al., the paper cited, found that conservative ensembles "practically eliminate" over-optimization. I checked both abstracts.
-36. **[med] L200–223: the hybrid-verifier code rewards dropping the answer tags.**
-    - An answer with no tag goes to the judge.
-    - A tagged answer that can't be parsed gets 0.
-    - Fix: `if not candidate: return None`, and adjust the sentence at L200.
 37. **[med] L50: "today's models likely do not suffer such biases to the same extent" is undercut by the paper cited next.** Yang (2026) finds capability often uncorrelated, or even negatively correlated, with low self-preference bias. Scope the hedge.
 38. **[low] L58: RewardBench is credited with calibration results it never measured.** It measures pairwise accuracy.
 39. **[low] L39: the odd-number-of-judges result is cited to a paper that doesn't contain it.** It's also majority-vote arithmetic: with random tie-breaking, 2k judges are no more accurate than 2k−1.
@@ -141,11 +116,7 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
 47. **[med] "Reward hacking" is never defined, and the taxonomy lacks tampering with the environment or grader.** The chapter's own examples (`exit(0)`, SkipTest, a patched verifier, shadowing pandas) and all of Ch 8's cases belong to that missing class.
 48. **[med] L88 says "The same dynamics hold" for programmatic verifiers, with no evidence.** Hedge it.
 49. **[med] L52–70 ("Mechanism gaps") uses the do-operator with no explanation and no example.** A Turpin or Lanham example would fix it; you'd want to write those sentences yourself.
-50. **[low] `R` means both the true reward (L24) and the reasoning trace (L56).**
-
 ### Chapter 8
-
-51. **[med] L90: "Chapter 7 described how optimizing against a monitor can teach a model to hide its intent" points to nothing.** Ch 7 never says this; it's at Ch 11:110. Four reviewers found this independently. Fix: cite the result directly, or add one sentence to Ch 7 after L76, since it's the same Baker et al. run.
 
 ### Chapter 9
 
@@ -174,12 +145,7 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
 
 ### Appendix A
 
-61. **[med] L62 says the baseline is "how we bootstrap RL to improve".** That's wrong: a baseline that doesn't depend on the sampled answer leaves the expected update unchanged and only reduces variance. "Bootstrap" is also a different RL term.
-62. **[low] Smaller errors in Appendix A:**
-    - The "multi-turn" state (L31–41) has no tool or environment observations.
-    - The weight `w_i` is defined but never used.
-    - L52 claims the book uses `R_φ`, but the chapters use `r(x,y)` and `v(x,y)`.
-    - L115 is garbled.
+62. **[low] Appendix A:** the "multi-turn" state (L31–41) has no tool or environment observations (the other three points were fixed on September 26).
 
 ### Appendix B
 
@@ -205,8 +171,8 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
 **Suggested order:**
 
 1. Items 1–2 (rights).
-2. The factual errors: 18, 26, 32, 33, 35, 36, 61, 51.
-3. The cheap site fixes: 6 and 5.
+2. The factual errors: 26, 32, 33.
+3. The cheap site fixes: 5.
 4. The links between parts: 21, 27, 64, 41, 52.
 5. The coverage additions: 43, 44, 42, 30, 29, 54.
 6. Everything else.
