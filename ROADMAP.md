@@ -8,7 +8,6 @@ Findings are in book order, and each is tagged high, med or low.
 
 ### Site, PDF, repository
 
-2. **[high] The Ch 6 and Ch 11 openers may not be public domain.** "Calanques de Piana (1928)" and "Alfedena Abruzzi (1929)" aren't in Escher's catalogue of prints. They look like dated drawings with no known publication before 1931, and unpublished works stay protected in the US until 2042. Today's rescans didn't change this, since they're the same works. Fix: document a publication date, swap in catalogued 1930-or-earlier prints (for example Bonifacio 1928, Calvi 1928, Street in Scanno 1930), or narrow the claim. Sure, if you want to replace with those two works that you mentioned, then go ahead, but the favicon is really trivial, so let's not get worried about that.
 3. **[med] The repo has no license at all**, though it's public, invites contributions, and publishes your review skill. Pick licenses for text and code, and list the third-party exceptions. (I generally have no qualms if people use my book for whatever purpose they desire, unless they claim that they wrote the book, which I think, even without a license, is not allowed. If what I'm saying is true, then we can ignore having a license.)
 4. **[med] Ch 7's over-optimization figure** (September 26: it has the id `fig-ch7-overoptimization`, Ch 11 references it, and the PDF plots Gao et al.'s functional form from `code/figures/07-overoptimization-curve.py`; the author's own version of the figure is still to come):
    - The PDF reproduces Gao et al.'s plot, and its arXiv license grants no reuse, unlike the CC BY figures in Ch 11.
@@ -170,7 +169,7 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
 
 **Suggested order:**
 
-1. Items 1–2 (rights).
+1. Item 3 (license).
 2. The factual errors: 26, 32, 33.
 3. The cheap site fixes: 5.
 4. The links between parts: 21, 27, 64, 41, 52.

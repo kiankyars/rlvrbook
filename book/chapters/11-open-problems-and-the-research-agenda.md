@@ -1,6 +1,6 @@
 # Open Problems
 
-![M. C. Escher, _Alfedena Abruzzi_ (1929).](../escher/11-alfedena-abruzzi.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Street in Scanno, Abruzzi_ (1930).](../escher/11-street-in-scanno.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
