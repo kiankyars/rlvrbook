@@ -16,7 +16,9 @@ Reinforcement learning from verifiable rewards (RLVR) studies how models can imp
 
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write most sections on my own,[^index-em-dashes] or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+
+[^index-em-dashes]: I can guarantee you there are no EM dashes in the entire book.
 
 - helping me plan out the structure
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
@@ -49,7 +51,9 @@ Each chapter has a chapter map at the beginning. Although the chapters do minima
 
 I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfbook.com), and I am well aware that his textbook treats the subject of RLVR in detail; notwithstanding, as he notes himself, this particular sub-field of ML is evolving so fast that much of the RLHF book's RLVR content will become outdated, and this book is intended to maintain pace with progress.
 
-I also acknowledge the wonderful developers of Excalidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artistic soul of the book (FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States). Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach (same for Colah from distillpub)! Lastly, thanks to the quarto devs for making the software this book uses!
+I also acknowledge the wonderful developers of Excalidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artistic soul of the book.[^index-public-domain] Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach (same for Colah from distillpub)! Lastly, thanks to the quarto devs for making the software this book uses!
+
+[^index-public-domain]: FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States.
 
 ## [GitHub Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 
