@@ -89,6 +89,8 @@ The clearest quantitative evidence for Goodhart dynamics in optimization comes f
 
 Pan et al. built four RL environments with deliberately misspecified rewards (traffic control, COVID response, blood glucose monitoring, and the Atari game Riverraid) and varied agent capability through model size, action resolution, observation noise, and training time. They found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
 
+::: {#fig-ch7-overoptimization}
+
 ::: {.content-visible when-format="html"}
 <div class="ghg-widget" id="ghg-widget">
 <p class="ghg-hint">Drag the slider to increase optimization pressure. Toggle verifier strength to see how the Goodhart gap changes.</p>
@@ -191,15 +193,11 @@ Pan et al. built four RL environments with deliberately misspecified rewards (tr
 :::
 
 ::: {.content-visible when-format="pdf"}
-![](../diagrams/07-overoptimization-gao-rm-size.png){fig-alt="Reproduced figure from Gao et al. showing gold and proxy reward curves as KL distance increases across reward-model sizes." width="96%"}
+![](../diagrams/07-overoptimization-curve-light.svg){fig-alt="Gold reward (solid) and proxy reward (dashed) against KL divergence for 12M, 300M, and 3B proxy reward models: proxy reward climbs while gold reward peaks and then falls, later and higher for larger reward models."}
 :::
 
-::: {.content-visible when-format="html"}
-Illustrative curves with the shape reported by Gao et al. [@gao2023scaling].
-:::
+Optimizing against an imperfect proxy: proxy reward keeps rising while true performance peaks and then falls, later and higher for a stronger proxy. The curves follow the functional forms of Gao et al. with illustrative coefficients [@gao2023scaling].
 
-::: {.content-visible when-format="pdf"}
-Reproduced from Gao et al. [@gao2023scaling].
 :::
 
 ## Are the highest-scoring answers actually correct?
