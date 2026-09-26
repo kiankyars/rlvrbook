@@ -1,21 +1,8 @@
-**Verdict.** Chapters 5–11 hold up well after our rounds. The rest of the book has five kinds of remaining problems:
-- **Factual errors in Chapters 1–4 and the bibliography.** Two cited papers have invented titles and authors.
-- **Missing links between parts of the book.** No chapter points to Appendices A–C, the glossary describes an older version of Chapter 11, Chapter 9 references no other chapter, and the Chapter 1 roadmap is out of date.
-- **Rendered-site bugs.** Pages overflow sideways on phones, and link previews show no image on every chapter page.
-- **Five coverage gaps worth a paragraph or section each.**
+# Roadmap
 
-Findings are in book order, and each is tagged high, med or low.
+Open tasks for contributors, from a whole-book audit on September 26, 2026 and the author's own list. Items are in book order and tagged high, med, or low. To take one, open an issue naming the item number, then send one PR per item (see CONTRIBUTING.md). Items are findings, not decisions: if you think one is wrong, say so in the issue.
 
 ### Site, PDF, repository
-
-4. **[med] Ch 7's over-optimization figure** (September 26: it has the id `fig-ch7-overoptimization`, Ch 11 references it, and the PDF plots Gao et al.'s functional form from `code/figures/07-overoptimization-curve.py`; the author's own version of the figure is still to come):
-   - The PDF reproduces Gao et al.'s plot, and its arXiv license grants no reuse, unlike the CC BY figures in Ch 11.
-   - It has no figure id, so it's unnumbered in both formats and can't be cross-referenced.
-   - Web and PDF show different content.
-   - Fix: one `#fig-ch7-overoptimization` div. For the PDF, either get permission or plot Gao's published functional form with a script.
-   For this one, I'm not sure if the precedent here is to exclusively cite everything. If we don't ever refer to the figure, then we don't need to give it a figure ID, but if we do, then let us do that. I have the impression that we did cite it in certain places, and if that's the case, then we must have somehow used a figure ID. I'm kind of confused: what's going on here?
-   And then, for the PDF, let us either plot the Gauss published functional form with the script or adapt the web version somehow for the PDF.
-Also, figure 2 in the paper is extremely informative, so I have added my own generated version of it, please substitute my versions for the PDF as well as the web version.
 
 5. **[med] 13 of 16 pages scroll sideways at phone width.** Display equations are cut off (Ch 3 eq 3.2, Appendix A, Ch 7), and tables and long URLs overflow too. Fix: three CSS rules, tested, plus splitting one inline equation in a Ch 6 footnote.
 7. **[med] Dark-mode contrast.** Ch 7's Goodhart widget axes and ticks are at 1.6:1 contrast, and Ch 2 and Ch 4 widget labels at about 2.2:1. Fix: dark overrides in `custom.css`.
@@ -30,7 +17,7 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
 13. **[low] The Tower of Babel opener is 4.9 MB, about 35% of the PDF.** I left it unchanged today. Downscale it to 1,600 px in gray, like the others.
 14. **[low] Diagrams with real content have no alt text** describing what they show.
 15. **[med] Most figures can't be regenerated.**
-    - Only the ScaleRL figure has a generator script.
+    - Only three figures have generator scripts (`scripts/figures/`).
     - Six Matplotlib pairs whose numbers the prose quotes have none: the Ch 5 entropy band, Ch 7 accepted-pool precision, three in Ch 9, and Ch 11 entropy.
     - The Ch 5 total-reward chart is hand-written SVG, and the Ch 1 and Ch 2 Excalidraw sources are missing.
     - The Ch 5 run has no logged data committed, and its format-share plot hides the negative values at the start.
@@ -158,25 +145,12 @@ Also, figure 2 in the paper is extremely informative, so I have added my own gen
     - PPO, DPO, KL, MCTS, RLHF and ORM are never spelled out.
     - No chapter links here.
 
-**Checked and dropped:**
+**Considered and dropped by the author:** part groupings, rewriting the chapter maps, varied chapter endings (Ch 7's bridge and Ch 11's conclusion were removed on purpose), Escher caption word order, and exercises.
 
-- Part groupings: a one-chapter Foundations part is a normal choice.
-- Rewriting the chapter maps: they're house style.
-- Varied chapter endings: you removed Ch 7's bridge and Ch 11's conclusion on purpose.
-- Escher caption word order ("Corte, Corsica"): optional polish.
-- Exercises: not needed for a reference book.
+**Where to start:** the factual errors (26, 32, 33), then the links between parts (21, 27, 64, 41, 52), then the coverage additions (43, 44, 42, 30, 29, 54).
 
-**Suggested order:**
+**Not covered by the audit:** Ch 5–11 correctness beyond the author's own review rounds, Ch 8's incident sources, legal determinations beyond publication dates and arXiv licenses, and real phones or screen readers (mobile was emulated at 375 px).
 
-2. The factual errors: 26, 32, 33.
-3. The cheap site fixes: 5.
-4. The links between parts: 21, 27, 64, 41, 52.
-5. The coverage additions: 43, 44, 42, 30, 29, 54.
-6. Everything else.
+### Other
 
-**Not checked:** Ch 5–11 correctness beyond our earlier rounds, Ch 8's incident sources, any legal determination beyond publication dates and arXiv licenses, and real phones or screen readers (mobile was emulated at 375 px).
-
-### Author's items (moved from the README)
-
-- Add image-gen diagrams to the textbook where there is a clear clarity gain.
-- Chapter 11, "A reconciliation" paragraph (elicitation section): rewritten and retitled in the September 26 round; the author's sign-off is pending.
+- Add image-generated diagrams where there is a clear clarity gain.

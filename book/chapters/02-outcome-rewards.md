@@ -87,7 +87,8 @@ def canonicalize_answer(answer: str) -> tuple[str, ...]:
     text = re.sub(r"\bx\s*(?:=|\\in)\s*", "", text)
     text = re.sub(r"\b(?:or|and)\b", ",", text)
     pieces = [piece.strip() for piece in text.split(",")]
-    if not pieces or any(not re.fullmatch(r"-?\d+(?:\.\d+)?", piece) for piece in pieces):
+    number = re.compile(r"-?\d+(?:\.\d+)?")
+    if not pieces or any(not number.fullmatch(piece) for piece in pieces):
         return ()
     return tuple(sorted(set(pieces), key=float))
 

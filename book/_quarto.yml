@@ -51,6 +51,7 @@ book:
         - chapters/09-a-frontier-recipe.md
         - chapters/10-long-context-multimodal-and-agentic-rlvr.md
         - chapters/11-open-problems-and-the-research-agenda.md
+    - references.md
   appendices:
     - appendices/a-minimal-rl-and-post-training-background.md
     - appendices/b-practical-verifier-design-checklist.md
@@ -103,6 +104,9 @@ format:
     include-in-header:
       text: |
         \let\cleardoublepage\clearpage
+        \RedeclareSectionCommand[tocnumwidth=3.4em]{subsection}
+        \counterwithin{figure}{section}
+        \counterwithin{table}{section}
         \makeatletter
         \def\cleardoubleoddpage{\clearpage}
         \def\cleardoubleevenpage{\clearpage}

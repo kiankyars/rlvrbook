@@ -5,9 +5,6 @@ description-meta: "RLVR means reinforcement learning from verifiable rewards: tr
 
 # Start Here {.unnumbered}
 
-[<i class="bi bi-file-earmark-pdf"></i> Open PDF](rlvrbook.pdf)  
-[<i class="bi bi-github"></i> GitHub](https://github.com/kiankyars/rlvrbook)
-
 ![M. C. Escher, _Corsica Corte_ (1929).](escher/00-corsica-corte.jpg){width="80%" fig-align="center"}
 
 ## Abstract
@@ -16,7 +13,7 @@ Reinforcement learning from verifiable rewards (RLVR) studies how models can imp
 
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write most sections on my own,[^index-em-dashes] or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I dictated Chapters 1 to 7 and edited every chapter,[^index-em-dashes] and Claude drafted Chapters 8, 10, and 11 and Appendix D from my notes and sources, which I then rewrote; by token count about half of the prose was first written by a model and every sentence has been edited by me. The main contributions of Codex/Claude to this project were:
 
 [^index-em-dashes]: I can guarantee you there are no EM dashes in the entire book.
 
@@ -30,7 +27,7 @@ I wrote this book with the intent to cater to the largest audience possible. Wit
 
 ## How to Use This Book
 
-Each chapter has a chapter map at the beginning. Although the chapters do minimally build off of each other, they can still be read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. If you are new to RLVR, start with [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md); if you build training systems, [Chapters 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [5](chapters/05-turning-checks-into-training-signal.md), and [10](chapters/10-long-context-multimodal-and-agentic-rlvr.md); and for frontier research, [Chapters 9](chapters/09-a-frontier-recipe.md) to [11](chapters/11-open-problems-and-the-research-agenda.md). The citations are plentiful to facilitate further research if there's a specific theme which captivates you :).
+Although the chapters do minimally build off of each other, they can still be read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. If you are new to RLVR, start with [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md); if you build training systems, [Chapters 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [5](chapters/05-turning-checks-into-training-signal.md), and [10](chapters/10-long-context-multimodal-and-agentic-rlvr.md); and for frontier research, [Chapters 9](chapters/09-a-frontier-recipe.md) to [11](chapters/11-open-problems-and-the-research-agenda.md). The citations are plentiful to facilitate further research if there's a specific theme which captivates you :).
 
 ## Changelog
 
@@ -46,6 +43,9 @@ Each chapter has a chapter map at the beginning. Although the chapters do minima
 - 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims.
 - 2026-09-23: Added Chapter 8 on optimization pressure in the wild.
 - 2026-09-24: Revised Chapter 9's frontier recipe with GRPO figures and a comparison against Kimi K3 and DeepSeek-V4.1-Flash.
+- 2026-09-24: Expanded Chapter 10 with multimodal verifiers, agent scaffolds, and environment synthesis; rebuilt Chapter 11 around verification as the frontier; added Appendix D with research ideas.
+- 2026-09-25: Replaced ten Escher openers with higher-resolution scans and fixed PDF figure captions and placement.
+- 2026-09-26: Audited the whole book; the open findings are in ROADMAP.md for contributors. Added the SemiAnalysis compute charts to Chapter 11, redrew the ScaleRL and Gao et al. figures, replaced the Chapter 6 and 11 openers with catalogued prints, and added a license.
 
 ## Acknowledgments
 
