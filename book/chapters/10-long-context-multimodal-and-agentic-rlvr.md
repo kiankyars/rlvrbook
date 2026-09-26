@@ -82,11 +82,27 @@ The crux here is that the harness itself shapes the policy (the Qwen model we ar
 
 ## MiniMax
 
-During MiniMax's training, the policy (the M2 model being trained) runs inside an agent scaffold, i.e. a program such as Claude Code that sends a prompt to a model API, calls tools, rewrites the prompt, and repeats. To learn from one of these calls, the trainer needs the exact prompt the model saw and the tokens it returned, since RL raises or lowers the probability of that response given that prompt. Yet every agent rewrites its prompts in its own way, whether by truncating old tool outputs, summarizing, or delegating to sub-agents, so rebuilding the prompts from outside would require reimplementing each agent's logic. MiniMax's solution is a gateway, a middleman that forwards each request and keeps a copy. The agent sends each of its requests to the gateway's model API instead of directly to a model; the gateway passes the call to the policy being trained, returns the policy's answer to the agent, and saves the exact prompt and response as a training example. The trainer thus needs to know nothing about how the agent built each prompt. MiniMax says the gateway design has been validated across hundreds of distinct agent scaffolds and thousands of tool-call formats [@minimax2026m2].
+During MiniMax's training, the policy (the M2 model being trained) runs inside an agent scaffold, i.e. a program such as Claude Code that sends a prompt to a model API, calls tools, rewrites the prompt, and repeats. To learn from one of these calls, the trainer needs the exact prompt the model saw and the tokens it returned, since RL raises or lowers the probability of that response given that prompt. Yet every agent rewrites its prompts in its own way, whether by truncating old tool outputs, summarizing, or delegating to sub-agents, so rebuilding the prompts from outside would require reimplementing each agent's logic. MiniMax's solution is a gateway (@fig-ch10-gateway), think of it as a middleman that forwards each request and keeps a copy. The agent sends each of its requests to the gateway's model API instead of directly to a model; the gateway passes the call to the policy being trained, returns the policy's answer to the agent, and saves the exact prompt and response as a training example. The trainer thus needs to know nothing about how the agent built each prompt. MiniMax says the gateway design has been validated across hundreds of distinct agent scaffolds and thousands of tool-call formats [@minimax2026m2].
+
+::: {#fig-ch10-gateway}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/10-gateway-light.png){.light-content fig-alt="Many agent harnesses send their requests to one gateway, which forwards them to the model; the model and the training loop feed each other."}
+
+![](../diagrams/10-gateway-dark.png){.dark-content fig-alt="Many agent harnesses send their requests to one gateway, which forwards them to the model; the model and the training loop feed each other."}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/10-gateway-light.png)
+:::
+
+MiniMax's gateway: many agent harnesses call one model API, and the gateway forwards each call to the policy, returns the answer, and records the exact prompt and response as a training example.
+
+:::
 
 For example, take an agent fixing a bug over three calls. In the first call, the model sees the issue and asks to read a file. In the second, it sees the issue, its request, and the file's 2,000 lines, and runs the tests. Before the third call, the agent replaces the 2,000 lines with a two-line summary to save space, so the model sees the issue, its requests, the summary, and the test output. The gateway records three training examples, each holding exactly what the model saw at that call, including the summary in the third. A trainer that rebuilt the context from the agent's full history would instead train the third step on 2,000 lines the model never saw at that point.
 
-MiniMax distinguishes two kinds of agent by how much of this rewriting the trainer can see. A white-box agent runs its context management, such as sliding-window truncation or periodic summarization, inside the training framework, so the trainer sees each transformation and can build training sequences that match the states the policy faces at inference. A black-box agent is opaque: the trainer sees only what each call exposes, namely the context sent to the model, the model's response, and the tool results, as in the bug-fixing example. That is enough to train on, and it lets MiniMax plug in agents with deep thinking loops, aggressive context rewriting, or hierarchical multi-agent coordination without modifying them. The gateway serves both; a white-box agent differs only in also registering its context-management operations [@minimax2026m2].
+MiniMax distinguishes two kinds of agent by how much of this rewriting the trainer can see. A white-box agent runs its context management, such as sliding-window truncation or periodic summarization, inside the training framework, so the trainer sees each transformation and can build training sequences that match the states the policy faces at inference. A black-box agent is opaque: the trainer sees only what each call exposes, namely the context sent to the model, the model's response, and the tool results, as in the bug-fixing example. That is enough to train on, and it lets MiniMax plug in agents with deep thinking loops, aggressive context rewriting, or hierarchical multi-agent coordination without modifying them. The gateway serves both; a white-box agent differs only in also registering its context-management operations [@minimax2026m2]. The black-box interface is what enables training across many harnesses, and that diverse training can help produce a broadly capable policy.
 
 ## DeepSeek
 

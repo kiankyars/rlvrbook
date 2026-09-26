@@ -1,114 +1,48 @@
-Review round of September 26. Delete each entry as you handle it. Commits are listed at the end; each answers one group of points, so any commit can be dropped on its own.
+Round of September 26, second pass. Line numbers are the current ones. Delete entries as you handle them; this file goes away at the end of the review.
 
 ### Chapter 10
 
-- **L85:** rewritten as you asked: "The agent sends each of its requests to the gateway's model API instead of directly to a model; the gateway passes the call to the policy being trained, returns the policy's answer to the agent, and saves the exact prompt and response as a training example."
-- **L97:** "(aka the GOAT)" is now a footnote, per the new asides rule.
+- **L85 to L103:** your gateway figure is in as `fig-ch10-gateway`, split into light and dark PNGs, referenced from the gateway sentence.
+- **L105:** your sentence on the black-box interface enabling training across many harnesses closes the black-box paragraph. Move or cut it if you meant it elsewhere.
 
 ### Chapter 11
 
-- **L32:** unchanged ("part of the reallocation"), as agreed.
-- **L54 (gains largest where the base is weakest):** you are right for the case you describe, a bad base model on a task where partial progress earns signal. The sentence was about pass@k, though, where "weakest" means the base model rarely or never samples a correct answer, and there RL with a binary reward has nothing to reinforce; the grokking paper shows exactly that stall until a dense warm-up gave signal. So the claim is self-evident with dense reward and not with binary reward, which is why the sentence stays out. If you want it back, "with a dense reward, the gains were largest where the base model was weakest" would be defensible.
-- **L56:** "code problem family" is now "a family of program-synthesis puzzles written in a custom language the model had never seen, verified by test cases". Your suggested "Python unit tests, based in MATLAB" does not match the paper: the pass@k = 0 family is Manufactoria, a domain-specific language the authors invented, and the Python tasks (BouncingSim) are in a different experiment where the base model already had non-zero pass.
-- **L57 (SFT below the base model):** the authors do give a reason, so SFT stays and the reason is in the text: imitating expert trajectories collapsed the variety of search strategies from about 40 distinct query sequences per problem to 15, so SFT lost 7 problems the base agent solved while gaining 3. I also fixed a factual problem in the sentence: the paper has only one setting where the RL curve pulls away from the base as k grows (the multi-hop "bridge" questions); the simpler comparison questions do not diverge. The sentence had described one result as two.
-- **L61 to L63, the reconciliation paragraph:** your instinct about the title was right. It is now "Why both cases can be right" and opens with the point in one sentence: both cases can be right because standard RLVR spends most of its updates where they can only sharpen. Three changes to your wording:
-  - "the large-k decline" now says what it is: "the decline Yue et al. measured, in which the RL model falls below the base model once k is large". That is what you assumed.
-  - "partly an artifact" became "reflects where standard RLVR spends its updates rather than an inability to learn anything new". The paper never calls the decline an artifact; it says the decline is real and expected, and that it masks genuine gains.
-  - "a sufficiently fine-grained advantage calculation" was not accurate, so it is gone. Nothing fine-grained is involved: the all-fail update is coarser than GRPO's, a constant negative advantage per rollout with no group baseline (negative-sample reinforcement). The text now says "the update needs a signal that does not vanish there, such as a penalty on the failed answers themselves". "Binary GRPO" is also gone; GRPO with binary rewards is the default the chapter already assumes.
-  - "on difficult benchmarks" now names them (MinervaMath and OlympiadBench, +2.6 and +0.9 pass@256 over the base model), since the paper calls those intermediate-difficulty elsewhere.
-  - The pending comment is removed; the roadmap still lists the paragraph until you sign off.
-- **L67:** "and so is whether composing known skills should count as new capability" is deleted; agreed that it is definitional, not an RL question.
-- **L73 (your DPO question):** no, practitioners do not fit Gao's law up front to predict where a run peaks. Its use is retrospective: it explains the hump. In practice people sweep the KL coefficient or beta and the number of steps and pick by a held-out judge or benchmark, which is what the sentence says. DPO has its own version of the hump (Rafailov et al., 2024, "Scaling laws for reward model overoptimization in direct alignment algorithms"), but it is used the same way. Your note is removed; the figure reference now points at the new Chapter 7 figure id.
-- **L75 (did the policy fool the reasoning judges?):** yes, both the training judge and the stronger gold judge. The text now gives the example: the policies learned one stereotyped output, a refusal citing a made-up "platform policy", then a fake end-of-response marker, then a self-assessment praising the refusal. GPT-OSS-120B, the gold judge the reasoning judges were distilled from, scored that output 9 out of 9 even after the authors hardened its prompt, and the same output won 90% on Arena-Hard creative writing under GPT-4.1 for a Llama-3.1-8B policy. Your "(this is relatively speaking, since today both of these models are impotent)" is now a footnote.
-- **L97:** your "two partial answers:" is kept.
-- **L102:** "No published results yet extend this to frontier-scale agentic tasks" is removed, as you proposed. For the record, that sentence was my replacement for a conditional you disliked in an earlier round, and Appendix D's audit idea covers the gap anyway. Your "As an aside" sentence is now a footnote, since you labelled it an aside.
-- **L112:** your Anthropic observation is held as an HTML comment after Pachocki's list rather than in the text, because it conflates two properties: monitorability is whether the chain of thought reveals intent, alignment is whether the model has good intent, and a model can be less monitorable and more aligned at once. If you want it in, a footnote such as "Anthropic, for its part, describes each successive model as its most aligned; that claim rests on evaluations, not on chain-of-thought monitoring" would be accurate. "(one eternity in AI time)" is now a footnote. "persuasivereasons" fixed.
-- **L128, figure caption:** fixed to "…mixture-of-experts model. Redrawn from Khatri et al.'s Figure 1 (CC BY 4.0), with the points digitized from the published figure."
-- **L131, the legend:** the figure is redrawn rather than edited. A script (`code/figures/11-scalerl-100k-gpu-hours.py`) digitizes the points from the paper's PNG, draws the paper's fitted curves, and puts the legend below the axes in two rows, with light and dark SVGs like the other figures. The digitized points are within about 1 pixel of the paper's; a few overlapping markers in the paper's clusters could not be separated. Your removed introducing sentence stays removed.
-- **L134:** the basis is now in the text with numbers: reverting any one of eight choices from the full recipe left the fitted ceiling between 0.590 and 0.610 against 0.610, inside the ±0.02 seed-to-seed margin, and only lowered the efficiency exponent (2.01 down to 1.62 for uniform sampling); the ceiling movers, with their numbers, follow. One correction to the old sentence: the loss function moved the ceiling only in the forward ablations (DAPO 0.520 against CISPO 0.595); reverting to DAPO from the full recipe did not, so the text now says so.
-- **L152:** "(really worth reading this paper)" is a footnote. The other asides converted to footnotes in this round: Chapter 11 L75 (relative judges), L102 (sample versus population), L112 (one eternity), L169 (the folding qualifier), L196 (interpretability artifact); index L19 (no em dashes) and L52 (public domain); Chapter 8 L34 (monitoring not set up); Chapter 10 L97 (the GOAT). Left inline because they define or explain rather than remark: Ch 1 L33 "(this is the basis of RLHF)", Ch 6 L30 and L32, Ch 8 L32 and L56, Ch 11 "(all common in pretraining data)". Your "dictated 'marketing practices'" I read as "remarks in parentheses"; say if you meant something else.
-- **L159:** "littlke" fixed. ProRL's reset is not standard: standard GRPO keeps the KL reference fixed for the whole run, and ProRL's paper introduces the hard reset of the reference to a recent snapshot, with the optimizer state, as one of its three contributions. The text now says that.
-- **L161:** the 2025 open-model shares (R1-Zero under 4%, R1 5.5%, Nemotron under 1%) are dropped, as you suggested once a SemiAnalysis figure sat there; the OLMo 3 durations stay as the one open datapoint. If you want the 5.5% sentence back, it is in the previous commit.
-- **L169:** the folding qualifier is a footnote in your words, grammar fixed.
-- **L179 (rubrics, your rewrite):** fine as a definition; I fixed "possibilites", "criteron", and the run-on. My one reservation: the cut example ("avoids misinformation" for a medical question) was the only concrete criterion a reader ever saw, and the house style leads with examples. Restore it if you agree; I did not.
-- **L186:** RL's Razor is introduced by its italic title; "forgets" is now "forgets less of what the model could do before than SFT does", which is what you assumed; the Guru sentence stays because the closing sentence rests on it (it is the evidence that logic, simulation, and tabular reasoning need their own data).
-- **L192:** "self-imporvement" fixed; INTUITOR's numbers added (47.6% against 49.4% on MATH500 from a 43.6% base; 72.3% against 71.4% on GSM8K).
-- **L196:** the interpretability aside is a footnote.
-- **L202 (pseudo-labels):** defined in a clause: "the answers the model treats as ground truth for its own training, such as the majority-vote answer".
-- **L202 (MiniMax 30% to 50%):** the reason it was cut: the sentence says M2.7 does 30% to 50% of the RL team's daily iteration work (reading logs, debugging, adjusting configs). That is a model automating RL research operations, not a model writing its own tasks or verifiers, so it did not support the section and nothing else in the book connects to it. It had already been moved once, out of the rubrics section, before being cut. I still think it does not belong; if you want it, the best home is a footnote in the environment-scaling part of Chapter 10.
-- **L204 (SPADE):** you were right. The privileged hint is written by the designer itself and serves only the designer's reward; the external input that stops the collapse is the seed document from the pretraining corpus, and it was removing the corpus that produced the same rotating-maze environment 41 times. The text now says so and keeps your DeepSeek analogy for the corpus. Self-Guided Self-Play is a method name, so it is plain; the text now reads "A method called Self-Guided Self-Play".
-- **L206:** the quote was already in the text from the last round; it now includes the second sentence too: producing environments "faster than our systems could vet them", "reward hacks and misconfigurations started outpacing our ability to filter or fix them", and the April freeze "to overhaul the stack". Source: Anthropic, "Improving our alignment and security efforts", August 31, 2026.
-- **New figures at L124 and L161:** both SemiAnalysis charts are in, reproduced with permission and captioned as such. The compute-share chart (Anthropic and OpenAI combined, 1Q24 to 4Q26E) follows the sentence that quotes it; the OpenAI capacity chart (training versus inference through 2030) anchors the frontier paragraph, which now says the science is missing exactly where the compute is. The ClusterMAX 3.0 report has a bibliography entry. The OpenAI chart is a dashboard screenshot with a large SemiAnalysis logo over it; it is what the article publishes.
+- **L56:** the dense-reward version of the sentence is in the grokking bullet: "with that dense reward, the gains were largest exactly where the base model was weakest".
+- **L57 to L59:** the SFT detail is a footnote.
+- **L61:** noted on "fine-grained"; the text stays as it is, since it now says what the update needs.
+- **L75:** you cut the reasoning-judge sentence, which carried the only citation for the judge sweep; the citation is back on the sweep sentence.
+- **L112 and L124 (Anthropic on monitorability):** yes. The Claude Opus 4.8 system card (May 28, 2026, section 6.6.3) reports a white-box probe finding grader-oriented reasoning in the activations, unprompted and never verbalized, in around 5% of sampled RL episodes, and offers it "as an indication that chain-of-thought alone may not be sufficient to allow robust monitoring of frontier models for grader awareness". Later cards dropped the hint-based faithfulness metric for behavioral audits. It is now a footnote after the Astra sentence, with a bibliography entry.
+- **L154:** the caption you asked about (it was L128 in the file you annotated; it moved when the SemiAnalysis figure went in above it).
+- **L158 to L160:** the eight reverted choices are a footnote; the generation-length result is now only in the ceiling list, with "at the cost of slower early progress", and the takeaway sentence ends at the figure reference.
+- **L187:** ProRL's citation is on its own sentence; the DeepSeek connection is stated: both are ways of restarting a run that has stopped improving, which is what one would do if plasticity were being lost, but neither measures it.
+- **L215:** your rubric sentence is restored with only "possibilities" and "criterion" fixed.
+- **L222 (Guru):** no controlled evidence at larger scale either way. Guru tested 7B and 32B; the frontier reasoning models that do well on logic puzzles have unknown training mixes, so they settle nothing. The sentence now says "tested at 7B and 32B" and "whether larger models close that gap on their own is untested", which keeps the evidence without overclaiming.
+- **L228:** the INTUITOR example is gone and the next sentence reads "Given this result".
+- **L236:** pseudo-labels are defined in a footnote.
+- **L248:** your freeze remark is a footnote in your words.
 
 ### Appendix D
 
-- **Format:** each idea is now three prose parts with no labels: the question and why the chapter leaves it open, what the closest work has and has not shown, and "The experiment:" as a numbered list of steps, followed by what the outcomes would mean. This is how Sutton and Barto's frontier chapter and Knuth's research problems read: a self-contained statement, then a procedure.
-- **L9 (AIME not in training data):** the sentence had the two facts in the wrong relation. Now: AIME 2025 was not in the training data, so the solutions are genuinely new, but only 15 of 12,288 samples were correct, so RL found them without making them reliable.
-- **L9 (TTT-Discover result):** added, with the ablation that matters for the question: it beat best-of-N on every problem where the paper reports that baseline (its best H100 kernel ran in 1,161 microseconds against 5,390 for best-of-N and 1,371 for the best human entry), but reusing earlier solutions accounts for most of that gap and weight updates for the rest.
-- **L11:** "fail even with 1,024 samples" now reads "which no open model of up to 8B parameters solves in any of 1,024 attempts".
-- **L17:** the answer you liked is now in the text: none of the studies fits a law, because none plots gold reward against KL from the initial policy and fits a functional form, which is what made Gao et al.'s result a law.
-- **L25:** Branching Policy Optimization is named and described (it snapshots the sandbox and forks sibling rollouts to estimate each step's value); GiGPO is named too.
-- **L31:** yes, the chapter establishes that the loops collapse. The question was badly put. It is now "Does the closing of the generation-verification gap predict when a self-reward loop collapses?", and the text says what is untested: whether the gap's decline during training predicts the collapse before it happens.
-- **L45 (format rewards as controls):** deleted, and your edit to the question stands. Why they were controls: a format reward acts on the surface of the output, not its content, so Kaufmann et al. used it as the null term that touches the chain of thought without conflicting with correctness; you are right that nobody expects it to change what the model learns. It matters only because production recipes do carry format terms, and "ablate one term at a time" already covers them without naming them.
-- **L51 (MBPP, wrong code):** MBPP is defined at first use (short Python problems, about three tests each). And yes: a rewarded false positive is code that passed the three training tests and earned reward but failed the hundred or so extra tests of MBPP+. The audit found about half of those were genuinely wrong code that the training verifier had let through; the other half were faults of the stricter suite, such as defective extra tests or inputs outside the task's contract. The text says this now.
-- **L53:** your alternative auditor is in, as "a frontier model of the next generation as the auditor, on tasks the previous generation had already saturated".
+- **L7 (MaxRL):** agreed that one solved sample answers the existence question. The sentence now says the result is "the closest existing answer to the question", notes that MaxRL uses a maximum-likelihood objective rather than a plain binary reward, and drops the reliability framing. The experiment still scores pass@1 and pass@4096 separately, which is where the reliable-versus-rare distinction belongs.
+- **L7 (TTT-Discover):** "reusing earlier solutions" is spelled out: its search starts each new attempt from the best solutions found so far instead of from scratch, and the ablation shows that search, not the weight updates, accounts for most of the gap over best-of-N.
+- **Line numbers:** the ones in the last file referred to the appendix before the reformat, which is why they no longer matched. Everything else you listed there is in the text as described; nothing further to do.
 
-### Roadmap items you commented on
+### Your other requests
 
-- **Item 2 (Escher openers):** replaced. Chapter 6 opens with *Bonifacio, Corsica* (woodcut, October 1928, Bool 120; scan from Escher in Het Paleis, 713 by 1,200 px, the largest reachable) and Chapter 11 with *Street in Scanno, Abruzzi* (lithograph, January 1930, Bool 131; scan from a Sotheby's lot photograph, cropped to the printed image, 1,096 by 1,600 px). Both are editioned prints, so the index claim about 1930 publication holds. For the record, neither old opener is a catalogued print: both are unique drawings (Calanques de Piana is inscribed 8-'28, Alfedena 8-'29), and I found no publication before 1931 for either. Favicon left alone, as you said.
-- **Item 3 (license):** your premise is the wrong way round. Without a license, copyright reserves everything: nobody may copy, redistribute, or adapt the book at all, beyond fair use. What you describe wanting, use for any purpose as long as nobody claims authorship, is exactly CC BY 4.0. I added `LICENSE.md` with CC BY 4.0 for the text and original figures, MIT for the code, and the exceptions (Escher works as US public domain, reproduced paper figures under their own licenses, the SemiAnalysis charts by permission). It is its own commit, and it is the one decision here that is hard to undo once pushed, so drop the commit if you disagree.
-- **Item 4 (Chapter 7 figure):** what was going on: the figure had no id, so nothing could reference it by number; Chapter 11 referred to it in prose as "Chapter 7's over-optimization curve". It now has the id `fig-ch7-overoptimization`, one caption for both formats, and Chapter 11 cites it as a figure. For the PDF, the reproduced Gao plot is replaced by a plot of Gao et al.'s published functional form (R(d) = d(α − β log d), d = √KL) for three reward-model sizes, generated by `code/figures/07-overoptimization-curve.py`; the coefficients follow the trends in their Figure 3, since the paper prints no fitted values. Your generated versions turned up in the repository root mid-session (the two ChatGPT PNGs). They redraw Gao's Figure 2, which is the diagram of the synthetic setup (labellers, gold RM, proxy RM), not the curves, so they cannot replace the curve figure; they are now a figure of their own, `fig-ch7-gold-proxy-setup`, right after the paragraph that describes the setup, light and dark on the web and light in the PDF, and the curve figure stays. The files moved to `book/diagrams/07-gold-proxy-setup-{light,dark}.png`.
-- **Item 24 (LLM use):** see the estimate below.
+- **AGENTS.md:** cut back to four added lines (italic titles, no em dashes, asides in footnotes, third-party figures only by license or permission), and the layout line now names `scripts/`. The review-workflow section and the rest are gone.
+- **Code and scripts:** `code/figures/` moved to `scripts/figures/`; `code/` no longer exists. Docstrings, LICENSE, and AGENTS updated.
+- **Gao figure:** your generated Figure 2 diagram was already placed last round as `fig-ch7-gold-proxy-setup`; the roadmap item is removed.
+- **PDF (you allowed a TeX install):** TinyTeX is installed through Quarto and the PDF renders. Fixed while I was there: the bibliography now has a References heading and a table-of-contents entry, figures and tables are numbered per chapter as on the web, the two-digit subsection numbers no longer collide with their titles in the table of contents, and the two code lines that ran off the page are split. One thing to know: deleting the "Start Here" heading from the landing page made Quarto number the landing page as chapter 1, so every chapter shifted by one in both formats (Chapter 11 became 12, its figures 12.x, and the sidebar entry went blank). The heading is back, unnumbered; your removal of the two links under it stands, since the sidebar already has the PDF download and the repository link.
+- **Index, LLM-use paragraph:** "that I dictated" restores the grammar of your sentence. The bullet list after it still says the main contributions were structure, scaffold, and diagrams, which now sits oddly next to "Claude drafted Chapters 8, 10, and 11"; a fourth bullet or a cut is yours to make.
 
-### Indisputable roadmap items, done in their own commit
+### V1
 
-- 6: og:image and twitter:image now resolve on chapter pages (leading slash; verified in a render).
-- 18: all six bibliography errors fixed (PPOCoder's real title and authors, RLTF's authors, Nye's author list, Ichter added to Wei et al., Chantzis, R1 as Nature 645:633–638 with its Nature title, Yue et al. as a NeurIPS 2025 oral, the working Fortune URL, the live TMTPost page). Chapter 1's footnote already attributed the quote to TMTPost and the war rooms to Fortune, which is correct; the Fortune article never contained the quote.
-- 20: pre-training, pass@n, and Pass@1 normalized; "test time" as a modifier left alone.
-- 21, first part only: the index no longer promises a TL;DR.
-- 23: appendix titles use a colon, the Chapter 4 table cells read n/a in both formats, and the one remaining em dash in the rendered book, from the Karpathy podcast title in the bibliography, is gone.
-- 25: the five typos.
-- 35: both ensemble findings are Eisenstein et al.'s; the sentence now contrasts them with Coste et al.'s synthetic result, and Eisenstein has an entry.
-- 36: `if not candidate: return None`, so an unparseable tagged answer goes to the judge like a missing one, and the sentence before the code says so.
-- 50: the reasoning trace in Chapter 7 is now T, not R.
-- 51: Chapter 8 cites Baker et al. directly instead of pointing at Chapter 7.
-- 61 and 62: the baseline sentence in Appendix A is corrected (a baseline reduces variance and leaves the expected update unchanged); the notation sentence names r(x, y) and v(x, y); w_i now appears in the equation it was defined for; the garbled KL sentence is rewritten. The multi-turn state without tool observations is left for you.
+- **Ready, in my view, once you push:** the notice about rewriting Chapters 10 and 11 is gone from the README, the changelog covers the September 24 to 26 work, the roadmap is rewritten as a contributor task list with a pointer from the README and CONTRIBUTING, the license is in, the PDF builds, and both formats render without unresolved references.
+- **Still yours before tagging:** the LLM-use bullets above; the license commit, if you want a different choice; and whether "Start Here" is the landing-page title you want.
+- **Not blocking, left in the roadmap:** everything else, including the mobile overflow (item 5), dark-mode contrast (7), figure regeneration scripts (15), the Chapter 1 to 4 factual items, the coverage gaps, and the glossary.
 
-### How much of the book is AI-written
+### Commits in this pass
 
-Method: git blame and a token-level replay of every commit over the 16 manuscript files at HEAD, counting prose words only (no code, math blocks, widgets). A commit is AI if it carries the Claude co-author trailer (every Claude Code commit since September 22); earlier Codex and Claude commits have no trailer and were classified by message style, which is unreliable, since you dictate capitalized one-liners too. The script is in the session scratchpad, not the repository.
-
-| Estimate | Share of prose tokens |
-|---|---|
-| Lines last touched by an AI commit (overstates; a one-word edit claims the line) | 68% |
-| Tokens first written by an AI commit, trailer only (lower bound) | 43% |
-| Tokens first written by an AI commit, trailer plus heuristic (central) | 54% |
-| Same, counting the April "chapter 8" file you called "all GPT" as AI | 58% |
-| Tokens from AI commits that added 30 or more lines (drafting, not editing) | 26% |
-
-By file, the token-origin estimate splits the book cleanly: Chapters 8 (90%), 10 (80%), 11 (89%), Appendix D (99%), and Appendix B (100%, Codex, which you called "vibe coded" in April) were drafted by AI and edited by you; Chapter 9 is 56% by commit and closer to 98% if your April statement counts; Chapters 1 to 7, Appendix A, and the index are 20 to 37% AI-origin, almost all of it small in-line edits from review passes rather than drafting, which matches what the index says about dictation.
-
-The index statement is yours to word; a version that matches the history: "I dictated Chapters 1 to 7 and edited every chapter, and Claude drafted Chapters 8, 10, and 11 and Appendix D from my notes and sources, which I then rewrote; by token count about half of the prose was first written by a model and every sentence has been edited by me." The changelog already records which chapters each pass covered.
-
-### AGENTS.md
-
-Added, one line each: italic titles for works named by title; no em dashes in rendered output; run-in titles versus headings; asides in footnotes; no figure-introducing sentences; define at first use and give numbers; typo-only edits to your sentences; claims and quotes as the source states them; say things once and cross-reference; no added summary or bridge sections; answer your questions with evidence; third-party figures only by license or permission, else a script in `code/figures/`; PDF layout by general rules only; the Escher opener spec; and a review-workflow section (roadmap as ledger, `md.md` as the response file, inline notes until addressed). Chapter 1 L41 and Chapter 8 L54 already had italic titles from the last round, so nothing changed there.
-
-### Left for the next round
-
-- Roadmap items without your commentary, untouched: 5, 7 to 17, 19, 22, 26 to 34, 37 to 49, 52 to 60, 63, 64, and the rest of 21 and 62.
-- PDF items (8, 9, 10, 11) cannot be checked here: this machine has no TeX (quarto check reports TinyTeX not installed), so I only rendered HTML.
-- The diagram-naming rule in `scripts/check-diagrams` is still in place; you did not answer that question last round, so I left it.
-
-### Commits in this round, oldest first
-
-1. Address the September 26 review notes in Chapters 10 and 11 and Appendix D (this file, the README move, the roadmap's author items).
-2. Fix factual errors, typos, and site metadata flagged by the audit.
-3. Add the SemiAnalysis compute charts to Chapter 11.
-4. Redraw the ScaleRL scaling figure with the legend below the plot.
-5. Plot the Chapter 7 over-optimization curve and give it a figure id (the setup diagram follows in commit 10).
-6. Replace the Chapter 6 and 11 Escher openers with catalogued prints.
-7. Move author asides into footnotes outside Chapter 11.
-8. Add a license.
-9. Record the book-wide editorial rules in AGENTS.md.
-10. Add the author's redrawing of Gao et al.'s setup diagram to Chapter 7.
+1. Address the second-pass review notes in Chapters 10 and 11 and Appendix D.
+2. Consolidate scripts and trim AGENTS.md.
+3. Prepare the v1 release: changelog, roadmap for contributors, References page, PDF fixes.
