@@ -101,8 +101,6 @@ Open tasks for contributors, from a whole-book audit on September 26, 2026 and t
 47. **[med] "Reward hacking" is never defined, and the taxonomy lacks tampering with the environment or grader.** The chapter's own examples (`exit(0)`, SkipTest, a patched verifier, shadowing pandas) and all of Ch 8's cases belong to that missing class.
 48. **[med] L88 says "The same dynamics hold" for programmatic verifiers, with no evidence.** Hedge it.
 49. **[med] L52–70 ("Mechanism gaps") uses the do-operator with no explanation and no example.** A Turpin or Lanham example would fix it; you'd want to write those sentences yourself.
-### Chapter 8
-
 ### Chapter 9
 
 52. **[med] Ch 9 references no other chapter, though it depends on several:**

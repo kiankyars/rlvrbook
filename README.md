@@ -1,3 +1,5 @@
+**SEP 25, 2026: IMPORTANT NOTICE: I'M CURRENTLY IN THE PROCESS OF REWRITING CHAPTERS 10-11, SO IF YOU READ THEM AND FIND MANY ERRORS, PLEASE WAIT UNTIL I RESOLVE THEM BEFORE YOU COMMIT.**
+
 # RLVR Book
 
 This repository contains **Reinforcement Learning from Verifiable Rewards**, a reference book on RLVR as a paradigm for learning from verifiable reward signals.
@@ -18,7 +20,3 @@ This repository contains **Reinforcement Learning from Verifiable Rewards**, a r
 
 - `npx prettier . --write '!book/**/*.md'`
   - We cannot use Prettier over the book source because Quarto uses Pandoc markdown syntax as opposed to CommonMark
-
-## Contributing
-
-Open tasks are listed in [ROADMAP.md](ROADMAP.md); pick one and send one PR per task. See [CONTRIBUTING.md](CONTRIBUTING.md).

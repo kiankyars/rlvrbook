@@ -22,7 +22,6 @@ This is a reference work about RLVR, not a general RL/RLHF textbook, an optimize
 - Write plain Markdown with short paragraphs and explicit headings. Use sentence case for prose headings, kebab-case for filenames, and ASCII unless a source requires otherwise.
 - Avoid positional references such as "above" or "the figure below". Use explicit cross-references such as `@fig-...` and `@tbl-...`, or stable wording.
 - A work named by its title is italicized; otherwise name works by system or benchmark name, by "Surname et al.", or by organization.
-- No em dashes anywhere, including rendered output.
 - Author asides such as reading recommendations and opinions go in footnotes, not parentheses.
 
 ## Citations and Figures
