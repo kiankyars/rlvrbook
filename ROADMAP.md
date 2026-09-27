@@ -1,6 +1,6 @@
 # Roadmap
 
-Open tasks for contributors, from a whole-book audit on September 26, 2026 and the author's own list. Items are in book order and tagged high, med, or low. To take one, open an issue naming the item number, then send one PR per item (see CONTRIBUTING.md). Items are findings, not decisions: if you think one is wrong, say so in the issue.
+Open tasks for contributors, from a whole-book audit on September 26, 2026 and my list; items are in book order and tagged high, med, or low.
 
 ### Site, PDF, repository
 
