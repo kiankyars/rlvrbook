@@ -6,16 +6,34 @@
 -- 2. Gives a captioned image without a #fig- id, such as an Escher chapter
 --    opener, an unnumbered caption, as in the HTML output, so it does not
 --    use up a figure number and shift the numbers of real figures.
+-- 3. Drops the landing page's "Start Here" heading and keeps that page's
+--    sections out of the table of contents. The heading exists only to keep
+--    the page unnumbered (without it Quarto numbers the landing page as
+--    chapter 1), and the web version hides it too.
 
 if not FORMAT:match("latex") then
   return {}
 end
+
+local in_landing_page = false
 
 return {
   {
     Meta = function(meta)
       quarto.doc.include_file("in-header", "../includes/pdf-figures.tex")
       return meta
+    end,
+
+    Header = function(h)
+      if h.level == 1 and h.identifier == "start-here" then
+        in_landing_page = true
+        return {}
+      elseif h.level == 1 then
+        in_landing_page = false
+      elseif in_landing_page then
+        h.classes:insert("unlisted")
+        return h
+      end
     end,
 
     Figure = function(fig)

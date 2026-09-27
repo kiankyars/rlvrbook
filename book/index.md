@@ -5,6 +5,12 @@ description-meta: "RLVR means reinforcement learning from verifiable rewards: tr
 
 # Start Here {.unnumbered}
 
+```{=html}
+<style>
+#title-block-header, #start-here { display: none; }
+</style>
+```
+
 ![M. C. Escher, _Corsica Corte_ (1929).](escher/00-corsica-corte.jpg){width="80%" fig-align="center"}
 
 ## Abstract
@@ -13,7 +19,7 @@ Reinforcement learning from verifiable rewards (RLVR) studies how models can imp
 
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I dictated Chapters 1 to 7 and edited every chapter,[^index-em-dashes] and Claude drafted Chapters 8, 10, and 11 and Appendix D from my notes and sources, which I then rewrote; by token count about half of the prose was first written by a model and every sentence has been edited by me. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I dictated Chapters 1 to 7 and edited every chapter,[^index-em-dashes] while Chapters 8, 10, and 11 and Appendix D started from drafts assembled by Claude from my notes and sources and then went through many rounds of my rewriting; by token count about half of the prose was first typed by a model, and every sentence has been edited by me. Beyond those drafts, the main contributions of Codex/Claude to this project were:
 
 [^index-em-dashes]: I can guarantee you there are no EM dashes in the entire book.
 
@@ -40,12 +46,10 @@ Although the chapters do minimally build off of each other, they can still be re
 - 2026-09-04: Revised Chapters 1 and 2 and normalized citation placement across the book.
 - 2026-09-05: Revised Chapter 3's process reward explanations.
 - 2026-09-22: Revised Chapter 4's verifier explanations and Chapter 5's reward shaping.
-- 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims.
-- 2026-09-23: Added Chapter 8 on optimization pressure in the wild.
-- 2026-09-24: Revised Chapter 9's frontier recipe with GRPO figures and a comparison against Kimi K3 and DeepSeek-V4.1-Flash.
-- 2026-09-24: Expanded Chapter 10 with multimodal verifiers, agent scaffolds, and environment synthesis; rebuilt Chapter 11 around verification as the frontier; added Appendix D with research ideas.
-- 2026-09-25: Replaced ten Escher openers with higher-resolution scans and fixed PDF figure captions and placement.
-- 2026-09-26: Audited the whole book; the open findings are in ROADMAP.md for contributors. Added the SemiAnalysis compute charts to Chapter 11, redrew the ScaleRL and Gao et al. figures, replaced the Chapter 6 and 11 openers with catalogued prints, and added a license.
+- 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims, and added Chapter 8 on optimization pressure in the wild.
+- 2026-09-24: Revised Chapter 9's frontier recipe, expanded Chapter 10 with multimodal verifiers, agent scaffolds, and environment synthesis, rebuilt Chapter 11 around verification, and added Appendix D with research ideas.
+- 2026-09-25: Replaced ten Escher openers with higher-resolution scans and fixed PDF figure placement.
+- 2026-09-26: Audited the whole book into ROADMAP.md, added the SemiAnalysis compute charts and redrawn figures to Chapters 7 and 11, replaced two Escher openers, and added a license.
 
 ## Acknowledgments
 
