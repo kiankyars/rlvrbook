@@ -3,7 +3,7 @@ pagetitle: "What is RLVR? Reinforcement Learning from Verifiable Rewards"
 description-meta: "RLVR means reinforcement learning from verifiable rewards: training models with reward signals from checkable task outcomes, executable feedback, formal validation, and other verifier-backed signals."
 ---
 
-# Introduction {.unnumbered}
+# Preface {.unnumbered}
 
 ```{=html}
 <style>
