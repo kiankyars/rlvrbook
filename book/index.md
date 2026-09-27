@@ -3,11 +3,11 @@ pagetitle: "What is RLVR? Reinforcement Learning from Verifiable Rewards"
 description-meta: "RLVR means reinforcement learning from verifiable rewards: training models with reward signals from checkable task outcomes, executable feedback, formal validation, and other verifier-backed signals."
 ---
 
-# Start Here {.unnumbered}
+# Preface {.unnumbered}
 
 ```{=html}
 <style>
-#title-block-header, #start-here { display: none; }
+#title-block-header .description { display: none; }
 </style>
 ```
 
@@ -49,7 +49,7 @@ Although the chapters do minimally build off of each other, they can still be re
 - 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims, and added Chapter 8 on optimization pressure in the wild.
 - 2026-09-24: Revised Chapter 9's frontier recipe, expanded Chapter 10 with multimodal verifiers, agent scaffolds, and environment synthesis, rebuilt Chapter 11 around verification, and added Appendix D with research ideas.
 - 2026-09-25: Replaced ten Escher openers with higher-resolution scans and fixed PDF figure placement.
-- 2026-09-26: Audited the whole book into ROADMAP.md, added the SemiAnalysis compute charts and redrawn figures to Chapters 7 and 11, replaced two Escher openers, and added a license.
+- 2026-09-26: Audited the whole book into ROADMAP.md, added the SemiAnalysis compute charts and redrawn figures to Chapters 7 and 11, replaced two Escher openers, added a license, and released v1.
 
 ## Acknowledgments
 

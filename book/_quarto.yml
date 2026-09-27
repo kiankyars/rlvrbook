@@ -30,9 +30,7 @@ book:
     - pdf
   chapters:
     - index.md
-    - part: "Foundations"
-      chapters:
-        - chapters/01-introduction.md
+    - chapters/01-introduction.md
     - part: "Verifier Design"
       chapters:
         - chapters/02-outcome-rewards.md
