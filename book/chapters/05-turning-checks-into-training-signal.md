@@ -391,7 +391,7 @@ This works for GSM8K only when the model and dataset happen to land in the right
 
 If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we are effectively training on formatting. Conversely, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
-The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. The band follows from the entropy of a binary reward (@eq-ch5-binary-reward-entropy): @fig-ch5-binary-reward-entropy shows that it peaks at one bit at a 50% solve rate, is still 0.72 bits at 20% and 80%, and falls off quickly toward either edge [@patel2025bitspersample].
+The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. The band follows from the entropy of a binary reward (@eq-ch5-binary-reward-entropy): it peaks at one bit at a 50% solve rate, is still 0.72 bits at 20% and 80%, and falls off quickly toward either edge [@patel2025bitspersample].
 
 :::: {#fig-ch5-binary-reward-entropy fig-cap="Entropy of a binary reward as a function of the per-prompt solve rate, with the 20–80% band shaded."}
 
