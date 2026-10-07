@@ -5,29 +5,29 @@ Open tasks for contributors, from a whole-book audit on September 26, 2026 and m
 ### Site, PDF, repository
 
 5. **[med] 13 of 16 pages scroll sideways at phone width.** Display equations are cut off (Ch 3 eq 3.2, Appendix A, Ch 7), and tables and long URLs overflow too. Fix: three CSS rules, tested, plus splitting one inline equation in a Ch 6 footnote.
-7. **[med] Dark-mode contrast.** Ch 7's Goodhart widget axes and ticks are at 1.6:1 contrast, and Ch 2 and Ch 4 widget labels at about 2.2:1. Fix: dark overrides in `custom.css`.
-8. **[med] The PDF bibliography has no heading and no table-of-contents or bookmark entry.** It runs straight on from D.6. Fix: a References page with `{#refs}`.
-9. **[low] PDF and web number figures differently.** The PDF counts through the whole book ("Figure 8") while the web numbers per chapter ("Figure 5.2"). Fix: `\counterwithin`, tested.
-10. **[low] Two PDF table-of-contents glitches:**
-    - The entry reads "11.10The agenda at a glance", with no space.
-    - The "Start Here" entry jumps to the title page.
-    - Both fixes are tested.
-11. **[low] Two PDF code lines overflow.** The Ch 5 `target_modules` line is cut off at the page edge, and a Ch 2 line runs into the margin. Fix: split the two source lines.
-12. **[low] Neither the PDF nor the site shows an edition date.** Fix: `date: last-modified`.
-13. **[low] The Tower of Babel opener is 4.9 MB, about 35% of the PDF.** I left it unchanged today. Downscale it to 1,600 px in gray, like the others.
-14. **[low] Diagrams with real content have no alt text** describing what they show.
-15. **[med] Most figures can't be regenerated.**
+6. **[med] Dark-mode contrast.** Ch 7's Goodhart widget axes and ticks are at 1.6:1 contrast, and Ch 2 and Ch 4 widget labels at about 2.2:1. Fix: dark overrides in `custom.css`.
+7. **[med] The PDF bibliography has no heading and no table-of-contents or bookmark entry.** It runs straight on from D.6. Fix: a References page with `{#refs}`.
+8. **[low] PDF and web number figures differently.** The PDF counts through the whole book ("Figure 8") while the web numbers per chapter ("Figure 5.2"). Fix: `\counterwithin`, tested.
+9. **[low] Two PDF table-of-contents glitches:**
+   - The entry reads "11.10The agenda at a glance", with no space.
+   - The "Start Here" entry jumps to the title page.
+   - Both fixes are tested.
+10. **[low] Two PDF code lines overflow.** The Ch 5 `target_modules` line is cut off at the page edge, and a Ch 2 line runs into the margin. Fix: split the two source lines.
+11. **[low] Neither the PDF nor the site shows an edition date.** Fix: `date: last-modified`.
+12. **[low] The Tower of Babel opener is 4.9 MB, about 35% of the PDF.** I left it unchanged today. Downscale it to 1,600 px in gray, like the others.
+13. **[low] Diagrams with real content have no alt text** describing what they show.
+14. **[med] Most figures can't be regenerated.**
     - Only three figures have generator scripts (`scripts/figures/`).
     - Six Matplotlib pairs whose numbers the prose quotes have none: the Ch 5 entropy band, Ch 7 accepted-pool precision, three in Ch 9, and Ch 11 entropy.
     - The Ch 5 total-reward chart is hand-written SVG, and the Ch 1 and Ch 2 Excalidraw sources are missing.
     - The Ch 5 run has no logged data committed, and its format-share plot hides the negative values at the start.
-16. **[low] CI doesn't pin Quarto.** It installs 1.10.18 while you have 1.9.36 locally, and the PDF filter relies on a Quarto internal. Pin the version.
-17. **[low] Repo tidiness:**
+15. **[low] CI doesn't pin Quarto.** It installs 1.10.18 while you have 1.9.36 locally, and the PDF filter relies on a Quarto internal. Pin the version.
+16. **[low] Repo tidiness:**
     - `book/siboehm-cuda-mmm/` holds 9.4 MB of unused third-party images.
     - README lists no prerequisites: TinyTeX with koma-script, rsvg-convert, ripgrep, uv.
     - AGENTS.md's layout rules are out of date.
-19. **[low] Heading case.** AGENTS.md asks for sentence case. Ch 1's section headings, Appendix A, every "Chapter Map" and the landing-page headings are Title Case. Chapter titles are also mixed: ten in Title Case, Ch 10 in sentence case, and Appendix B unlike A, C and D. Decide one convention.
-20. **[low] Spelling drift:** "test time" used as a modifier, as in Ch 6's title (the rest was normalized on September 26).
+17. **[low] Heading case.** AGENTS.md asks for sentence case. Ch 1's section headings, Appendix A, every "Chapter Map" and the landing-page headings are Title Case. Chapter titles are also mixed: ten in Title Case, Ch 10 in sentence case, and Appendix B unlike A, C and D. Decide one convention.
+18. **[low] Spelling drift:** "test time" used as a modifier, as in Ch 6's title (the rest was normalized on September 26).
 
 ### Landing page
 
@@ -35,7 +35,8 @@ Open tasks for contributors, from a whole-book audit on September 26, 2026 and m
     - The reading paths predate Chapter 8: Ch 3, 6 and 8 are in no path, and Ch 9 isn't in the builders' path.
     - Nothing points to Appendix A (RL background) or Appendix C (terms).
 22. **[low] Dead links in the PDF.** The "Open PDF" link and the `.md` chapter links don't work from inside the PDF.
-24. **[low] The LLM-use statement vs the git history.** It lists only planning, scaffolding and diagrams, but Ch 8, Ch 11, Appendix D and much of Ch 10 were drafted by Claude and then edited by you. Only you can word this.
+23. **[low] The LLM-use statement vs the git history.** It lists only planning, scaffolding and diagrams, but Ch 8, Ch 11, Appendix D and much of Ch 10 were drafted by Claude and then edited by you. Only you can word this.
+
 ### Chapter 1
 
 26. **[med] L39: DeepSeekMath is called the "first paper to apply critic-free RL to mathematical reasoning at LLM scale".** Uesato et al. (2022) already ran final-answer RL on a 70B model, and ReST-EM followed in 2023. DeepSeekMath's own GRPO run also used a learned reward model, not a verifier. Fix: drop "first".
@@ -101,6 +102,8 @@ Open tasks for contributors, from a whole-book audit on September 26, 2026 and m
 47. **[med] "Reward hacking" is never defined, and the taxonomy lacks tampering with the environment or grader.** The chapter's own examples (`exit(0)`, SkipTest, a patched verifier, shadowing pandas) and all of Ch 8's cases belong to that missing class.
 48. **[med] L88 says "The same dynamics hold" for programmatic verifiers, with no evidence.** Hedge it.
 49. **[med] L52–70 ("Mechanism gaps") uses the do-operator with no explanation and no example.** A Turpin or Lanham example would fix it; you'd want to write those sentences yourself.
+- Section 7.6 is vibe-coded.
+
 ### Chapter 9
 
 52. **[med] Ch 9 references no other chapter, though it depends on several:**

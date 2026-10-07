@@ -2,11 +2,11 @@
 
 ## Book text and original figures
 
-The text of *Reinforcement Learning from Verifiable Rewards* and the figures made for it (everything under `book/` except the exceptions listed below) are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0): <https://creativecommons.org/licenses/by/4.0/>.
+The text of _Reinforcement Learning from Verifiable Rewards_ and the figures made for it (everything under `book/` except the exceptions listed below) are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0): <https://creativecommons.org/licenses/by/4.0/>.
 
 You may copy, redistribute, and adapt the book for any purpose, including commercially, as long as you credit Kian Kyars as the author, link to the license, and indicate any changes you made. Presenting the book, or an adaptation of it, as your own work is not permitted.
 
-Suggested attribution: Kian Kyars, *Reinforcement Learning from Verifiable Rewards*, <https://rlvrbook.com>, CC BY 4.0.
+Suggested attribution: Kian Kyars, _Reinforcement Learning from Verifiable Rewards_, <https://rlvrbook.com>, CC BY 4.0.
 
 ## Code
 
