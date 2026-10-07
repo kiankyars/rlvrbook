@@ -12,3 +12,5 @@ This includes, but is not limited to:
 - typo fixes
 
 All contributors will be added to the acknowledgments section in [book/index.md](book/index.md). Please keep each PR's scope to one chapter; the presence of obvious AI-written content in a PR to GitHub will almost certainly result in it not being included.
+
+Open tasks are listed in [ROADMAP.md](ROADMAP.md); claim one by opening an issue that names the item number.

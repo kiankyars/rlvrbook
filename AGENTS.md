@@ -4,7 +4,7 @@
 
 - The Quarto manuscript is under `book/`: `index.md` is the landing page, numbered chapters live in `chapters/`, and lettered appendices live in `appendices/`.
 - Keep shared references in `book/bibliography.bib` and chapter-prefixed visual assets in the flat `book/diagrams/` directory.
-- Generated output belongs in `build/`; experiments and supporting artifacts belong in `code/` or `data`, not the manuscript tree.
+- Generated output belongs in `build/`; scripts, figure generators, and notebooks belong in `scripts/`, not the manuscript tree.
 
 ## Build and Checks
 
@@ -22,6 +22,8 @@ This is a reference work about RLVR, not a general RL/RLHF textbook, an optimize
 - Write plain Markdown with short paragraphs and explicit headings. Use sentence case for prose headings, kebab-case for filenames, and ASCII unless a source requires otherwise.
 - Do not open a paragraph with a short sentence that only announces its topic, such as "The open question is quantitative." or "Specific reward terms matter too." Start with the claim.
 - Avoid positional references such as "above" or "the figure below". Use explicit cross-references such as `@fig-...` and `@tbl-...`, or stable wording.
+- A work named by its title is italicized; otherwise name works by system or benchmark name, by "Surname et al.", or by organization.
+- Author asides such as reading recommendations and opinions go in footnotes, not parentheses.
 
 ## Citations and Figures
 
@@ -29,6 +31,7 @@ This is a reference work about RLVR, not a general RL/RLHF textbook, an optimize
 - Put parenthetical citations before sentence punctuation, with a space before the citation: `claim [@key].`, not `claim.[@key]`.
 - Use interactive HTML figures only when they materially improve comprehension. Follow the existing `content-visible` HTML/PDF pattern and provide a static PDF fallback.
 - For dual-mode images, preserve web light/dark switching and use only the light-mode variant in PDF output.
+- Reproduce a third-party figure only under a license that allows it or with written permission; otherwise plot it with a script in `scripts/figures/`.
 
 ## Contributions
 

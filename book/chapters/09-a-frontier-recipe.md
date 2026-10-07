@@ -34,7 +34,7 @@ The following modifications are made to vanilla GRPO.
 
 **No KL loss.** There is no KL loss, to prevent restrictive policy updates.
 
-**Token-level loss.** A token-level loss is used despite the reward being outcome based; the reason for this is to normalize the loss by the total number of tokens across the batch, rather than per sample, to avoid length bias. Suppose one model response is 10 tokens long and another is 100 tokens long. If you normalize loss per sample and both samples had the same reward, each response contributes equally in total, so each token of the longer response counts one-tenth as much as a token of the shorter one. With token-level normalization every token counts equally, as @fig-ch9-token-level-normalization shows.
+**Token-level loss.** A token-level loss is used despite the reward being outcome based; the reason for this is to normalize the loss by the total number of tokens across the batch, rather than per sample, to avoid length bias. Suppose one model response is 10 tokens long and another is 100 tokens long. If you normalize loss per sample and both samples had the same reward, each response contributes equally in total, so each token of the longer response counts one-tenth as much as a token of the shorter one. With token-level normalization every token counts equally.
 
 :::: {#fig-ch9-token-level-normalization fig-cap="Per-sample normalization gives each response a total weight of one, so tokens in long responses count less; token-level normalization gives every token the same weight."}
 
@@ -50,7 +50,7 @@ The following modifications are made to vanilla GRPO.
 
 ::::
 
-**Asymmetric clipping.** GRPO already limits how much one update can change token probabilities, and the clipping is tweaked to be asymmetric, such that the positive limit is larger than the negative limit. The objective stops pushing a positive-advantage token's probability up once it has risen 27.2% relative to the sampling policy, but stops pushing a negative-advantage token's probability down after a 20% drop (@fig-ch9-asymmetric-clipping). The looser upper bound comes from DAPO, which found that a symmetric clip keeps unlikely but rewarded tokens from gaining probability quickly, so the policy stops exploring and its entropy collapses [@yu2025dapo].
+**Asymmetric clipping.** GRPO already limits how much one update can change token probabilities, and the clipping is tweaked to be asymmetric, such that the positive limit is larger than the negative limit. The objective stops pushing a positive-advantage token's probability up once it has risen 27.2% relative to the sampling policy, but stops pushing a negative-advantage token's probability down after a 20% drop. The looser upper bound comes from DAPO, which found that a symmetric clip keeps unlikely but rewarded tokens from gaining probability quickly, so the policy stops exploring and its entropy collapses [@yu2025dapo].
 
 :::: {#fig-ch9-asymmetric-clipping fig-cap="Clipping thresholds on the probability ratio in OlmoRL: 0.8 below and 1.272 above. They bound how far one update pushes a token, not the probability itself."}
 
@@ -68,7 +68,7 @@ The following modifications are made to vanilla GRPO.
 
 **No standard-deviation normalization.** The advantage calculation uses a simplified group-relative advantage $A_i = r_i - \bar r$ instead of $A_i = (r_i - \bar r) / \sigma_r$, because dividing by a tiny within-group standard deviation can artificially magnify prompts where all completions had almost the same reward.
 
-**Truncated importance sampling.** Rollouts come from actors whose weights can lag the learner's, so GRPO weights each token by the ratio between its probability under the current policy and under the policy that sampled it, the same ratio the clipping bounds; a token the policy has since made more or less likely counts accordingly. OLMo 3 ran into a subtler mismatch: even with identical weights, vLLM and the training engine assign slightly different probabilities to the same token, because their kernels add floating-point numbers in different orders and the result depends on the batch size [@he2025nondeterminism]. To correct for this, the loss is multiplied by the ratio of the trainer's probability to vLLM's, capped at $\rho$ so that no single token can dominate the update [@yao2025offpolicy]. @fig-ch9-truncated-importance-sampling shows the resulting weight.
+**Truncated importance sampling.** Rollouts come from actors whose weights can lag the learner's, so GRPO weights each token by the ratio between its probability under the current policy and under the policy that sampled it, the same ratio the clipping bounds; a token the policy has since made more or less likely counts accordingly. OLMo 3 ran into a subtler mismatch: even with identical weights, vLLM and the training engine assign slightly different probabilities to the same token, because their kernels add floating-point numbers in different orders and the result depends on the batch size [@he2025nondeterminism]. To correct for this, the loss is multiplied by the ratio of the trainer's probability to vLLM's, capped at $\rho$ so that no single token can dominate the update [@yao2025offpolicy].
 
 :::: {#fig-ch9-truncated-importance-sampling fig-cap="Truncated importance sampling: each token's loss is weighted by the ratio of the trainer's probability to vLLM's, up to a cap."}
 
@@ -162,16 +162,16 @@ OLMo 3 is the most fully open of the frontier recipes, with data, code, and chec
 | Pipeline | SFT, DPO, one mixed RLVR stage | SFT, RL on nine specialists, MOPD into one model | SFT, RL, on-policy distillation |
 | Rewards | Four domain verifiers; LM judge for chat | Verifiable environments; rubric-writing judge for the rest | Synthesized tasks, each with its own audited verifier |
 | Stale data | Capped importance ratio; in-flight updates | Per-token regularizer; shared quantization | Off-policy bound; stale-token mask |
-| Length control | None | Token budget; verbose outputs lose | Early short samples discarded |
+| Length control | None | Token budget; verbose outputs lose | Length penalty that shrinks with requested effort |
 
 : OLMo 3 Think's RL stage compared with Kimi K3 and DeepSeek-V4.1-Flash [@teamolmo2025olmo3; @kimiteam2026k3; @deepseekai2026v41flash]. {#tbl-ch9-open-recipes}
 
 - Kimi K3's nine specialists cover three domains at three reasoning-effort levels.
 - Kimi K3's judge writes a rubric for each task and ranks candidates in a tournament of pairwise comparisons.
-- DeepSeek audits each synthesized task with an inspection agent that looks for ways to hack it.
-- Kimi K3 keeps rollouts that span several training iterations stable with a per-token regularizer.
-- Kimi K3 runs rollout and training under one quantization scheme, so the two engines assign the same probabilities.
-- DeepSeek masks tokens that are too stale, and keeps the KV cache and expert routing across weight updates.
+- DeepSeek audits each synthesized coding task with an inspection agent that looks for flaws, including ways to hack it.
+- Kimi K3 keeps rollouts that span several training iterations stable with a per-token regularizer, a penalty on each token that keeps the updated policy close to the one that sampled it.
+- Kimi K3 runs rollout and training under one quantization scheme (4-bit expert weights, 8-bit activations), so the two engines assign the same probabilities.
+- DeepSeek masks tokens that are too stale, i.e. sampled from a checkpoint too far behind the current one, and keeps the KV cache and expert routing across weight updates, so an interrupted rollout resumes where it stopped.
 - Kimi K3 sets the reward to -1 when a response exceeds its per-problem token budget.
 - OLMo 3 tried a length-control verifier and found it did not help.
 - DeepSeek discards early short samples to counter the bias of asynchronous generation toward short rollouts.

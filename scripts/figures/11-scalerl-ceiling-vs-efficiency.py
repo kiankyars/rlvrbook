@@ -8,7 +8,7 @@ Writes book/diagrams/11-scalerl-ceiling-vs-efficiency-{light,dark}.svg.
 
 Run from the repository root:
 
-    uv run code/figures/11-scalerl-ceiling-vs-efficiency.py
+    uv run scripts/figures/11-scalerl-ceiling-vs-efficiency.py
 
 The curves use the sigmoid of ScaleRL (Khatri et al., 2025, arXiv:2510.13786,
 Eq. 1, p. 2):

@@ -53,20 +53,20 @@ The verifier was calibrated for one distribution of model outputs, yet the polic
 
 Turpin et al. showed that chain-of-thought explanations can hide factors that influenced the answer, and Lanham et al. tested faithfulness more directly by intervening on traces [@turpin2023language; @lanham2023measuring]. The mechanism gap is the difference between a trace that predicts correctness and a trace that causally controls the answer:
 
-Let $X$ be the prompt, $R$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,R,Y)$.
+Let $X$ be the prompt, $T$ the written reasoning trace, $Y$ the final answer, and $H$ the hidden computation that produced both. An outcome verifier observes $(X,Y)$. A process verifier observes $(X,T,Y)$.
 
 The artifact-level question is:
 
 $$
-\Pr(Y \text{ correct} \mid X,R).
+\Pr(Y \text{ correct} \mid X,T).
 $$ {#eq-ch7-artifact-correctness}
 
 The causal question is different:
 
 $$
-\Pr(Y=y \mid \operatorname{do}(R=r), X)
+\Pr(Y=y \mid \operatorname{do}(T=t), X)
 \quad \text{versus} \quad
-\Pr(Y=y \mid \operatorname{do}(R=r'), X).
+\Pr(Y=y \mid \operatorname{do}(T=t'), X).
 $$ {#eq-ch7-causal-trace}
 
 ## Empirical exploits
@@ -87,7 +87,25 @@ Part of the reward was derived from edits, so Composer also learned to defer ris
 
 The clearest quantitative evidence for Goodhart dynamics in optimization comes from Gao et al., who measured the relationship between optimization pressure and performance [@gao2023scaling]. The premise is to treat one large reward model as a stand-in for human judgment, the "gold" model, whose scores count as ground truth and stay fixed during training. The authors train a smaller proxy reward model on the gold model's labels and optimize the policy against the proxy. What happens is that proxy reward increases monotonically, but gold reward first rises, then falls. The peak location depends on the proxy's quality: better proxies peak later and higher, while weaker proxies peak early and low. The original result was measured for learned reward models in RLHF, but the dynamics apply whenever a proxy is imperfect. In the context of RLVR, the proxy can be the programmatic verifier, which approximates but may not equal the target capability. The natural stand-in for the gold model is then a stronger check held out from training, such as hidden tests or an augmented test suite like EvalPlus [@liu2023evalplus]. The same dynamics hold as with learned reward models; the difference being that programmatic verifiers are stronger proxies than learned reward models, so peaks likely occur later and gaps open more slowly.
 
+::: {#fig-ch7-gold-proxy-setup}
+
+::: {.content-visible when-format="html"}
+![](../diagrams/07-gold-proxy-setup-light.png){.light-content fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
+
+![](../diagrams/07-gold-proxy-setup-dark.png){.dark-content fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
+:::
+
+::: {.content-visible when-format="pdf"}
+![](../diagrams/07-gold-proxy-setup-light.png)
+:::
+
+In real RLHF, human labellers produce the comparisons that train the proxy reward model. In Gao et al.'s synthetic setup, a large gold reward model, itself trained on real comparisons, labels the comparisons instead, so its score can stand in for ground truth. Redrawn after Gao et al.'s Figure 2 [@gao2023scaling].
+
+:::
+
 Pan et al. built four RL environments with deliberately misspecified rewards (traffic control, COVID response, blood glucose monitoring, and the Atari game Riverraid) and varied agent capability through model size, action resolution, observation noise, and training time. They found that as the policy becomes stronger, it finds exploits that weaker policies could not [@pan2022effects]. There are capability thresholds where agent behavior qualitatively shifts, causing sharp drops in true performance even as proxy reward continues to climb. These phase transitions are only predictable empirically and difficult to monitor.
+
+::: {#fig-ch7-overoptimization}
 
 ::: {.content-visible when-format="html"}
 <div class="ghg-widget" id="ghg-widget">
@@ -191,15 +209,11 @@ Pan et al. built four RL environments with deliberately misspecified rewards (tr
 :::
 
 ::: {.content-visible when-format="pdf"}
-![](../diagrams/07-overoptimization-gao-rm-size.png){fig-alt="Reproduced figure from Gao et al. showing gold and proxy reward curves as KL distance increases across reward-model sizes." width="96%"}
+![](../diagrams/07-overoptimization-curve-light.svg){fig-alt="Gold reward (solid) and proxy reward (dashed) against KL divergence for 12M, 300M, and 3B proxy reward models: proxy reward climbs while gold reward peaks and then falls, later and higher for larger reward models."}
 :::
 
-::: {.content-visible when-format="html"}
-Illustrative curves with the shape reported by Gao et al. [@gao2023scaling].
-:::
+Optimizing against an imperfect proxy: proxy reward keeps rising while true performance peaks and then falls, later and higher for a stronger proxy. The curves follow the functional forms of Gao et al. with illustrative coefficients [@gao2023scaling].
 
-::: {.content-visible when-format="pdf"}
-Reproduced from Gao et al. [@gao2023scaling].
 :::
 
 ## Are the highest-scoring answers actually correct?
@@ -235,7 +249,7 @@ $$
 
 With a yes/no verifier and $\tau = 1$, this reduces to @eq-ch6-tail-precision.
 
-As @fig-ch7-accepted-pool-precision shows, raising the threshold first filters out ordinary wrong answers, so precision rises. Past a point, the only samples left are the rare exploits that score higher than any honest answer, and precision collapses.
+Raising the threshold first filters out ordinary wrong answers, so precision rises. Past a point, the only samples left are the rare exploits that score higher than any honest answer, and precision collapses.
 
 :::: {#fig-ch7-accepted-pool-precision fig-cap="Illustrative score distributions for correct answers, wrong answers, and a rare exploit that the verifier scores highest (left), and the resulting precision of the accepted pool as the threshold rises (right)."}
 

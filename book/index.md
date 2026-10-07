@@ -3,10 +3,13 @@ pagetitle: "What is RLVR? Reinforcement Learning from Verifiable Rewards"
 description-meta: "RLVR means reinforcement learning from verifiable rewards: training models with reward signals from checkable task outcomes, executable feedback, formal validation, and other verifier-backed signals."
 ---
 
-# Start Here {.unnumbered}
+# Preface {.unnumbered}
 
-[<i class="bi bi-file-earmark-pdf"></i> Open PDF](rlvrbook.pdf)  
-[<i class="bi bi-github"></i> GitHub](https://github.com/kiankyars/rlvrbook)
+```{=html}
+<style>
+#title-block-header .description { display: none; }
+</style>
+```
 
 ![M. C. Escher, _Corsica Corte_ (1929).](escher/00-corsica-corte.jpg){width="80%" fig-align="center"}
 
@@ -16,7 +19,9 @@ Reinforcement learning from verifiable rewards (RLVR) studies how models can imp
 
 ## LLM Use
 
-Fortunately, we live in a world where AI slop writing is as intelligble as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I write (I can guarantee you there are no EM dashes in the entire book) most sections on my own, or rather use Wispr Flow to dictate them and then edit them. The main contributions of Codex/Claude to this project were:
+Fortunately, we live in a world where AI slop writing is as intelligible as black from white. This remark is incidentally paramount in the context of this book as the more verifiable a task, the more we can improve it, and writing is extremely unverifiable. It is knowing this fact, and also knowing that a textbook is still a human-led endeavor, that I dictated Chapters 1 to 7 and edited every chapter,[^index-em-dashes] while Chapters 8, 10, and 11 and Appendix D started from drafts assembled by Claude from my notes and sources and then went through many rounds of my rewriting; by token count about half of the prose was first typed by a model, and every sentence has been edited by me. Beyond those drafts, the main contributions of Codex/Claude to this project were:
+
+[^index-em-dashes]: I can guarantee you there are no EM dashes in the entire book.
 
 - helping me plan out the structure
 - giving me the initial boilerplate/skeleton scaffold of the textbook itself
@@ -28,7 +33,7 @@ I wrote this book with the intent to cater to the largest audience possible. Wit
 
 ## How to Use This Book
 
-Each chapter has a TL;DR at the beginning. Although the chapters do minimally build off of each other, they can still read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. If you are new to RLVR, start with [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md); if you build training systems, [Chapters 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [5](chapters/05-turning-checks-into-training-signal.md), and [10](chapters/10-long-context-multimodal-and-agentic-rlvr.md); and for frontier research, [Chapters 9](chapters/09-a-frontier-recipe.md) to [11](chapters/11-open-problems-and-the-research-agenda.md). The citations are plentiful to facilitate further research if there's a specific theme which captivates you :).
+Although the chapters do minimally build off of each other, they can still be read alone. Feel free to use the search function on the web version or Command F on the PDF to find what you wish directly. If you are new to RLVR, start with [Chapter 1](chapters/01-introduction.md), [Chapter 2](chapters/02-outcome-rewards.md), and [Chapter 7](chapters/07-reward-hacking-and-verifier-robustness.md); if you build training systems, [Chapters 4](chapters/04-learned-programmatic-and-hybrid-verifiers.md), [5](chapters/05-turning-checks-into-training-signal.md), and [10](chapters/10-long-context-multimodal-and-agentic-rlvr.md); and for frontier research, [Chapters 9](chapters/09-a-frontier-recipe.md) to [11](chapters/11-open-problems-and-the-research-agenda.md). The citations are plentiful to facilitate further research if there's a specific theme which captivates you :).
 
 ## Changelog
 
@@ -41,17 +46,20 @@ Each chapter has a TL;DR at the beginning. Although the chapters do minimally bu
 - 2026-09-04: Revised Chapters 1 and 2 and normalized citation placement across the book.
 - 2026-09-05: Revised Chapter 3's process reward explanations.
 - 2026-09-22: Revised Chapter 4's verifier explanations and Chapter 5's reward shaping.
-- 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims.
-- 2026-09-23: Added Chapter 8 on optimization pressure in the wild.
-- 2026-09-24: Revised Chapter 9's frontier recipe with GRPO figures and a comparison against Kimi K3 and DeepSeek-V4.1-Flash.
+- 2026-09-23: Revised Chapter 6's test time verification and Chapter 7's reward hacking claims, and added Chapter 8 on optimization pressure in the wild.
+- 2026-09-24: Revised Chapter 9's frontier recipe, expanded Chapter 10 with multimodal verifiers, agent scaffolds, and environment synthesis, rebuilt Chapter 11 around verification, and added Appendix D with research ideas.
+- 2026-09-25: Replaced ten Escher openers with higher-resolution scans and fixed PDF figure placement.
+- 2026-09-26: Audited the whole book into ROADMAP.md, added the SemiAnalysis compute charts and redrawn figures to Chapters 7 and 11, replaced two Escher openers, added a license, and released v1.
 
 ## Acknowledgments
 
 I shamelessly take inspiration from Nathan Lambert's [RLHF book](https://rlhfbook.com), and I am well aware that his textbook treats the subject of RLVR in detail; notwithstanding, as he notes himself, this particular sub-field of ML is evolving so fast that much of the RLHF book's RLVR content will become outdated, and this book is intended to maintain pace with progress.
 
-I also acknowledge the wonderful developers of Exclaidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artisitic soul of the book (FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States). Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach (same for Colah from distillpub)! Lastly, thanks to the quarto devs for making the software this book uses!
+I also acknowledge the wonderful developers of Excalidraw, which I used for this book's figures. Thanks to M.C. Escher for being the artistic soul of the book.[^index-public-domain] Thanks to Simon Boehm for creating amazing educational content and establishing the target I strive to reach (same for Colah from distillpub)! Lastly, thanks to the quarto devs for making the software this book uses!
 
-## [Github Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
+[^index-public-domain]: FYI all art contained in this textbook is published at the latest in 1930, which means it's in the public domain in the United States.
+
+## [GitHub Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 
 <!-- contributors:start -->
 - [Yaroslav Petrashko](https://github.com/YaroslavPetrashko)

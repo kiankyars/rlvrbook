@@ -51,7 +51,7 @@ Of note that models of today's capability likely do not suffer such biases to th
 
 ### Reward model ensembles
 
-Ensembles are the simplest hybrid stacks, combining multiple judgments homogeneously without layering different verification modalities. Coste et al. studied ensembles of reward models for RLHF and found that they mitigate but do not eliminate reward hacking [@coste2023rewardensemble]. Ensembles that differ in pretraining seeds generalize better than those that differ only in fine-tuning seeds, because the former have more diverse internal representations, and less-overlapping blind spots.
+Ensembles are the simplest hybrid stacks, combining multiple judgments homogeneously without layering different verification modalities. Eisenstein et al. studied ensembles of reward models for RLHF and found that they mitigate but do not eliminate reward hacking, a more negative conclusion than Coste et al. reached in a synthetic setup, where conservative ensemble objectives practically eliminated over-optimization for best-of-$n$ sampling [@eisenstein2023helping; @coste2023rewardensemble]. Ensembles that differ in pretraining seeds generalize better than those that differ only in fine-tuning seeds, because the former have more diverse internal representations, and less-overlapping blind spots [@eisenstein2023helping].
 
 ### The calibration problem
 
@@ -109,10 +109,10 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
   const modes = {
     outcome: {
       scores: [
-        { s: "\u2014", c: "oph-na", src: "\u2014" },
-        { s: "\u2014", c: "oph-na", src: "\u2014" },
-        { s: "\u2014", c: "oph-na", src: "\u2014" },
-        { s: "\u2014", c: "oph-na", src: "\u2014" },
+        { s: "n/a", c: "oph-na", src: "" },
+        { s: "n/a", c: "oph-na", src: "" },
+        { s: "n/a", c: "oph-na", src: "" },
+        { s: "n/a", c: "oph-na", src: "" },
         { s: "r = 0", c: "oph-fail", src: "Symbolic" }
       ],
       summary: "<strong>Outcome only.</strong> The verifier checks the final answer against the ground truth. It returns r\u00A0=\u00A00 because the extracted answer is incomplete. The four correct reasoning steps are not assessed separately."
@@ -165,13 +165,11 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
 
 | Step | Reasoning | Outcome | Hybrid |
 |:-----|:----------|:-------:|:------:|
-| 1 | Factor: $x^2-5x+6=(x-2)(x-3)$ | --- | $\checkmark$ (PRM) |
-| 2 | $x-2=0 \implies x=2$ | --- | $\checkmark$ (PRM) |
-| 3 | $x-3=0 \implies x=3$ | --- | $\checkmark$ (PRM) |
-| 4 | Solution set: $\{2,3\}$ | --- | $\checkmark$ (PRM) |
+| 1 | Factor: $x^2-5x+6=(x-2)(x-3)$ | n/a | $\checkmark$ (PRM) |
+| 2 | $x-2=0 \implies x=2$ | n/a | $\checkmark$ (PRM) |
+| 3 | $x-3=0 \implies x=3$ | n/a | $\checkmark$ (PRM) |
+| 4 | Solution set: $\{2,3\}$ | n/a | $\checkmark$ (PRM) |
 | 5 | Report: `<answer>x = 2</answer>` | $r=0$ | $r=0$ (Symbolic) |
-
-: Outcome verification scores only the endpoint. The hybrid stack uses a programmatic checker for the endpoint and a PRM for intermediate steps.
 
 :::
 
@@ -199,7 +197,7 @@ The choice of arbitration pattern determines the stack's effective false-positiv
 
 ### Hybrid verifier in code
 
-This code snippet reuses Chapter 2's answer-extraction and canonicalization helpers; `gold` is the reference answer in canonicalized form. A parsed mismatch returns zero, and a learned fallback receives both the problem and the complete reference answer.
+This code snippet reuses Chapter 2's answer-extraction and canonicalization helpers; `gold` is the reference answer in canonicalized form. A parsed mismatch returns zero, while an answer that is missing or cannot be parsed goes to a learned fallback, which receives both the problem and the complete reference answer.
 
 ```python
 def symbolic_reward(completion: str, gold: tuple[str, ...]) -> float | None:
@@ -207,6 +205,8 @@ def symbolic_reward(completion: str, gold: tuple[str, ...]) -> float | None:
     if answer is None:
         return None
     candidate = canonicalize_answer(answer)
+    if not candidate:
+        return None
     return float(candidate == gold)
 
 def hybrid_reward(

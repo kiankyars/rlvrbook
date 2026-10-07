@@ -173,7 +173,10 @@ training_args = GRPOConfig(
 peft_config = LoraConfig(
     r=16,
     lora_alpha=64,
-    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "up_proj", "down_proj", "gate_proj"],
+    target_modules=[
+        "q_proj", "k_proj", "v_proj", "o_proj",
+        "up_proj", "down_proj", "gate_proj",
+    ],
     task_type="CAUSAL_LM",
     lora_dropout=0.05,
 )
@@ -303,27 +306,29 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
 
 ::: {.content-visible when-format="pdf"}
 
-**Correctness only** (3 correct, 5 incorrect out of 8 rollouts):
 
 | Rollout | Correctness | Format | Reward | Advantage |
 |---------|-------------|--------|--------|-----------|
 | 1–3     | Correct     | N/A    | 2.0    | +1.29     |
 | 4–8     | Wrong       | N/A    | 0.0    | −0.77     |
 
+: Correctness only (3 correct, 5 incorrect out of 8 rollouts). {#tbl-ch5-reward-correctness}
+
 Group mean: 0.75. Advantage sign matches correctness for every rollout.
 
-**Correctness + format rewards** (same eight rollouts):
 
 | Rollout | Correctness | Format | Reward | Advantage |
 |---------|-------------|--------|--------|-----------|
-| 1       | Correct     | ✓      | 3.8    | +1.43     |
-| 2       | Correct     | ✓      | 3.5    | +1.21     |
+| 1       | Correct     | $\checkmark$ | 3.8    | +1.43     |
+| 2       | Correct     | $\checkmark$ | 3.5    | +1.21     |
 | 3       | Correct     | ~      | 3.0    | +0.84     |
-| 4       | Wrong       | ✓      | 1.8    | **−0.04** |
-| 5       | Wrong       | ✓      | 1.5    | −0.26     |
+| 4       | Wrong       | $\checkmark$ | 1.8    | **−0.04** |
+| 5       | Wrong       | $\checkmark$ | 1.5    | −0.26     |
 | 6       | Wrong       | ~      | 1.0    | −0.62     |
-| 7       | Wrong       | ✗      | 0.2    | −1.21     |
-| 8       | Wrong       | ✗      | 0.0    | −1.36     |
+| 7       | Wrong       | $\times$ | 0.2    | −1.21     |
+| 8       | Wrong       | $\times$ | 0.0    | −1.36     |
+
+: Correctness + format rewards (same eight rollouts). {#tbl-ch5-reward-format}
 
 Group mean: 1.85. Rollout 4 is incorrect but barely suppressed.
 
@@ -386,7 +391,7 @@ This works for GSM8K only when the model and dataset happen to land in the right
 
 If the model already solves 95% of training tasks, most rollout groups will be all-correct. After group normalization, advantages are determined by format differences alone, so we are effectively training on formatting. Conversely, a model that can only solve 5% of problems produces groups where most rollouts are incorrect, giving a weak learning signal.
 
-The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. The band follows from the entropy of a binary reward (@eq-ch5-binary-reward-entropy): @fig-ch5-binary-reward-entropy shows that it peaks at one bit at a 50% solve rate, is still 0.72 bits at 20% and 80%, and falls off quickly toward either edge [@patel2025bitspersample].
+The optimal regime in RL is the band where the solve rate is roughly 20–80% per prompt. The band follows from the entropy of a binary reward (@eq-ch5-binary-reward-entropy): it peaks at one bit at a 50% solve rate, is still 0.72 bits at 20% and 80%, and falls off quickly toward either edge [@patel2025bitspersample].
 
 :::: {#fig-ch5-binary-reward-entropy fig-cap="Entropy of a binary reward as a function of the per-prompt solve rate, with the 20–80% band shaded."}
 

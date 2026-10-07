@@ -49,7 +49,7 @@ $$ {#eq-appa-multiturn-objective}
 
 In many verifier-based RL formulations, intermediate rewards are typically zero ($r_t \approx 0$ for $t < T$), with a single scalar terminal reward ($r_T = R_\phi(x, y_{1:T})$) providing the only feedback signal from the verifier or environment.
 
-Throughout this book, we use $x$ to denote prompts and $y$ for generated outputs (including turn-level outputs in multi-turn cases). The verifier or environment is represented as a reward function, either $R_\phi$ or $r_\phi$, that assigns a score to a prompt and completion pair, or to an entire trajectory.
+Throughout this book, we use $x$ to denote prompts and $y$ for generated outputs (including turn-level outputs in multi-turn cases). The verifier or environment is represented as a reward function that assigns a score to a prompt and completion pair, or to an entire trajectory; this appendix writes it $r_\phi$ or $R_\phi$ to mark its parameters, and the chapters write it $r(x, y)$, or $v(x, y)$ when the verifier returns a score rather than a reward.
 
 ## What the Optimizer Does
 
@@ -59,7 +59,7 @@ $$
 \hat A_i = r_i - b_i.
 $$ {#eq-appa-advantage}
 
-This is how we bootstrap RL to improve through its own trajectory, by updating the policy to perform better than its mean result, which is the baseline. Optimizers mainly differ in how they choose this baseline and how they limit the size of the update. PPO uses a learned value function as the baseline and constrains policy movement with a clipped update [@schulman2017proximal]. In LLM post-training, implementations often also add KL regularization to a reference policy. GRPO, introduced in DeepSeekMath, removes the learned value model and estimates the baseline from the rewards in the sampled rollout group [@shao2024deepseekmath]. In the group-relative form used in Chapter 5, this becomes:
+A baseline that does not depend on the sampled completion leaves the expected update unchanged and only reduces its variance; in practice it makes each update push toward completions that beat the policy's typical result, which is the baseline. Optimizers mainly differ in how they choose this baseline and how they limit the size of the update. PPO uses a learned value function as the baseline and constrains policy movement with a clipped update [@schulman2017proximal]. In LLM post-training, implementations often also add KL regularization to a reference policy. GRPO, introduced in DeepSeekMath, removes the learned value model and estimates the baseline from the rewards in the sampled rollout group [@shao2024deepseekmath]. In the group-relative form used in Chapter 5, this becomes:
 
 $$
 \hat A_i = \frac{r_i - \mu_{\text{group}}}{\sigma_{\text{group}}}.
@@ -80,7 +80,7 @@ $$ {#eq-appa-token-logprob-gradient}
 Implementations can also weight the update itself. A rollout weight $w_i$ changes the strength of the whole sample; a token weight $\alpha_t$ changes which token log-probability terms receive more pressure:
 
 $$
-\nabla_\theta J(\theta) \approx \hat A_i \sum_t \alpha_t \nabla_\theta \log \pi_\theta(y_t \mid x, y_{<t})
+\nabla_\theta J(\theta) \approx w_i\, \hat A_i \sum_t \alpha_t \nabla_\theta \log \pi_\theta(y_t \mid x, y_{<t})
 $$
 
 Outcome RLVR usually has $\alpha_t = 1$ for every generated token, because the verifier only returns one scalar for the completion. Nonuniform token weights require extra information: a process label, a verifier-localized error, a tool-call mask, or another credit-assignment signal.
@@ -112,7 +112,7 @@ D_{\mathrm{KL}}\!\left(
 \right].
 $$ {#eq-appa-kl-objective}
 
-The KL term penalizes policies for moving too far from the reference distribution. Despite, verifier acting on some region of the model's distribution a priori, if optimization pushes the policy far outside that region, the reward can become easier to hack and detached from the task the verifier checks.
+The KL term penalizes policies for moving too far from the reference distribution. The verifier was only ever validated on the region of outputs the reference model produces; if optimization pushes the policy far outside that region, the reward can become easier to hack and detached from the task the verifier checks.
 
 ## Rejection, Search, and Policy Optimization
 

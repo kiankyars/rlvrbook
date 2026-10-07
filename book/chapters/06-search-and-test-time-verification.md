@@ -1,6 +1,6 @@
 # Search and Test Time Verification
 
-![M. C. Escher, _Calanques de Piana_ (1928).](../escher/06-calanques-de-piana.jpg){width="80%" fig-align="center"}
+![M. C. Escher, _Bonifacio, Corsica_ (1928).](../escher/06-bonifacio-corsica.jpg){width="80%" fig-align="center"}
 
 ## Chapter Map
 
@@ -174,8 +174,6 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 | 1 (pass@1) | 28.9% | 40.0% | +11.1 |
 | 8 | 53.6% | 68.0% | +14.4 |
 | 16 | 62.5% | 70.0% | +7.5 |
-
-: Exact AIME24 pass@k values for DeepScaleR-1.5B-Preview before and after micro-budget RLVR. Both models improve with more candidates, but the RLVR-trained model starts higher at pass@1 and needs less help from additional search [@khan2026plasticity].
 
 :::
 
