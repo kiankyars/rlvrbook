@@ -62,6 +62,7 @@ I also acknowledge the wonderful developers of Excalidraw, which I used for this
 ## [GitHub Contributors](https://github.com/kiankyars/rlvrbook?tab=contributing-ov-file)
 
 <!-- contributors:start -->
+- [kiankyars](https://github.com/kiankyars)
 - [Yaroslav Petrashko](https://github.com/YaroslavPetrashko)
 <!-- contributors:end -->
 
