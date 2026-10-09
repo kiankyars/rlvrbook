@@ -50,22 +50,22 @@ Long-context question answering can use citation checks, evidence matching, or e
 
 RLVR is a training paradigm, and reasoning is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are the ones which leverage strong verifiers. It's therefore understandable that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance.
 
-## Verifiable versus Complete
+## Verifiable versus complete
 
-Even verifiers are susceptible to becoming proxies, from our three core domain examples:
+It is important to monitor verifiers' blind spots, since designing verifiers that are robust across all possible inputs, especially during prolonged training runs, is non-trivial. Consider three examples of verifier weaknesses:
 
-1. A code evaluator may miss behaviors outside the test suite.
-2. A math reward may depend on brittle extraction. 
-3. A proof system may validate a derivation without telling us whether the model's decomposition was insightful or robust.
+1. Unit tests cannot check every possible regression that an agent may introduce in software.
+2. A math reward may depend on brittle extraction.
+3. A proof assistant can verify that a sorting program returns an ordered list. If the specification forgets to require that the output contain the same elements as the input, a program that always returns an empty list can satisfy it.
 
 These examples raise important questions to consider in applying RLVR:
 
-- what is being checked, 
+- what is being checked,
 - what is being missed,
-- how expensive is the check, and 
+- how expensive is the check, and
 - how easily the signal can be gamed.
- 
-We will dissect the gap between a usable reward signal and the outcome we want in the rest of the book. 
+
+In his September 17, 2026 interview with Dwarkesh Patel, Noam Brown distinguishes solving a math problem from looking up its answer key: what counts as cheating is clear in that setting. In broader tasks, even defining cheating can be difficult, as he illustrates with the blurry boundary between sycophancy and reward hacking. He also notes that today's models operate over increasingly long horizons and asks how evaluation can keep up if tasks last longer than the interval between model releases [@patel2026brown]. Extrapolating to an agent running a corporation, a profitable outcome alone would not establish that its decisions were acceptable. The verifier problem becomes not only how to check an outcome, but how to define success across the decisions that led to it.
 
 ## What we cover
 
