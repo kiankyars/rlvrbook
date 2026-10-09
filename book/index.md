@@ -50,6 +50,7 @@ Although the chapters do minimally build off of each other, they can still be re
 - 2026-09-24: Revised Chapter 9's frontier recipe, expanded Chapter 10 with multimodal verifiers, agent scaffolds, and environment synthesis, rebuilt Chapter 11 around verification, and added Appendix D with research ideas.
 - 2026-09-25: Replaced ten Escher openers with higher-resolution scans and fixed PDF figure placement.
 - 2026-09-26: Audited the whole book into ROADMAP.md, added the SemiAnalysis compute charts and redrawn figures to Chapters 7 and 11, replaced two Escher openers, added a license, and released v1.
+- 2026-10-09: Revised Chapter 1's framing and verifier examples, added a footnote on RLVR and superhuman performance, removed the domain map while preserving its citations, and connected verifier blind spots to Noam Brown's discussion of cheating and long-horizon evaluation.
 
 ## Acknowledgments
 
