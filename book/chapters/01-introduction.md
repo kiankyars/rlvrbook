@@ -44,8 +44,6 @@ Things heated up in September 2024, when OpenAI published *Learning to Reason wi
 
 Verifiable tasks separate better behavior from worse at acceptable cost (imagine a task that required an expert chemist to read the agent traces and assign a score manually; this is likely not an acceptable cost). Indeed, chemistry was not the first domain to be scaled via verifiable rewards; math, code, and formal proof became central to RLVR because correctness is tractable. For a math problem, one might normalize an answer and compare it with a reference answer, while code and formal proof use programs to verify correctness [@shao2024deepseekmath; @liu2023rltf; @xin2024deepseekproverv15].
 
-Long-context question answering can use citation checks, evidence matching, or entailment-style grading[^ch1-entailment] to grade answers [@zhang2024longcite]. Tool-using agents have environment transitions, task completion criteria, or execution traces [@zhou2023webarena; @xie2024osworld].
-
 ## RLVR and Reasoning
 
 RLVR is a training paradigm, and reasoning is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are the ones which leverage strong verifiers. It's therefore understandable that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance.
@@ -74,4 +72,3 @@ The next chapters move from the general paradigm to the main reward regimes in p
 [^ch1-deepseekmath-rlvr-name]: DeepSeekMath introduced GRPO and used RL to improve mathematical reasoning in an open model [@shao2024deepseekmath]. Tulu 3 later introduced the name "Reinforcement Learning with Verifiable Rewards (RLVR)" for this broader training pattern [@lambert2024tulu3].
 [^ch1-openai-o1]: OpenAI's writeup states that `o1` performance improved with both more reinforcement learning, which they describe as train-time compute, and more time spent thinking at test time [@openai2024o1].
 [^ch1-meta-reaction]: The quoted line was reported as an anonymous Teamblind post summarized by TMTPOST, while the claim that Meta created four "war rooms" was reported by Fortune, citing The Information [@tmtpost2025deepseek; @quirozgutierrez2025warrooms].
-[^ch1-entailment]: In natural-language inference, entailment means that a hypothesis follows from a premise. Here, entailment-style grading asks whether a model's answer is supported by a reference answer or its cited evidence.
