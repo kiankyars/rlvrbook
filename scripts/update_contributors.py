@@ -12,6 +12,7 @@ from pathlib import Path
 
 START_MARKER = "<!-- contributors:start -->"
 END_MARKER = "<!-- contributors:end -->"
+IGNORED_LOGINS = {"kiankyars"}
 
 
 def fetch_display_name(login: str, token: str | None) -> str | None:
@@ -88,6 +89,10 @@ def main() -> int:
     login = os.environ["CONTRIBUTOR_LOGIN"].strip()
     if not login:
         raise ValueError("CONTRIBUTOR_LOGIN is required")
+
+    if login.casefold() in IGNORED_LOGINS:
+        print(f"Skipping excluded contributor @{login}")
+        return 0
 
     display_name = os.environ.get("CONTRIBUTOR_DISPLAY_NAME", "").strip() or None
     if display_name is None:
