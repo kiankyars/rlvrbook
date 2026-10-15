@@ -2,12 +2,12 @@
 
 ![M. C. Escher, _Tower of Babel_ (1928).](../escher/01-tower-of-babel.jpg){width="80%" fig-align="center"}
 
-## Chapter map
+## Chapter Map
 
 - Define RLVR as learning from verifiable reward signals and explain verifiable tasks.
 - Analyze why RLVR became ubiquitous in reasoning models and preview the structure of the book.
 
-## What RLVR is
+## What RLVR Is
 
 RLVR is reinforcement learning on tasks where some meaningful part of correctness can be checked directly. The check you implement can be exact, as in symbolic math or formal proof, or the result of an executable, as in unit tests. It can be partial, i.e. grounded question answering or tool-using agents where only some parts of the trajectory can be reliably scored. The unifying idea is the availability of a success notion, because a task/environment possessing useful correctness signals can be used to improve search at test time, or RL'd against to optimize a model, resulting in systems that improve far beyond what static supervised fine-tuning alone produces.[^ch1-superhuman]
 
@@ -40,17 +40,17 @@ Math-Shepherd was a landmark mathematical-reasoning RL paper, using a learned pr
 
 Things heated up in September 2024, when OpenAI published *Learning to Reason with LLMs* (o1), indicating that they had used a train-time and test-time compute strategy to enhance model reasoning through reinforcement learning in math and coding tasks.[^ch1-openai-o1] The name "Reinforcement Learning with Verifiable Rewards" (RLVR) was coined in the Tulu 3 paper from November 22, 2024.[^ch1-deepseekmath-rlvr-name] Finally, there was DeepSeek-R1 at the start of 2025, which demonstrated the full verifier-driven RL formula for bootstrapping reasoning models [@deepseekai2025r1]. To quote someone describing the atmosphere at Meta after R1 launched, “Engineers are moving frantically to dissect DeepSeek and copy anything and everything we can from it,” and according to Fortune, there were war rooms assembled at Meta to understand how a Chinese lab with substantially fewer resources was beating them.[^ch1-meta-reaction]
 
-## Verifiable tasks
+## Verifiable Tasks
 
 Verifiable tasks separate better behavior from worse behavior and, to be practical, do so at acceptable cost. Math, code, and formal proof became central to RLVR because the notion of correctness is tractable. For a math problem, one might normalize an answer and compare it with a reference answer, while code and formal proof use programs to verify correctness [@shao2024deepseekmath; @liu2023rltf; @xin2024deepseekproverv15]. MathVista applies answer-based evaluation to mathematical questions about images [@lu2023mathvista].
 
 Long-context question answering can use citation checks, evidence matching, or entailment-style grading[^ch1-entailment] to grade answers [@zhang2024longcite]. Tool-using agents have environment transitions, task completion criteria, or execution traces [@zhou2023webarena; @xie2024osworld].
 
-## RLVR and reasoning
+## RLVR and Reasoning
 
 RLVR is a training paradigm, and reasoning is a downstream capability/artefact, e.g. multi-step breakdown, search, planning, tool use, etc. The marriage between the two occurs because the most successful reasoning domains are the ones which leverage strong verifiers. It's therefore understandable that RLVR and reasoning are conflated, since verifier-friendly domains are the best places to scale reasoning performance.
 
-## Verifiable versus complete
+## Verifiable versus Complete
 
 It is important to monitor verifiers' blind spots, since designing verifiers that are robust across all possible inputs, especially during prolonged training runs, is non-trivial. Consider three examples of verifier weaknesses:
 
@@ -67,7 +67,7 @@ These examples raise important questions to consider in applying RLVR:
 
 In his September 17, 2026 interview with Dwarkesh Patel, Noam Brown distinguishes solving a math problem from looking up its answer key: what counts as cheating is clear in that setting. In broader tasks, even defining cheating can be difficult, as he illustrates with the blurry boundary between sycophancy and reward hacking. He also notes that today's models operate over increasingly long horizons and asks how evaluation can keep up if tasks last longer than the interval between model releases [@patel2026brown]. Extrapolating to an agent running a corporation, a profitable outcome alone would not establish that its decisions were acceptable. The verifier problem becomes not only how to check an outcome, but how to define success across the decisions that led to it.
 
-## What we cover
+## What We Cover
 
 The next chapters move from the general paradigm to the main reward regimes in practice. Chapters 2 through 4 cover outcome rewards, process rewards, programmatic, learned and hybrid verification pipelines. Chapter 5 demonstrates turning a verifier into a learning signal. Chapter 6 turns to search and test-time verification, and Chapter 7 covers reward hacking. Chapter 8 documents the 2026 incidents in which models from four frontier labs reached real systems outside their sandboxes, in large part due to the optimization pressure in scaling RLVR. Chapters 9-11 discuss real frontier RLVR recipes, agents, RL environments, and open problems.
 
