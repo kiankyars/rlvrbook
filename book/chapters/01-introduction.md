@@ -42,7 +42,7 @@ Things heated up in September 2024, when OpenAI published *Learning to Reason wi
 
 ## Verifiable Tasks
 
-Verifiable tasks separate better behavior from worse behavior and, to be practical, do so at acceptable cost. Math, code, and formal proof became central to RLVR because the notion of correctness is tractable. For a math problem, one might normalize an answer and compare it with a reference answer, while code and formal proof use programs to verify correctness [@shao2024deepseekmath; @liu2023rltf; @xin2024deepseekproverv15]. MathVista applies answer-based evaluation to mathematical questions about images [@lu2023mathvista].
+Verifiable tasks separate better behavior from worse at acceptable cost (imagine a task that required an expert chemist to read the agent traces and assign a score manually; this is likely not an acceptable cost). Indeed, chemistry was not the first domain to be scaled via verifiable rewards; math, code, and formal proof became central to RLVR because correctness is tractable. For a math problem, one might normalize an answer and compare it with a reference answer, while code and formal proof use programs to verify correctness [@shao2024deepseekmath; @liu2023rltf; @xin2024deepseekproverv15].
 
 Long-context question answering can use citation checks, evidence matching, or entailment-style grading[^ch1-entailment] to grade answers [@zhang2024longcite]. Tool-using agents have environment transitions, task completion criteria, or execution traces [@zhou2023webarena; @xie2024osworld].
 
@@ -52,20 +52,17 @@ RLVR is a training paradigm, and reasoning is a downstream capability/artefact, 
 
 ## Verifiable versus Complete
 
-It is important to monitor verifiers' blind spots, since designing verifiers that are robust across all possible inputs, especially during prolonged training runs, is non-trivial. Consider three examples of verifier weaknesses:
+It is important to monitor the verifier's blind spots, since designing verifiers that are robust across all possible inputs, especially during prolonged training runs, is non-trivial. Consider two examples of verifier weaknesses:
 
 1. Unit tests cannot check every possible regression that an agent may introduce in software.
 2. A math reward may depend on brittle extraction.
-3. A proof assistant can verify that a sorting program returns an ordered list. If the specification forgets to require that the output contain the same elements as the input, a program that always returns an empty list can satisfy it.
 
 These examples raise important questions to consider in applying RLVR:
 
-- what is being checked,
-- what is being missed,
-- how expensive is the check, and
-- how easily the signal can be gamed.
-
-In his September 17, 2026 interview with Dwarkesh Patel, Noam Brown distinguishes solving a math problem from looking up its answer key: what counts as cheating is clear in that setting. In broader tasks, even defining cheating can be difficult, as he illustrates with the blurry boundary between sycophancy and reward hacking. He also notes that today's models operate over increasingly long horizons and asks how evaluation can keep up if tasks last longer than the interval between model releases [@patel2026brown]. Extrapolating to an agent running a corporation, a profitable outcome alone would not establish that its decisions were acceptable. The verifier problem becomes not only how to check an outcome, but how to define success across the decisions that led to it.
+- what is being checked?
+- what is being missed?
+- how expensive is the check?
+- how easily can the signal be gamed?
 
 ## What We Cover
 
