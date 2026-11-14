@@ -15,13 +15,13 @@ The harness decides what the policy is allowed to observe, what actions it can t
 
 ::: {#fig-ch10-agentic-harness-stack fig-cap="The trajectory, environment state, and verifier stack part of the training interface."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/10-agentic-harness-stack.png){.light-content}
 
 ![](../diagrams/10-agentic-harness-stack-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/10-agentic-harness-stack.png)
 :::
 
@@ -35,13 +35,13 @@ Long rollouts finish anywhere from seconds to hours after starting, meaning batc
 
 ::: {#fig-ch10-windowed-fifo}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/10-windowed-fifo.png){.light-content}
 
 ![](../diagrams/10-windowed-fifo-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/10-windowed-fifo.png)
 :::
 
@@ -86,14 +86,14 @@ During MiniMax's training, the policy (the M2 model being trained) runs inside a
 
 ::: {#fig-ch10-gateway}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/10-gateway-light.png){.light-content fig-alt="Many agent harnesses send their requests to one gateway, which forwards them to the model; the model and the training loop feed each other."}
 
 ![](../diagrams/10-gateway-dark.png){.dark-content fig-alt="Many agent harnesses send their requests to one gateway, which forwards them to the model; the model and the training loop feed each other."}
 :::
 
-::: {.content-visible when-format="pdf"}
-![](../diagrams/10-gateway-light.png)
+::: {.content-visible unless-format="html:js"}
+![](../diagrams/10-gateway-light.png){fig-alt="Many agent harnesses send their requests to one gateway, which forwards them to the model; the model and the training loop feed each other."}
 :::
 
 MiniMax's gateway: many agent harnesses call one model API, and the gateway forwards each call to the policy, returns the answer, and records the exact prompt and response as a training example.
@@ -122,13 +122,13 @@ They score each task on difficulty and correctness and use those scores as rewar
 
 ::: {#fig-ch10-fail-to-pass fig-cap="Fail-to-pass (top) and pass-to-pass (bottom) tests."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/10-fail-to-pass-and-pass-to-pass.png){.light-content}
 
 ![](../diagrams/10-fail-to-pass-and-pass-to-pass-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/10-fail-to-pass-and-pass-to-pass.png)
 :::
 

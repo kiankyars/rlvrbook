@@ -89,14 +89,14 @@ The clearest quantitative evidence for Goodhart dynamics in optimization comes f
 
 ::: {#fig-ch7-gold-proxy-setup}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/07-gold-proxy-setup-light.png){.light-content fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
 
 ![](../diagrams/07-gold-proxy-setup-dark.png){.dark-content fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
 :::
 
-::: {.content-visible when-format="pdf"}
-![](../diagrams/07-gold-proxy-setup-light.png)
+::: {.content-visible unless-format="html:js"}
+![](../diagrams/07-gold-proxy-setup-light.png){fig-alt="Two pipelines. Real: a labeller produces real comparisons that train the proxy reward model. Synthetic: real comparisons train a gold reward model, which labels synthetic comparisons that train the proxy reward model."}
 :::
 
 In real RLHF, human labellers produce the comparisons that train the proxy reward model. In Gao et al.'s synthetic setup, a large gold reward model, itself trained on real comparisons, labels the comparisons instead, so its score can stand in for ground truth. Redrawn after Gao et al.'s Figure 2 [@gao2023scaling].
@@ -107,7 +107,7 @@ Pan et al. built four RL environments with deliberately misspecified rewards (tr
 
 ::: {#fig-ch7-overoptimization}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 <div class="ghg-widget" id="ghg-widget">
 <p class="ghg-hint">Drag the slider to increase optimization pressure. Toggle verifier strength to see how the Goodhart gap changes.</p>
 <div class="ghg-tabs" role="tablist">
@@ -208,7 +208,7 @@ Pan et al. built four RL environments with deliberately misspecified rewards (tr
 </script>
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/07-overoptimization-curve-light.svg){fig-alt="Gold reward (solid) and proxy reward (dashed) against KL divergence for 12M, 300M, and 3B proxy reward models: proxy reward climbs while gold reward peaks and then falls, later and higher for larger reward models."}
 :::
 
@@ -253,13 +253,13 @@ Raising the threshold first filters out ordinary wrong answers, so precision ris
 
 :::: {#fig-ch7-accepted-pool-precision fig-cap="Illustrative score distributions for correct answers, wrong answers, and a rare exploit that the verifier scores highest (left), and the resulting precision of the accepted pool as the threshold rises (right)."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/07-accepted-pool-precision-light.svg){.light-content}
 
 ![](../diagrams/07-accepted-pool-precision-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/07-accepted-pool-precision-light.svg)
 :::
 

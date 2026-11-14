@@ -5,11 +5,13 @@ description-meta: "RLVR means reinforcement learning from verifiable rewards: tr
 
 # Preface {.unnumbered}
 
+::: {.content-visible when-format="html:js"}
 ```{=html}
 <style>
 #title-block-header .description { display: none; }
 </style>
 ```
+:::
 
 ![M. C. Escher, _Corsica Corte_ (1929).](escher/00-corsica-corte.jpg){width="80%" fig-align="center"}
 

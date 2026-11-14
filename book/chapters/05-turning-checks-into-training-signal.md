@@ -229,7 +229,7 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
 @tbl-ch5-reward-comparison demonstrates this edge case with eight rollouts scored under two regimes for a single prompt having three correct and five incorrect outcomes.
 
 ::: {#tbl-ch5-reward-comparison}
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 
 <div class="rsp-widget" id="rsp-widget">
 <div class="rsp-tabs" role="tablist">
@@ -304,7 +304,7 @@ The script passes five reward functions to `GRPOTrainer`, which sums their outpu
 
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 
 
 | Rollout | Correctness | Format | Reward | Advantage |
@@ -343,13 +343,13 @@ The correctness component should dominate such that auxiliary rewards do not det
 
 :::: {#fig-ch5-grpo-reward-components fig-cap="Mean reward of correctness vs format over time."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/05-grpo-reward-components-light.png){.light-content}
 
 ![](../diagrams/05-grpo-reward-components-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/05-grpo-reward-components-light.png)
 :::
 
@@ -357,13 +357,13 @@ The correctness component should dominate such that auxiliary rewards do not det
 
 :::: {#fig-ch5-grpo-format-reward-share fig-cap="Format reward becomes more than half of the observed shaped reward."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/05-grpo-format-reward-share-light.png){.light-content}
 
 ![](../diagrams/05-grpo-format-reward-share-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/05-grpo-format-reward-share-light.png)
 :::
 
@@ -371,13 +371,13 @@ The correctness component should dominate such that auxiliary rewards do not det
 
 :::: {#fig-ch5-grpo-total-reward fig-cap="Total shaped reward rises as correctness and format reward improve together."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/05-grpo-total-reward-light.svg){.light-content}
 
 ![](../diagrams/05-grpo-total-reward-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/05-grpo-total-reward-light.svg)
 :::
 
@@ -395,13 +395,13 @@ The optimal regime in RL is the band where the solve rate is roughly 20–80% pe
 
 :::: {#fig-ch5-binary-reward-entropy fig-cap="Entropy of a binary reward as a function of the per-prompt solve rate, with the 20–80% band shaded."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/05-binary-reward-entropy-light.svg){.light-content}
 
 ![](../diagrams/05-binary-reward-entropy-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/05-binary-reward-entropy-light.svg)
 :::
 

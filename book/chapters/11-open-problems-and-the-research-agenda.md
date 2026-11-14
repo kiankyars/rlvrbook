@@ -33,13 +33,13 @@ Policy-gradient updates raise each sampled token's logit in proportion to its ad
 
 ::: {#fig-ch11-entropy-performance}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/11-entropy-performance-light.svg){.light-content}
 
 ![](../diagrams/11-entropy-performance-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/11-entropy-performance-light.svg)
 :::
 
@@ -84,14 +84,14 @@ One single-author audit found that in a 49-task sample of SWE-bench Verified dra
 
 ::: {#fig-ch11-impossiblebench fig-cap="ImpossibleBench mutates a test to contradict the task, so any pass is a cheat. Adapted from Zhong et al. (cropped, with a dark-mode variant), CC BY 4.0."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/11-impossiblebench-overview.png){.light-content fig-alt="An is_prime task with a normal test, assert is_prime(7), and a mutated test, assert not is_prime(7), which a model can only pass by special-casing 7."}
 
 ![](../diagrams/11-impossiblebench-overview-dark.png){.dark-content fig-alt="An is_prime task with a normal test, assert is_prime(7), and a mutated test, assert not is_prime(7), which a model can only pass by special-casing 7."}
 :::
 
-::: {.content-visible when-format="pdf"}
-![](../diagrams/11-impossiblebench-overview.png)
+::: {.content-visible unless-format="html:js"}
+![](../diagrams/11-impossiblebench-overview.png){fig-alt="An is_prime task with a normal test, assert is_prime(7), and a mutated test, assert not is_prime(7), which a model can only pass by special-casing 7."}
 :::
 
 :::
@@ -141,14 +141,14 @@ The largest systematic datapoint is ScaleRL: a study totaling more than 400,000 
 
 ::: {#fig-ch11-scalerl-100k}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/11-scalerl-100k-gpu-hours-light.svg){.light-content fig-alt="Held-out pass rate against RL training compute on log scales for an 8B dense model and a 17Bx16 mixture-of-experts model, with sigmoid curves fitted to the training points and extrapolations that match the extended training points."}
 
 ![](../diagrams/11-scalerl-100k-gpu-hours-dark.svg){.dark-content fig-alt="Held-out pass rate against RL training compute on log scales for an 8B dense model and a 17Bx16 mixture-of-experts model, with sigmoid curves fitted to the training points and extrapolations that match the extended training points."}
 :::
 
-::: {.content-visible when-format="pdf"}
-![](../diagrams/11-scalerl-100k-gpu-hours-light.svg)
+::: {.content-visible unless-format="html:js"}
+![](../diagrams/11-scalerl-100k-gpu-hours-light.svg){fig-alt="Held-out pass rate against RL training compute on log scales for an 8B dense model and a 17Bx16 mixture-of-experts model, with sigmoid curves fitted to the training points and extrapolations that match the extended training points."}
 :::
 
 Sigmoid curves fitted to the early training points of each run and extrapolated for an 8B dense model and a 17Bx16 mixture-of-experts model. Redrawn from Khatri et al.'s Figure 1 (CC BY 4.0).
@@ -161,13 +161,13 @@ Each fitted curve has three parameters: $A$, the ceiling the run approaches, $C_
 
 ::: {#fig-ch11-scalerl-ceiling}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/11-scalerl-ceiling-vs-efficiency-light.svg){.light-content}
 
 ![](../diagrams/11-scalerl-ceiling-vs-efficiency-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/11-scalerl-ceiling-vs-efficiency-light.svg)
 :::
 

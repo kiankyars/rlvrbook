@@ -38,13 +38,13 @@ The following modifications are made to vanilla GRPO.
 
 :::: {#fig-ch9-token-level-normalization fig-cap="Per-sample normalization gives each response a total weight of one, so tokens in long responses count less; token-level normalization gives every token the same weight."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/09-token-level-normalization-light.svg){.light-content}
 
 ![](../diagrams/09-token-level-normalization-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/09-token-level-normalization-light.svg)
 :::
 
@@ -54,13 +54,13 @@ The following modifications are made to vanilla GRPO.
 
 :::: {#fig-ch9-asymmetric-clipping fig-cap="Clipping thresholds on the probability ratio in OlmoRL: 0.8 below and 1.272 above. They bound how far one update pushes a token, not the probability itself."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/09-asymmetric-clipping-light.svg){.light-content}
 
 ![](../diagrams/09-asymmetric-clipping-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/09-asymmetric-clipping-light.svg)
 :::
 
@@ -72,13 +72,13 @@ The following modifications are made to vanilla GRPO.
 
 :::: {#fig-ch9-truncated-importance-sampling fig-cap="Truncated importance sampling: each token's loss is weighted by the ratio of the trainer's probability to vLLM's, up to a cap."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/09-truncated-importance-sampling-light.svg){.light-content}
 
 ![](../diagrams/09-truncated-importance-sampling-dark.svg){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/09-truncated-importance-sampling-light.svg)
 :::
 

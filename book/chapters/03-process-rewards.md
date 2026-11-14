@@ -99,13 +99,13 @@ When comparing these paradigms, we should be asking whether the granular informa
 
 ::: {#fig-ch3-process-vs-outcome-orm-vs-prm}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/03-process-vs-outcome-light.png){.light-content fig-alt="Outcome reward assigns one endpoint score to a complete reasoning path, while process reward assigns separate scores to individual steps."}
 
 ![](../diagrams/03-process-vs-outcome-dark.png){.dark-content fig-alt="Outcome reward assigns one endpoint score to a complete reasoning path, while process reward assigns separate scores to individual steps."}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/03-process-vs-outcome-light.png){fig-alt="Outcome reward assigns one endpoint score to a complete reasoning path, while process reward assigns separate scores to individual steps."}
 :::
 

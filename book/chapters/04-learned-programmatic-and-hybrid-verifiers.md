@@ -69,7 +69,7 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
 
 ::: {#fig-ch4-outcome-hybrid}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 
 ```{=html}
 <div class="oph-widget" id="oph-widget">
@@ -161,7 +161,7 @@ OpenAI's public reinforcement fine-tuning API exposes this pattern as multigrade
 ```
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 
 | Step | Reasoning | Outcome | Hybrid |
 |:-----|:----------|:-------:|:------:|

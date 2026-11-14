@@ -64,13 +64,13 @@ If the model deviates from the output contract e.g. omits `<answer>...</answer>`
 
 ::: {#fig-answer-normalization}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/02-answer-normalization-light.png){.light-content}
 
 ![](../diagrams/02-answer-normalization-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/02-answer-normalization-light.png)
 :::
 
@@ -127,7 +127,7 @@ One cannot deny the success of outcome-based RLVR, but in this regard, it is a b
 
 ::: {#fig-ch2-outcome-full-trajectory-update fig-cap="Example from @sec-ch2-rollout continued."}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 
 ```{=html}
 <div class="ds-widget" id="ds-widget">
@@ -269,7 +269,7 @@ One cannot deny the success of outcome-based RLVR, but in this regard, it is a b
 
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 
 ```text
 Successful trajectory

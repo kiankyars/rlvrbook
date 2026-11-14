@@ -53,7 +53,7 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 
 ::: {#fig-ch6-pass-at-k}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 
 ```{=html}
 <div class="sva-widget" id="sva-widget">
@@ -167,7 +167,7 @@ Chen et al. defined pass@$k$: the probability that at least one of $k$ samples p
 ```
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 
 | Budget (candidates) | Baseline model | RLVR-trained model | Training gain |
 |:-------------------:|:----------:|:----------------:|:-------------:|

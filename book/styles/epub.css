@@ -1,0 +1,8 @@
+/* E-readers have no margin column, so margin notes render inline after the
+   paragraph or code block they annotate. Set them off as asides. */
+.column-margin {
+  margin: 0.5em 0 1em;
+  padding-left: 0.75em;
+  border-left: 2px solid #9ca3af;
+  font-size: 0.9em;
+}

@@ -15,13 +15,13 @@ RLVR is reinforcement learning on tasks where some meaningful part of correctnes
 
 ::: {#fig-verifier-stack}
 
-::: {.content-visible when-format="html"}
+::: {.content-visible when-format="html:js"}
 ![](../diagrams/01-verifier-stack-light.png){.light-content}
 
 ![](../diagrams/01-verifier-stack-dark.png){.dark-content}
 :::
 
-::: {.content-visible when-format="pdf"}
+::: {.content-visible unless-format="html:js"}
 ![](../diagrams/01-verifier-stack-light.png)
 :::
 
